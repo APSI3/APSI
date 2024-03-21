@@ -1,0 +1,9 @@
+FROM eclipse-temurin:17-jdk-alpine
+
+COPY gradlew ./gradlew
+COPY gradle ./gradle
+COPY build.gradle ./build.gradle
+
+COPY src ./src
+
+CMD ["./gradlew", "bootRun"]
