@@ -7,11 +7,17 @@ import jakarta.persistence.*;
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "login")
+    @Column(name = "login", nullable = false)
     private String login;
+
+    @Column(name = "HASH", nullable = false)
+    private String hash;
+
+    @Column(name = "SALT", nullable = false)
+    private String salt;
 
     public UserEntity() {}
 
@@ -34,5 +40,21 @@ public class UserEntity {
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 }

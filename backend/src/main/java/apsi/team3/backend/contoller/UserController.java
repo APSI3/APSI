@@ -1,14 +1,12 @@
 package apsi.team3.backend.contoller;
 
-import apsi.team3.backend.interfaces.IUserService;
-import apsi.team3.backend.model.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import apsi.team3.backend.interfaces.IUserService;
 
 @RestController
 @RequestMapping("/user")
@@ -20,8 +18,14 @@ public class UserController {
     public UserController(IUserService userService) {
         this.userService = userService;
     }
-    @GetMapping
-    public List<UserEntity> getAllUsers() {
-        return userService.getAllUsers();
+
+    @PostMapping
+    public boolean Session() {
+        return true;
+    }
+
+    @PostMapping
+    public boolean Login(){
+        return true;
     }
 }

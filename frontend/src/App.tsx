@@ -2,8 +2,8 @@ import { Route, createBrowserRouter, createRoutesFromElements, RouterProvider } 
 import Footer from "./components/Footer";
 import { UnAuthorizedPage } from "./pages/UnauthorizedPage";
 import { AuthorizedPage } from "./pages/AuthorizedPage";
-import UserPage from "./pages/UserPage";
 import LoginPage from "./pages/LoginPage";
+import MainPage from "./pages/MainPage";
 
 export const Paths = {
     login: "/login",
@@ -14,7 +14,7 @@ const router = createBrowserRouter(
     createRoutesFromElements(
         <Route>
             <Route path={Paths.login} element={<UnAuthorizedPage page={<LoginPage />} />} />
-            <Route path={Paths.main} element={<AuthorizedPage page={<UserPage />} />} />
+            <Route path={Paths.main} element={<AuthorizedPage page={<MainPage />} />} />
         </Route>
     )
 )

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { ApiResponse, LoginResponse } from "./Responses";
 import { LoginRequest } from "./Requests";
+import { toastError } from "../helpers/ToastHelpers";
 
 axios.defaults.withCredentials = true;
 
@@ -37,7 +38,7 @@ async function getApiResponse<R, T>(request: R, url: string): Promise<ApiRespons
     });
 
     if (response.statusCode === 401)
-        toastAuthError();
+        toastError("Brak uprawnień do wykonania operacji");
 
     return response;
 }
@@ -46,16 +47,15 @@ export class Api {
     private static url = process.env.REACT_APP_BACKEND_URL;
 
     static async Login(request: LoginRequest) {
-        return await getApiResponse<LoginRequest, LoginResponse>(request, this.url + "/users/login");
+        return await getApiResponse<LoginRequest, LoginResponse>(request, this.url + "/user/login");
     }
 
     static async Logout() {
-        return await getApiResponse<undefined, undefined>(undefined, this.url + "/users/logout");
+        return await getApiResponse<undefined, undefined>(undefined, this.url + "/user/logout");
     }
 
-
     static async Session() {
-        const isLoggedIn = await axios.post(this.url + "/users/session", {}, {
+        const isLoggedIn = await axios.post(this.url + "/user/session", {}, {
             validateStatus: status => status <= 500,
             headers: {
                 "Content-Type": "application/json"
@@ -68,8 +68,4 @@ export class Api {
 
         return isLoggedIn;
     }
-}
-
-function toastAuthError() {
-    throw new Error("Function not implemented.");
 }
