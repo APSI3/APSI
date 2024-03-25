@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-import { User } from "../model/User";
+import { UserDTO } from "../api/DTOs";
 
 
 export default function UserPage() {
-    const [users, setUsers] = useState<User[] | null>(null);
+    const [users, setUsers] = useState<UserDTO[] | null>(null);
 
     useEffect(() => {
         testFetch().then(res => res.res).then(data => {
