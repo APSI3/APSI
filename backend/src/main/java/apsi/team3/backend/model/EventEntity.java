@@ -2,6 +2,9 @@ package apsi.team3.backend.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 @Entity
 @Table(name = "events")
 public class EventEntity {
@@ -13,23 +16,35 @@ public class EventEntity {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "latitude")
-    private float latitude;
+    @Column(name = "start_date")
+    private Date startDate;
 
-    @Column(name = "longitude")
-    private float longitude;
+    @Column(name = "end_date")
+    private Date endDate;
+
+    @Column(name = "start_time")
+    private LocalDateTime startTime;
+
+    @Column(name = "end_time")
+    private LocalDateTime endTime;
 
     @Column(name = "description")
     private String description;
 
+    @Column(name = "organizer_id")
+    private Long organizerId;
+
     public EventEntity() {}
 
-    public EventEntity(Long id, String name, float latitude, float longitude, String description) {
+    public EventEntity(Long id, String name, Date startDate, Date endDate, LocalDateTime startTime, LocalDateTime endTime, String description, Long organizerId) {
         this.id = id;
         this.name = name;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.description = description;
+        this.organizerId = organizerId;
     }
 
     public Long getId() {
@@ -48,20 +63,36 @@ public class EventEntity {
         this.name = name;
     }
 
-    public float getLatitude() {
-        return latitude;
+    public Date getStartDate() {
+        return startDate;
     }
 
-    public void setLatitude(float latitude) {
-        this.latitude = latitude;
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
-    public float getLongitude() {
-        return longitude;
+    public Date getEndDate() {
+        return endDate;
     }
 
-    public void setLongitude(float longitude) {
-        this.longitude = longitude;
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     public String getDescription() {
@@ -70,5 +101,13 @@ public class EventEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Long getOrganizerId() {
+        return organizerId;
+    }
+
+    public void setOrganizerId(Long organizerId) {
+        this.organizerId = organizerId;
     }
 }
