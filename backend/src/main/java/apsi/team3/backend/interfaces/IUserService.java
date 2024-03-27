@@ -1,6 +1,9 @@
 package apsi.team3.backend.interfaces;
 
+import apsi.team3.backend.DTOs.Requests.LoginRequest;
+import apsi.team3.backend.DTOs.Responses.LoginResponse;
 import apsi.team3.backend.exceptions.ApsiException;
+import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.model.UserEntity;
 
 import java.util.List;
@@ -11,4 +14,5 @@ public interface IUserService {
     Optional<UserEntity> getUserByLogin(String login);
     List<UserEntity> getAllUsers();
     String hashPassword(String password, String salt) throws ApsiException;
+    LoginResponse login(LoginRequest request) throws ApsiValidationException;
 }

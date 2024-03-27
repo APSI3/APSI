@@ -1,6 +1,9 @@
 package apsi.team3.backend.services;
 
+import apsi.team3.backend.DTOs.Requests.LoginRequest;
+import apsi.team3.backend.DTOs.Responses.LoginResponse;
 import apsi.team3.backend.exceptions.ApsiException;
+import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IUserService;
 import apsi.team3.backend.model.UserEntity;
 import apsi.team3.backend.repository.UserRepository;
@@ -54,5 +57,11 @@ public class UserService implements IUserService {
         catch (DecoderException|NoSuchAlgorithmException|InvalidKeySpecException e) {
             throw new ApsiException(e);
         }
+    }
+
+    @Override
+    public LoginResponse login(LoginRequest request) throws ApsiValidationException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'login'");
     }
 }

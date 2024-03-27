@@ -7,11 +7,11 @@ axios.defaults.withCredentials = true;
 
 async function getApiResponse<R, T>(request: R, url: string): Promise<ApiResponse<T>> {
     let response: ApiResponse<T> = {
-        statusCode: 400,
         data: undefined,
         errors: {},
         success: false
     };
+    let statusCode = 400;
 
     await axios.post(url, request ?? {}, {
         validateStatus: status => status <= 500,
@@ -19,8 +19,8 @@ async function getApiResponse<R, T>(request: R, url: string): Promise<ApiRespons
             "Content-Type": "application/json"
         }
     }).then(res => {
+        statusCode = res.status;
         response = {
-            statusCode: res.status ?? 400,
             data: res.data.data,
             errors: res.data.errors ?? {},
             success: res.data.success ?? false
@@ -28,7 +28,6 @@ async function getApiResponse<R, T>(request: R, url: string): Promise<ApiRespons
     }).catch(error => {
         if (error.response)
             response = {
-                statusCode: error.response.status ?? 400,
                 data: error.response.data.data,
                 errors: error.response.data.errors ?? {},
                 success: error.response.data.success ?? false
@@ -37,7 +36,7 @@ async function getApiResponse<R, T>(request: R, url: string): Promise<ApiRespons
             console.error('Api Error: ', error.message)
     });
 
-    if (response.statusCode === 401)
+    if (statusCode === 401)
         toastError("Brak uprawnień do wykonania operacji");
 
     return response;
