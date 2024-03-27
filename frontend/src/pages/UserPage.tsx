@@ -35,7 +35,7 @@ export default function UserPage() {
                 {
                     users != null && 
                     users.map((user, index) => (
-                        <div><span>{index + 1}. </span>{user.login}</div>
+                        <div key={`user-{index}`}><span>{index + 1}. </span>{user.login}</div>
                     ))
                 }
             </div>
