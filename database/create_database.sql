@@ -28,6 +28,25 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
 
+CREATE TABLE public.locations (
+      location_id SERIAL PRIMARY KEY,
+      name character varying(255) NOT NULL,
+      latitude NUMERIC,
+      longitude NUMERIC,
+      description TEXT
+);
+
+CREATE TABLE public.events (
+       id SERIAL PRIMARY KEY,
+       name character varying(255) NOT NULL,
+       start_date TIMESTAMP NOT NULL,
+       end_date TIMESTAMP NOT NULL,
+       description TEXT,
+       organizer_id INT references public.users(id) NOT NULL
+);
+
+ALTER TABLE public.events OWNER TO apsi;
+
 ------------------------------------------------------------------------
 
 insert into public.users(login)
