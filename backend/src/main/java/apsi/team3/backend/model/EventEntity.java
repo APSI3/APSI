@@ -3,7 +3,6 @@ package apsi.team3.backend.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "events")
@@ -17,16 +16,10 @@ public class EventEntity {
     private String name;
 
     @Column(name = "start_date")
-    private Date startDate;
+    private LocalDateTime startDate;
 
     @Column(name = "end_date")
-    private Date endDate;
-
-    @Column(name = "start_time")
-    private LocalDateTime startTime;
-
-    @Column(name = "end_time")
-    private LocalDateTime endTime;
+    private LocalDateTime endDate;
 
     @Column(name = "description")
     private String description;
@@ -36,13 +29,11 @@ public class EventEntity {
 
     public EventEntity() {}
 
-    public EventEntity(Long id, String name, Date startDate, Date endDate, LocalDateTime startTime, LocalDateTime endTime, String description, Long organizerId) {
+    public EventEntity(Long id, String name, LocalDateTime startDate, LocalDateTime endDate, String description, Long organizerId) {
         this.id = id;
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.startTime = startTime;
-        this.endTime = endTime;
         this.description = description;
         this.organizerId = organizerId;
     }
@@ -63,36 +54,20 @@ public class EventEntity {
         this.name = name;
     }
 
-    public Date getStartDate() {
+    public LocalDateTime getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public LocalDateTime getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
-    }
-
-    public LocalDateTime getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
-    }
-
-    public LocalDateTime getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
     }
 
     public String getDescription() {

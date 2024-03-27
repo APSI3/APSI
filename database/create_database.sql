@@ -39,10 +39,8 @@ CREATE TABLE public.locations (
 CREATE TABLE public.events (
        id SERIAL PRIMARY KEY,
        name character varying(255) NOT NULL,
-       start_date DATE NOT NULL,
-       start_time TIME NOT NULL,
-       end_date DATE NOT NULL,
-       end_time TIME NOT NULL ,
+       start_date TIMESTAMP NOT NULL,
+       end_date TIMESTAMP NOT NULL,
        description TEXT,
        organizer_id INT references public.users(id) NOT NULL
 );

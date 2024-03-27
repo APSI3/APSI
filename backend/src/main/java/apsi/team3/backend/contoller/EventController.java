@@ -30,6 +30,7 @@ public class EventController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
+    @CrossOrigin(origins = {"http://localhost:3000"})
     public ResponseEntity<EventEntity> createEvent(@RequestBody EventEntity newEvent) throws ServerException {
         EventEntity event = eventService.save(newEvent);
         if (event == null) {
