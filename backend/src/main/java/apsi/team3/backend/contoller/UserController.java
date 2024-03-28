@@ -3,6 +3,7 @@ package apsi.team3.backend.contoller;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +18,7 @@ import apsi.team3.backend.interfaces.IUserService;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = {"http://localhost:3000"})
+@CrossOrigin(origins = {"http://localhost:3000"}, allowCredentials = "true")
 public class UserController {
     private final IUserService userService;
 
@@ -26,12 +27,13 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping
+    @PostMapping("/session")
     public boolean Session() {
-        return true;
+        var a = SecurityContextHolder.getContext().getAuthentication();
+        return a.isAuthenticated();
     }
 
-    @PostMapping
+    @PostMapping("/login")
     public ApiResponse<LoginResponse> Login(@RequestBody LoginRequest request){
         try {
             var resp = userService.login(request);
