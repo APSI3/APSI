@@ -1,11 +1,11 @@
 package apsi.team3.backend.DTOs;
 
 public class UserDTO {
-    public long Id;
-    public String Login;
+    public long id;
+    public String login;
     
     public UserDTO(long id, String login) {
-        Id = id;
-        Login = login;
+        this.id = id;
+        this.login = login;
     }
 }

@@ -18,4 +18,12 @@ public class ApiResponse<T> {
         Success = false;
         Data = null;
     }
+
+    public ApiResponse(String error, String key) {
+        Errors = new HashMap<String, String>() {{ 
+            put(key, error);
+        }};
+        Success = false;
+        Data = null;
+    }
 }

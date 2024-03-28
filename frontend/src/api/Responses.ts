@@ -1,4 +1,4 @@
-import { UserDTO } from "./DTOs"
+import { LoggedUserDTO } from "./DTOs"
 
 export type ApiResponse<T> = {
     data?: T,
@@ -7,5 +7,5 @@ export type ApiResponse<T> = {
 }
 
 export type LoginResponse = {
-    user: UserDTO
+    user: LoggedUserDTO
 }

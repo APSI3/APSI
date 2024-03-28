@@ -23,3 +23,7 @@ export function toastError(msg: string) {
         type: 'error'
     })
 }
+
+export function toastDefaultError() { 
+    toastError("Coś poszło nie tak")
+}

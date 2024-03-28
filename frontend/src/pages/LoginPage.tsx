@@ -7,6 +7,7 @@ import { LoginRequest } from "../api/Requests";
 import { AuthHelpers } from "../helpers/AuthHelpers";
 import { ValidationMessage } from "../helpers/FormHelpers";
 import { Helmet } from "react-helmet";
+import { toastDefaultError } from "../helpers/ToastHelpers";
 
 const initialValues: LoginRequest = {
     login: "",
@@ -26,10 +27,6 @@ const loginValidationSchema = object<LoginRequest>().shape({
 export default function LoginPage() {
     const nav = useNavigate();
 
-    function toastDefaultError() {
-        throw new Error("Function not implemented.");
-    }
-
     return <>
         <Helmet>
             <title>APSI - logowanie</title>
@@ -41,8 +38,8 @@ export default function LoginPage() {
                 onSubmit={async (values, fh) => {
                     await Api.Login(values).then(res => {
                         if (res.success && res.data) {
+                            AuthHelpers.StoreUserData(res.data.user, res.data.user.authHeader);
                             nav(Paths.main)
-                            AuthHelpers.StoreUserData(res.data.user);
                         }
                         else {
                             fh.setFieldValue('password', '', false);

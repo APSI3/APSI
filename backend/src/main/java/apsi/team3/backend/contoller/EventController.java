@@ -4,7 +4,6 @@ import apsi.team3.backend.interfaces.IEventService;
 import apsi.team3.backend.model.EventEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,11 +25,7 @@ public class EventController {
     @GetMapping("/{id}")
     public EventEntity getEventById(@PathVariable("id") Long id) { return eventService.getEventById(id); }
 
-    @PostMapping(
-        consumes = MediaType.APPLICATION_JSON_VALUE,
-        produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    @CrossOrigin(origins = {"http://localhost:3000"})
+    @PostMapping()
     public ResponseEntity<EventEntity> createEvent(@RequestBody EventEntity newEvent) throws ServerException {
         EventEntity event = eventService.save(newEvent);
         if (event == null) {

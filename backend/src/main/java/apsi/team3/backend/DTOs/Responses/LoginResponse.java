@@ -1,11 +1,11 @@
 package apsi.team3.backend.DTOs.Responses;
 
-import apsi.team3.backend.DTOs.UserDTO;
+import apsi.team3.backend.DTOs.LoggedUserDTO;
 
 public class LoginResponse {
-    public UserDTO User;
+    public LoggedUserDTO user;
 
-    public LoginResponse(UserDTO user) {
-        User = user;
+    public LoginResponse(LoggedUserDTO user) {
+        this.user = user;
     }
 }

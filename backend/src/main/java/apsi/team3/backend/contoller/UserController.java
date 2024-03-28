@@ -1,7 +1,5 @@
 package apsi.team3.backend.contoller;
 
-import java.util.HashMap;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -34,15 +32,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ApiResponse<LoginResponse> Login(@RequestBody LoginRequest request){
-        try {
-            var resp = userService.login(request);
-            return new ApiResponse<>(resp);
-        }
-        catch (ApsiValidationException e){
-            return new ApiResponse<>(new HashMap<String, String>() {{ 
-                put(e.key, e.getMessage());
-            }});
-        }
+    public ApiResponse<LoginResponse> Login(@RequestBody LoginRequest request) throws ApsiValidationException {
+        var resp = userService.login(request);
+        return new ApiResponse<>(resp);
     }
 }
