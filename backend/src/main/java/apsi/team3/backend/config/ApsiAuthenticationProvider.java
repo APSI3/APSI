@@ -44,6 +44,7 @@ public class ApsiAuthenticationProvider implements AuthenticationProvider {
             .orElse(null);
     }
 
+    // TODO: uzależnić przyznane uprawnienia od roli/flagi w bazie (prywatny/firma)
     private List<GrantedAuthority> getAuthorities() {
         return new ArrayList<GrantedAuthority>() {{
             new SimpleGrantedAuthority("USER");

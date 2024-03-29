@@ -3,6 +3,9 @@ package apsi.team3.backend.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+
+import apsi.team3.backend.DTOs.Requests.CreateEventRequest;
 
 @Entity
 @Table(name = "events")
@@ -36,6 +39,14 @@ public class EventEntity {
         this.endDate = endDate;
         this.description = description;
         this.organizerId = organizerId;
+    }
+
+    public EventEntity(CreateEventRequest request, Long userId) {
+        this.name = request.name;
+        this.startDate = request.startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        this.endDate = request.endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        this.description = request.description;
+        this.organizerId = userId;
     }
 
     public Long getId() {

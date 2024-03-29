@@ -1,33 +1,66 @@
-import { useForm } from 'react-hook-form';
-import { EventFormProps, EventFormData } from "../model/Event";
+import { Field, Form, Formik } from "formik";
+import { Helmet } from "react-helmet";
+import { CreateEventRequest } from "../api/Requests";
+import { Api } from "../api/Api";
+import { toastDefaultError, toastInfo } from "../helpers/ToastHelpers";
+import { ValidationMessage } from "../helpers/FormHelpers";
 
-export default function EventForm({ onSubmit }: EventFormProps) {
-    const { register, handleSubmit } = useForm<EventFormData>();
+const initialValues: CreateEventRequest = {
+    name: "",
+    description: "",
+    startDate: new Date(),
+    endDate: new Date(),
+}
 
-    return (
-        <form onSubmit={handleSubmit(onSubmit)}>
-            <label> Nazwa:
-                <input type="text" {...register('name')}/>
-            </label>
-            <br />
-            <label>
-                Od: <input type="datetime-local" {...register('startDate', { valueAsDate: true })}/>
-            </label>
-            <br />
-            <label>
-                Do: <input type="datetime-local" {...register('endDate', { valueAsDate: true })}/>
-            </label>
-            <br />
-            <label>
-                Opis: <input type="text" {...register('description')}/>
-            </label>
-            <br />
-            {/*TODO: after logging this should be replaced with current user*/}
-            <label>
-                Organizator: <input type="number" {...register('organizerId')}/>
-            </label>
-
-            <input type="submit"/>
-        </form>
-    )
+export default function EventForm() {
+    // TODO: poprawić wygląd
+    // TODO: dodać walidację z yupa
+    return <>
+        <Helmet>
+            <title>APSI - Dodawanie wydarzenia</title>
+        </Helmet>
+        <Formik
+            initialValues={initialValues}
+            onSubmit={async (values, fh) => {
+                await Api.CreateEvent(values).then(res => {
+                    debugger;
+                    if (res.success) {
+                        toastInfo("Udało się stworzyć wydarzenie " + values.name);
+                    }
+                    else {
+                        if (res.errors)
+                            fh.setErrors(res.errors);
+                        else
+                            toastDefaultError()
+                    }
+                })
+            }}
+        >
+            {({ isSubmitting }) => <Form className="form">
+                <label>Nazwa</label>
+                <div>
+                    <Field type="text" name="name" className="form-control" />
+                    <ValidationMessage fieldName="name" />
+                </div>
+                <label>Opis</label>
+                <div>
+                    <Field type="text" name="description" className="form-control" />
+                    <ValidationMessage fieldName="description" />
+                </div>
+                <label>Od</label>
+                <div>
+                    <Field type="date" name="startDate" className="form-control" />
+                    <ValidationMessage fieldName="startDate" />
+                </div>
+                <label>Do</label>
+                <div>
+                    <Field type="date" name="endDate" className="form-control" />
+                    <ValidationMessage fieldName="endDate" />
+                </div>
+                <div>
+                    <button className="btn btn-primary form-control" type="submit" disabled={isSubmitting}>Dodaj</button>
+                </div>
+            </Form>}
+        </Formik>
+    </>
 }

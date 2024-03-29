@@ -19,7 +19,6 @@ export function AuthorizedPage({ page }: AuththorizedPageProps) {
             const sessionBack = await Api.Session();
 
             if (!(sessionBack && sessionFront)) {
-                Api.Logout()
                 AuthHelpers.ClearAllData();
                 nav(Paths.login);
             }

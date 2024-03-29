@@ -23,7 +23,7 @@ export function UnAuthorizedPage({ page }: UnAuththorizedPageProps) {
             }
 
             if (sessionBack && !sessionFront)
-                Api.Logout();
+                AuthHelpers.ClearAllData();
         }
 
         checkIfLoggedIn();

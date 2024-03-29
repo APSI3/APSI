@@ -32,6 +32,7 @@ public class Config {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.csrf(c -> c.disable())
             .cors(Customizer.withDefaults())
+            // TODO: dodawanie eventu, etc. tylko dla userów reprezentujących firmę
             .authorizeHttpRequests(r -> r.requestMatchers("/user/login").anonymous())
             .authorizeHttpRequests(r -> r.anyRequest().authenticated())
             .httpBasic(c -> c.authenticationEntryPoint((req, res, authEx) -> {

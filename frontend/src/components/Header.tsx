@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import { Api } from "../api/Api";
 import { Paths } from "../App";
 import { AuthHelpers } from "../helpers/AuthHelpers";
 
@@ -11,7 +10,10 @@ export default function Header() {
         <a href={Paths.main} className="navbar-title">APSI</a>
         <div className="collapse navbar-collapse">
             <ul className="navbar-nav mr-auto">
-
+                {/* TODO: tu powinno być sprawdzenie czy user ma rolę odpowiednią */}
+                {<li className="nav-item">
+                    <a className="nav-link" href={Paths.createEvent}>Dodaj wydarzenie</a>
+                </li>}
             </ul>
         </div>
         <div className="navbar-login">
@@ -23,7 +25,6 @@ export default function Header() {
                 {AuthHelpers.IsLoggedIn() && <button type="button" className="btn btn-outline-light btn-sm"
                     onClick={() => {
                         AuthHelpers.ClearAllData();
-                        Api.Logout();
                         nav(Paths.login)
                     }}
                 >
