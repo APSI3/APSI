@@ -42,7 +42,6 @@ export default function LoginForm () {
                             nav(Paths.main)
                         }
                         else {
-                            debugger;
                             fh.setFieldValue('password', '', false);
                             if (res.errors)
                                 fh.setErrors(res.errors);

@@ -13,14 +13,13 @@ async function getApiResponse<R, T>(request: R, url: string): Promise<ApiRespons
         success: false
     };
     let statusCode = 400;
-    const authKey = AuthHelpers.GetAuthKey();
-    const authHeader = !!authKey ? { "Authorization": authKey } : {};
 
+    const authKey = AuthHelpers.GetAuthKey();
     await axios.post(url, request ?? {}, {
         validateStatus: status => status <= 500,
         headers: {
             "Content-Type": "application/json",
-            ...authHeader
+            "Authorization": authKey
         }
     }).then(res => {
         statusCode = res.status;
@@ -63,10 +62,12 @@ export class Api {
     }
 
     static async Session() {
+        const authKey = AuthHelpers.GetAuthKey();
         const isLoggedIn = await axios.post(this.url + "/user/session", {}, {
             validateStatus: status => status <= 500,
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": authKey
             }
         }).then(r => {
             return r.data as boolean;
