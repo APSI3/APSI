@@ -2,7 +2,7 @@ import { LoggedUserDTO } from "./DTOs"
 
 export type ApiResponse<T> = {
     data?: T,
-    errors: { [key: string]: string[] },
+    errors: { [key: string]: string },
     success: boolean,
 }
 

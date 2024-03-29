@@ -13,6 +13,6 @@ import apsi.team3.backend.exceptions.ApsiValidationException;
 public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({ ApsiValidationException.class })
     protected ResponseEntity<Object> handleBackendException(ApsiValidationException ex) {
-        return new ResponseEntity<>(new ApiResponse<>(ex.key, ex.getMessage()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ApiResponse<>(ex.getMessage(), ex.key), HttpStatus.BAD_REQUEST);
     }
 }

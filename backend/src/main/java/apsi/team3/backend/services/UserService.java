@@ -65,7 +65,7 @@ public class UserService implements IUserService {
         
         var userRaw = userRepository.findUserByLogin(request.login);
         if (userRaw.isEmpty())
-            throw new ApsiValidationException("Nie znaleziono użytkownika", "login");
+            throw new ApsiValidationException("Niepoprawne hasło", "password");
         
         var user = userRaw.get();
         try {
