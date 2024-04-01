@@ -1,42 +1,41 @@
 package apsi.team3.backend.contoller;
 
-import apsi.team3.backend.interfaces.IEventService;
-import apsi.team3.backend.model.EventEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.rmi.ServerException;
-import java.util.List;
+import apsi.team3.backend.DTOs.ApiResponse;
+import apsi.team3.backend.DTOs.Requests.CreateEventRequest;
+import apsi.team3.backend.DTOs.Responses.CreateEventResponse;
+import apsi.team3.backend.exceptions.ApsiValidationException;
+import apsi.team3.backend.interfaces.IEventService;
 
 @RestController
 @RequestMapping("/event")
-@CrossOrigin(origins = {"http://localhost:3000"})
+@CrossOrigin(origins = {"http://localhost:3000"}, allowCredentials = "true")
 public class EventController {
     private final IEventService eventService;
 
     @Autowired
     public EventController(IEventService eventService) { this.eventService = eventService; }
 
-    @GetMapping
-    public List<EventEntity> getAllEvents() { return eventService.getAllEvents(); }
+    // TODO: odkomentować przy implementowaniu strony eventu i listy
+    // @GetMapping
+    // public List<EventEntity> getAllEvents() { 
+    //     return eventService.getAllEvents();
+    // }
 
-    @GetMapping("/{id}")
-    public EventEntity getEventById(@PathVariable("id") Long id) { return eventService.getEventById(id); }
+    // @GetMapping("/{id}")
+    // public Optional<EventEntity> getEventById(@PathVariable("id") Long id) { 
+    //     return eventService.getEventById(id);
+    // }
 
-    @PostMapping(
-        consumes = MediaType.APPLICATION_JSON_VALUE,
-        produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    @CrossOrigin(origins = {"http://localhost:3000"})
-    public ResponseEntity<EventEntity> createEvent(@RequestBody EventEntity newEvent) throws ServerException {
-        EventEntity event = eventService.save(newEvent);
-        if (event == null) {
-            throw new ServerException("Encountered error saving event");
-        } else {
-            return new ResponseEntity<>(event, HttpStatus.CREATED);
-        }
+    @PostMapping("/create")
+    public ApiResponse<CreateEventResponse> createEvent(@RequestBody CreateEventRequest request) throws ApsiValidationException {
+        var resp = eventService.save(request);
+        return new ApiResponse<>(resp);
     }
 }

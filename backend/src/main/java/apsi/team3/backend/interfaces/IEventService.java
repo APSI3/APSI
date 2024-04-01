@@ -1,11 +1,15 @@
 package apsi.team3.backend.interfaces;
 
+import apsi.team3.backend.DTOs.Requests.CreateEventRequest;
+import apsi.team3.backend.DTOs.Responses.CreateEventResponse;
+import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.model.EventEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IEventService {
-    EventEntity getEventById(Long id);
+    Optional<EventEntity> getEventById(Long id);
     List<EventEntity> getAllEvents();
-    EventEntity save(EventEntity event);
+    CreateEventResponse save(CreateEventRequest event) throws ApsiValidationException;
 }

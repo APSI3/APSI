@@ -5,7 +5,9 @@ CREATE ROLE apsi WITH LOGIN PASSWORD 'apsi';
 
 CREATE TABLE public.users (
     id integer NOT NULL,
-    login character varying(128) NOT NULL
+    login character varying(128) NOT NULL,
+    hash character (64) NOT NULL,
+    salt character (32) NOT NULL
 );
 
 
@@ -49,8 +51,8 @@ ALTER TABLE public.events OWNER TO apsi;
 
 ------------------------------------------------------------------------
 
-insert into public.users(login)
-values ('testuser1');
-
+insert into public.users(login, hash, salt)
+values ('testuser1', '341ced0137e534a3ed32527538dd2cdaf7f331c5c0594a07dc5feec41777e59a' ,'f5962616e849a8727fd957287cc8253e');
+-- hasło "apsi"
 
 ------------------------------------------------------------------------

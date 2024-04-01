@@ -1,8 +1,3 @@
-
-export interface EventFormProps {
-    onSubmit: (data: EventFormData) => void;
-}
-
 export interface EventFormData {
     name: string;
     startDate: Date;

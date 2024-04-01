@@ -1,18 +1,22 @@
 package apsi.team3.backend.contoller;
 
-import apsi.team3.backend.interfaces.IUserService;
-import apsi.team3.backend.model.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import apsi.team3.backend.DTOs.ApiResponse;
+import apsi.team3.backend.DTOs.Requests.LoginRequest;
+import apsi.team3.backend.DTOs.Responses.LoginResponse;
+import apsi.team3.backend.exceptions.ApsiValidationException;
+import apsi.team3.backend.interfaces.IUserService;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = {"http://localhost:3000"})
+@CrossOrigin(origins = {"http://localhost:3000"}, allowCredentials = "true")
 public class UserController {
     private final IUserService userService;
 
@@ -20,8 +24,16 @@ public class UserController {
     public UserController(IUserService userService) {
         this.userService = userService;
     }
-    @GetMapping
-    public List<UserEntity> getAllUsers() {
-        return userService.getAllUsers();
+
+    @PostMapping("/session")
+    public boolean Session() {
+        var a = SecurityContextHolder.getContext().getAuthentication();
+        return a.isAuthenticated();
+    }
+
+    @PostMapping("/login")
+    public ApiResponse<LoginResponse> Login(@RequestBody LoginRequest request) throws ApsiValidationException {
+        var resp = userService.login(request);
+        return new ApiResponse<>(resp);
     }
 }
