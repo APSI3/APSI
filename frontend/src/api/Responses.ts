@@ -1,4 +1,4 @@
-import { LoggedUserDTO } from "./DTOs"
+import { EventDTO, LoggedUserDTO } from "./DTOs"
 
 export type ApiResponse<T> = {
     data?: T,
@@ -8,4 +8,8 @@ export type ApiResponse<T> = {
 
 export type LoginResponse = {
     user: LoggedUserDTO
+}
+
+export type CreateEventResponse = {
+    event: EventDTO
 }

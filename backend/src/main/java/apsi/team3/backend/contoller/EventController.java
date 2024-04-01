@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import apsi.team3.backend.DTOs.ApiResponse;
 import apsi.team3.backend.DTOs.Requests.CreateEventRequest;
+import apsi.team3.backend.DTOs.Responses.CreateEventResponse;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IEventService;
 
@@ -33,8 +34,8 @@ public class EventController {
     // }
 
     @PostMapping("/create")
-    public ApiResponse<Boolean> createEvent(@RequestBody CreateEventRequest request) throws ApsiValidationException {
-        eventService.save(request);
-        return new ApiResponse<Boolean>(true);
+    public ApiResponse<CreateEventResponse> createEvent(@RequestBody CreateEventRequest request) throws ApsiValidationException {
+        var resp = eventService.save(request);
+        return new ApiResponse<>(resp);
     }
 }

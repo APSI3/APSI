@@ -7,12 +7,11 @@ export type LoggedUserDTO = UserDTO & {
     authHeader: string;
 }
 
-export interface EventFormData {
+export interface EventDTO {
+    id: number,
     name: string;
     startDate: Date;
     startTime: Date;
-    endDate: Date;
-    endTime: Date;
     description: string;
     organizerId: number;
 }
