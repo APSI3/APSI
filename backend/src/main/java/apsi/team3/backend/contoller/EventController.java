@@ -1,11 +1,8 @@
 package apsi.team3.backend.contoller;
 
+import apsi.team3.backend.DTOs.Responses.GetEventsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import apsi.team3.backend.DTOs.ApiResponse;
 import apsi.team3.backend.DTOs.Requests.CreateEventRequest;
@@ -22,12 +19,13 @@ public class EventController {
     @Autowired
     public EventController(IEventService eventService) { this.eventService = eventService; }
 
-    // TODO: odkomentować przy implementowaniu strony eventu i listy
-    // @GetMapping
-    // public List<EventEntity> getAllEvents() { 
-    //     return eventService.getAllEvents();
-    // }
+     @PostMapping("/all")
+     public ApiResponse<GetEventsResponse> getAllEvents() {
+         var resp = eventService.getAllEvents();
+         return new ApiResponse<>(resp);
+     }
 
+    // TODO: odkomentować przy implementowaniu strony eventu
     // @GetMapping("/{id}")
     // public Optional<EventEntity> getEventById(@PathVariable("id") Long id) { 
     //     return eventService.getEventById(id);

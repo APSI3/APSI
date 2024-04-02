@@ -11,7 +11,7 @@ export interface EventDTO {
     id: number,
     name: string;
     startDate: Date;
-    startTime: Date;
+    endDate: Date;
     description: string;
     organizerId: number;
 }

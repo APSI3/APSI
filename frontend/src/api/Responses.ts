@@ -13,3 +13,7 @@ export type LoginResponse = {
 export type CreateEventResponse = {
     event: EventDTO
 }
+
+export type GetEventsResponse = {
+    events: EventDTO[]
+}
