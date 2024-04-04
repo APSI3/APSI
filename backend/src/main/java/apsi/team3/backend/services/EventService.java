@@ -3,6 +3,7 @@ package apsi.team3.backend.services;
 import apsi.team3.backend.DTOs.EventDTO;
 import apsi.team3.backend.DTOs.Requests.CreateEventRequest;
 import apsi.team3.backend.DTOs.Responses.CreateEventResponse;
+import apsi.team3.backend.DTOs.Responses.GetEventsResponse;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IEventService;
 import apsi.team3.backend.model.EventEntity;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EventService implements IEventService {
@@ -30,8 +32,13 @@ public class EventService implements IEventService {
     }
 
     @Override
-    public List<EventEntity> getAllEvents() { 
-        return eventRepository.findAll();
+    public GetEventsResponse getAllEvents() {
+        var eventEntities = eventRepository.findAll();
+        return new GetEventsResponse(
+                eventEntities
+                        .stream()
+                        .map(entity -> new EventDTO(entity))
+                        .collect(Collectors.toList()));
     }
 
     @Override

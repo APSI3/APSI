@@ -14,6 +14,9 @@ export default function Header() {
                 {<li className="nav-item">
                     <a className="nav-link" href={Paths.createEvent}>Dodaj wydarzenie</a>
                 </li>}
+                {<li className="nav-item">
+                    <a className="nav-link" href={Paths.events}>Twoje wydarzenia</a>
+                </li>}
             </ul>
         </div>
         <div className="navbar-login">

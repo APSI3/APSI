@@ -1,6 +1,6 @@
 import axios from "axios";
-import { ApiResponse, CreateEventResponse, LoginResponse } from "./Responses";
-import { CreateEventRequest, LoginRequest } from "./Requests";
+import {ApiResponse, CreateEventResponse, GetEventsResponse, LoginResponse} from "./Responses";
+import {CreateEventRequest, GetEventsRequest, LoginRequest} from "./Requests";
 import { toastError } from "../helpers/ToastHelpers";
 import { AuthHelpers } from "../helpers/AuthHelpers";
 
@@ -59,6 +59,10 @@ export class Api {
 
     static async CreateEvent(request: CreateEventRequest) {
         return await getApiResponse<CreateEventRequest, CreateEventResponse>(request, this.url + "/event/create");
+    }
+
+    static async GetEvents(request: GetEventsRequest) {
+        return await getApiResponse<GetEventsRequest, GetEventsResponse>(request, this.url + "/event/all");
     }
 
     static async Session() {

@@ -9,3 +9,5 @@ export type CreateEventRequest = {
     startDate: Date,
     endDate: Date,
 }
+
+export type GetEventsRequest = {}
