@@ -4,9 +4,10 @@ import { UnAuthorizedPage } from "./pages/UnauthorizedPage";
 import { AuthorizedPage } from "./pages/AuthorizedPage";
 import LoginPage from "./pages/LoginPage";
 import MainPage from "./pages/MainPage";
-import CreateEventPage from "./pages/CreateEventPage";
 import EventsPage from "./pages/EventsPage";
 import EventPage from "./pages/EventPage";
+import LocationsPage from "./pages/LocationsPage";
+
 
 export const Paths = {
     login: "/login",
@@ -22,9 +23,9 @@ const router = createBrowserRouter(
         <Route>
             <Route path={Paths.login} element={<UnAuthorizedPage page={<LoginPage />} />} />
             <Route path={Paths.main} element={<AuthorizedPage page={<MainPage />} />} />
-            <Route path={Paths.createEvent} element={<AuthorizedPage page={<CreateEventPage />} />} />
             <Route path={Paths.events} element={<AuthorizedPage page={<EventsPage />} />} />
             <Route path={Paths.event} element={<AuthorizedPage page={<EventPage />} />} />
+            <Route path={Paths.locations} element={<AuthorizedPage page={<LocationsPage />} />} />
         </Route>
     )
 )
