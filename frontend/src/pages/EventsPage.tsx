@@ -3,7 +3,7 @@ import {EventDTO} from "../api/DTOs";
 import {Api} from "../api/Api";
 import Event from "../components/Event";
 
-export default function CreateEventPage() {
+export default function EventsPage() {
     const [ events, setEvents ] = useState<EventDTO[]>([]);
     useEffect(() => {
         Api.GetEvents({}).then(res => { if (res.success && res.data) {

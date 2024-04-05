@@ -5,6 +5,7 @@ import { Api } from "../api/Api";
 import { AuthHelpers } from "../helpers/AuthHelpers";
 import { CustomToastContainer } from "../helpers/ToastHelpers";
 import Header from "../components/Header";
+import ActionButtons from "../components/ActionButtons";
 
 type AuththorizedPageProps = {
     page: JSX.Element,
@@ -34,6 +35,7 @@ export function AuthorizedPage({ page }: AuththorizedPageProps) {
         <main className='app container'>
             <CustomToastContainer />
             {page}
+            <ActionButtons />
         </main>
     </>
 }

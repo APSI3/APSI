@@ -12,10 +12,10 @@ export default function Header() {
             <ul className="navbar-nav mr-auto">
                 {/* TODO: tu powinno być sprawdzenie czy user ma rolę odpowiednią */}
                 {<li className="nav-item">
-                    <a className="nav-link" href={Paths.createEvent}>Dodaj wydarzenie</a>
+                    <a className="nav-link" href={Paths.events}>Twoje wydarzenia</a>
                 </li>}
                 {<li className="nav-item">
-                    <a className="nav-link" href={Paths.events}>Twoje wydarzenia</a>
+                    <a className="nav-link" href={Paths.locations}>Twoje lokalizacje</a>
                 </li>}
             </ul>
         </div>
