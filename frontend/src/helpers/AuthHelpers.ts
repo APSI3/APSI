@@ -25,4 +25,15 @@ export class AuthHelpers {
     public static ClearAllData() {
         secureLocalStorage.clear();
     }
+
+    public static HasAnyRole(roles: string[]) : boolean {
+        const data = AuthHelpers.GetUserData();
+        return !!data?.type && roles.some(r => r === data?.type)
+    }
 }
+
+export class UserTypes {
+    public static SUPERADMIN = "SUPERADMIN";
+    public static PERSON = "PERSON";
+    public static ORGANIZER = "ORGANIZER";
+} 

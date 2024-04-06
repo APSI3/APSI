@@ -46,9 +46,10 @@ public class ApsiAuthenticationProvider implements AuthenticationProvider {
     }
 
     private List<GrantedAuthority> getAuthorities(UserEntity user) {
-        return new ArrayList<GrantedAuthority>() {{
-            new SimpleGrantedAuthority(user.getType().toString());
-        }};
+        var type = user.getType().toString();
+        var list = new ArrayList<GrantedAuthority>();
+        list.add(new SimpleGrantedAuthority(type));
+        return list;
     }
 
     @Override

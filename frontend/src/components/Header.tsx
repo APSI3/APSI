@@ -1,20 +1,20 @@
 import { useNavigate } from "react-router-dom";
 import { Paths } from "../App";
-import { AuthHelpers } from "../helpers/AuthHelpers";
+import { AuthHelpers, UserTypes } from "../helpers/AuthHelpers";
 
 export default function Header() {
     const nav = useNavigate();
     const login = AuthHelpers.GetUserData()?.login;
-
+    const isAdminOrOrganizer = AuthHelpers.HasAnyRole([UserTypes.SUPERADMIN, UserTypes.ORGANIZER])
+    
     return <nav className="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
         <a href={Paths.main} className="navbar-title">APSI</a>
         <div className="collapse navbar-collapse">
             <ul className="navbar-nav mr-auto">
-                {/* TODO: tu powinno być sprawdzenie czy user ma rolę odpowiednią */}
-                {<li className="nav-item">
+                {isAdminOrOrganizer && <li className="nav-item">
                     <a className="nav-link" href={Paths.createEvent}>Dodaj wydarzenie</a>
                 </li>}
-                {<li className="nav-item">
+                {isAdminOrOrganizer && <li className="nav-item">
                     <a className="nav-link" href={Paths.events}>Twoje wydarzenia</a>
                 </li>}
             </ul>
