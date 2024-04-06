@@ -14,6 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import apsi.team3.backend.exceptions.ApsiException;
+import apsi.team3.backend.model.UserEntity;
 import apsi.team3.backend.services.UserService;
 
 @Component
@@ -40,14 +41,13 @@ public class ApsiAuthenticationProvider implements AuthenticationProvider {
                     return false;
                 }
             })
-            .map(user -> new UsernamePasswordAuthenticationToken(user, password, getAuthorities()))
+            .map(user -> new UsernamePasswordAuthenticationToken(user, password, getAuthorities(user)))
             .orElse(null);
     }
 
-    // TODO: uzależnić przyznane uprawnienia od roli/flagi w bazie (prywatny/firma)
-    private List<GrantedAuthority> getAuthorities() {
+    private List<GrantedAuthority> getAuthorities(UserEntity user) {
         return new ArrayList<GrantedAuthority>() {{
-            new SimpleGrantedAuthority("USER");
+            new SimpleGrantedAuthority(user.getType().toString());
         }};
     }
 

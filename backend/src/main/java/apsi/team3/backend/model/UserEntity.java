@@ -19,6 +19,10 @@ public class UserEntity {
     @Column(name = "SALT", nullable = false)
     private String salt;
 
+    @Column(name = "type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserTypes type;
+
     public UserEntity() {}
 
     public UserEntity(Long id, String login) {
@@ -56,5 +60,13 @@ public class UserEntity {
 
     public void setSalt(String salt) {
         this.salt = salt;
+    }
+
+    public UserTypes getType(){
+        return type;
+    }
+
+    public void setType(UserTypes type) {
+        this.type = type;
     }
 }

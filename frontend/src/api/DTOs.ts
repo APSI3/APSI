@@ -5,6 +5,7 @@ export type UserDTO = {
 
 export type LoggedUserDTO = UserDTO & {
     authHeader: string;
+    type: string
 }
 
 export interface EventDTO {

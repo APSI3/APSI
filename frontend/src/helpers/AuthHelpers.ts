@@ -1,11 +1,11 @@
 import secureLocalStorage from "react-secure-storage";
-import { UserDTO } from "../api/DTOs";
+import { LoggedUserDTO } from "../api/DTOs";
 
 export class AuthHelpers {
     private static userKey = "userData";
     private static authKey = "auth";
 
-    public static StoreUserData(userData: UserDTO, authHeader: string) {
+    public static StoreUserData(userData: LoggedUserDTO, authHeader: string) {
         secureLocalStorage.setItem(this.userKey, userData);
         secureLocalStorage.setItem(this.authKey, authHeader);
     }
@@ -14,8 +14,8 @@ export class AuthHelpers {
         return secureLocalStorage.getItem(this.authKey) as string;
     }
 
-    public static GetUserData(): UserDTO | undefined {
-        return secureLocalStorage.getItem(this.userKey) as UserDTO;
+    public static GetUserData(): LoggedUserDTO | undefined {
+        return secureLocalStorage.getItem(this.userKey) as LoggedUserDTO;
     }
 
     public static IsLoggedIn(): boolean {
