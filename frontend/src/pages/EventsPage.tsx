@@ -1,7 +1,9 @@
 import {useEffect, useState} from "react";
 import {EventDTO} from "../api/DTOs";
 import {Api} from "../api/Api";
-import Event from "../components/Event";
+import EventCard from "../components/EventCard";
+
+// todo: filtering and search bar
 
 export default function EventsPage() {
     const [ events, setEvents ] = useState<EventDTO[]>([]);
@@ -11,6 +13,6 @@ export default function EventsPage() {
         } })
     }, [])
     return <>
-        {events.map(event => <Event key={`event-${event.id}`} event={event} />)}
+        {events.map(event => <EventCard key={`event-${event.id}`} event={event} />)}
     </>
 }

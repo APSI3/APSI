@@ -9,6 +9,7 @@ export default function Header() {
     return <nav className="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
         <a href={Paths.main} className="navbar-title">APSI</a>
         <div className="collapse navbar-collapse">
+            {/*todo: based on user type insert either person, superadmin or organizer header*/}
             <ul className="navbar-nav mr-auto">
                 {/* TODO: tu powinno być sprawdzenie czy user ma rolę odpowiednią */}
                 {<li className="nav-item">
