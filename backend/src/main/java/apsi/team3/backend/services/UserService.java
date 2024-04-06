@@ -75,7 +75,7 @@ public class UserService implements IUserService {
                 var str = user.getLogin() + ":" + request.password;
                 var encoded = Base64.getEncoder().encodeToString(str.getBytes()); 
                 var header = "Basic " + encoded;
-                return new LoginResponse(new LoggedUserDTO(user.getId(), user.getLogin(), header));
+                return new LoginResponse(new LoggedUserDTO(user.getId(), user.getLogin(), header, user.getType()));
             }
         }
         catch (ApsiException e){
