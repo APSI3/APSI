@@ -1,12 +1,18 @@
 package apsi.team3.backend.model;
 
 import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.util.Objects;
 
-import apsi.team3.backend.DTOs.Requests.CreateEventRequest;
-
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "events")
 public class EventEntity {
@@ -15,7 +21,7 @@ public class EventEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", length = 250)
     private String name;
 
     @Column(name = "start_date")
@@ -24,76 +30,26 @@ public class EventEntity {
     @Column(name = "end_date")
     private LocalDateTime endDate;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 2000)
     private String description;
 
     @Column(name = "organizer_id")
     private Long organizerId;
 
-    public EventEntity() {}
 
-    public EventEntity(Long id, String name, LocalDateTime startDate, LocalDateTime endDate, String description, Long organizerId) {
-        this.id = id;
-        this.name = name;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.description = description;
-        this.organizerId = organizerId;
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        EventEntity that = (EventEntity) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
     }
 
-    public EventEntity(CreateEventRequest request, Long userId) {
-        this.name = request.name;
-        this.startDate = request.startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        this.endDate = request.endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        this.description = request.description;
-        this.organizerId = userId;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public LocalDateTime getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDateTime getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDateTime endDate) {
-        this.endDate = endDate;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Long getOrganizerId() {
-        return organizerId;
-    }
-
-    public void setOrganizerId(Long organizerId) {
-        this.organizerId = organizerId;
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }

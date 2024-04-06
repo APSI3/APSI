@@ -1,12 +1,9 @@
 package apsi.team3.backend.services;
 
+import apsi.team3.backend.DTOs.DTOMapper;
 import apsi.team3.backend.DTOs.EventDTO;
-import apsi.team3.backend.DTOs.Requests.CreateEventRequest;
-import apsi.team3.backend.DTOs.Responses.CreateEventResponse;
-import apsi.team3.backend.DTOs.Responses.GetEventsResponse;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IEventService;
-import apsi.team3.backend.model.EventEntity;
 import apsi.team3.backend.model.UserEntity;
 import apsi.team3.backend.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,43 +19,35 @@ public class EventService implements IEventService {
     private final EventRepository eventRepository;
 
     @Autowired
-    public EventService(EventRepository eventRepository) { 
+    public EventService(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
     }
 
     @Override
-    public Optional<EventEntity> getEventById(Long id) { 
-        return eventRepository.findEventById(id);
+    public Optional<EventDTO> getEventById(Long id) {
+        return eventRepository.findById(id).map(DTOMapper::toDTO);
     }
 
     @Override
-    public GetEventsResponse getAllEvents() {
-        var eventEntities = eventRepository.findAll();
-        return new GetEventsResponse(
-                eventEntities
-                        .stream()
-                        .map(entity -> new EventDTO(entity))
-                        .collect(Collectors.toList()));
+    public List<EventDTO> getAllEvents() {
+        return eventRepository.findAll()
+                .stream()
+                .map(DTOMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     // TODO: dodać nawet prostą walidację
     // TODO: przetestować zachowanie dat, nie wiem czy dobrze się ustawiają, strefy czasowe itd 
-    public CreateEventResponse save(CreateEventRequest request) throws ApsiValidationException{
-        if (request == null || request.name == null || request.name.isBlank())
+    public EventDTO save(EventDTO eventDTO) throws ApsiValidationException {
+        if (eventDTO == null || eventDTO.getName() == null || eventDTO.getName().isBlank())
             throw new ApsiValidationException("Należy podać nazwę wydarzenia", "name");
-        
-        var loggedUser = (UserEntity)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var entity = new EventEntity(request, loggedUser.getId());
+
+        var loggedUser = (UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var entity = DTOMapper.toEntity(eventDTO);
+        entity.setOrganizerId(loggedUser.getId());
         var saved = this.eventRepository.save(entity);
 
-        return new CreateEventResponse(new EventDTO(
-            saved.getId(),
-            saved.getName(),
-            saved.getStartDate(),
-            saved.getEndDate(),
-            saved.getDescription(),
-            saved.getOrganizerId()
-        ));
+        return DTOMapper.toDTO(saved);
     }
 }

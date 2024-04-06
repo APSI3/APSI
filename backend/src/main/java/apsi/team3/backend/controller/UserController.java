@@ -1,18 +1,12 @@
-package apsi.team3.backend.contoller;
+package apsi.team3.backend.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import apsi.team3.backend.DTOs.ApiResponse;
 import apsi.team3.backend.DTOs.Requests.LoginRequest;
 import apsi.team3.backend.DTOs.Responses.LoginResponse;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IUserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
@@ -32,8 +26,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ApiResponse<LoginResponse> Login(@RequestBody LoginRequest request) throws ApsiValidationException {
-        var resp = userService.login(request);
-        return new ApiResponse<>(resp);
+    public LoginResponse Login(@RequestBody LoginRequest request) throws ApsiValidationException {
+        return userService.login(request);
     }
 }

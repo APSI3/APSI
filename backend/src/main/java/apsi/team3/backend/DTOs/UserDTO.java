@@ -1,11 +1,17 @@
 package apsi.team3.backend.DTOs;
 
-public class UserDTO {
-    public long id;
-    public String login;
-    
-    public UserDTO(long id, String login) {
-        this.id = id;
-        this.login = login;
-    }
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+
+import java.io.Serializable;
+
+@Getter
+@AllArgsConstructor
+@ToString
+@EqualsAndHashCode
+public class UserDTO implements Serializable {
+    private final Long id;
+    private final String login;
 }
