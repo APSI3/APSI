@@ -38,7 +38,7 @@ public class Config {
             .cors(Customizer.withDefaults())
             // TODO: dodawanie eventu, etc. tylko dla userów reprezentujących firmę
             .authorizeHttpRequests(r -> r.requestMatchers("/user/login").anonymous())
-            .authorizeHttpRequests(r -> r.requestMatchers("/event/**").hasAnyAuthority(UserTypes.SUPERADMIN.toString(), UserTypes.ORGANIZER.toString()))
+            .authorizeHttpRequests(r -> r.requestMatchers("/event/create").hasAnyAuthority(UserTypes.SUPERADMIN.toString(), UserTypes.ORGANIZER.toString()))
             .authorizeHttpRequests(r -> r.anyRequest().authenticated())
             .httpBasic(c -> c.authenticationEntryPoint((req, res, authEx) -> {
                 if (!req.getRequestURI().contains("login"))
