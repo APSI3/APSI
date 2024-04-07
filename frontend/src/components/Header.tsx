@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { Paths } from "../App";
-import { AuthHelpers } from "../helpers/AuthHelpers";
+import { AuthHelpers, UserTypes } from "../helpers/AuthHelpers";
 
 export default function Header() {
     const nav = useNavigate();
     const login = AuthHelpers.GetUserData()?.login;
+    const isAdminOrOrganizer = AuthHelpers.HasAnyRole([UserTypes.SUPERADMIN, UserTypes.ORGANIZER])
 
     return <nav className="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
         <a href={Paths.main} className="navbar-title">APSI</a>

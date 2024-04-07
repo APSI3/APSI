@@ -6,7 +6,6 @@ import apsi.team3.backend.DTOs.Responses.GetEventsResponse;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.model.EventEntity;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface IEventService {
