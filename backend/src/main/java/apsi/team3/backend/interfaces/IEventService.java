@@ -11,5 +11,11 @@ public interface IEventService {
 
     List<EventDTO> getAllEvents();
 
-    EventDTO save(EventDTO event) throws ApsiValidationException;
+    EventDTO create(EventDTO event) throws ApsiValidationException;
+
+    EventDTO replace(EventDTO event) throws ApsiValidationException;
+
+    void delete(Long id);
+
+    boolean notExists(Long id);
 }

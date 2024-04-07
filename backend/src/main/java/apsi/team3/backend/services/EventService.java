@@ -39,15 +39,44 @@ public class EventService implements IEventService {
     @Override
     // TODO: dodać nawet prostą walidację
     // TODO: przetestować zachowanie dat, nie wiem czy dobrze się ustawiają, strefy czasowe itd 
-    public EventDTO save(EventDTO eventDTO) throws ApsiValidationException {
-        if (eventDTO == null || eventDTO.getName() == null || eventDTO.getName().isBlank())
-            throw new ApsiValidationException("Należy podać nazwę wydarzenia", "name");
+    public EventDTO create(EventDTO eventDTO) throws ApsiValidationException {
+        if (eventDTO.getId() != null)
+            throw new ApsiValidationException("Id must be null", "id");
+
+        validate(eventDTO);
 
         var loggedUser = (UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         var entity = DTOMapper.toEntity(eventDTO);
         entity.setOrganizerId(loggedUser.getId());
-        var saved = this.eventRepository.save(entity);
+        var saved = eventRepository.save(entity);
 
         return DTOMapper.toDTO(saved);
     }
+
+    @Override
+    public EventDTO replace(EventDTO eventDTO) throws ApsiValidationException {
+        validate(eventDTO);
+
+        var entity = DTOMapper.toEntity(eventDTO);
+        var saved = eventRepository.save(entity);
+
+        return DTOMapper.toDTO(saved);
+    }
+
+    @Override
+    public void delete(Long id) {
+        eventRepository.deleteById(id);
+    }
+
+    @Override
+    public boolean notExists(Long id) {
+        return !eventRepository.existsById(id);
+    }
+
+    private static void validate(EventDTO eventDTO) throws ApsiValidationException {
+        if (eventDTO == null || eventDTO.getName() == null || eventDTO.getName().isBlank())
+            throw new ApsiValidationException("Należy podać nazwę wydarzenia", "name");
+    }
+
+
 }

@@ -9,6 +9,7 @@ public class DTOMapper {
 
     public static EventEntity toEntity(EventDTO event) {
         return EventEntity.builder()
+                .id(event.getId())
                 .name(event.getName())
                 .startDate(event.getStartDate())
                 .endDate(event.getEndDate())
