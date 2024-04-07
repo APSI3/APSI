@@ -1,7 +1,13 @@
 package apsi.team3.backend.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "users")
 public class UserEntity {
@@ -23,50 +29,4 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     private UserTypes type;
 
-    public UserEntity() {}
-
-    public UserEntity(Long id, String login) {
-        this.id = id;
-        this.login = login;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public String getHash() {
-        return hash;
-    }
-
-    public void setHash(String hash) {
-        this.hash = hash;
-    }
-
-    public String getSalt() {
-        return salt;
-    }
-
-    public void setSalt(String salt) {
-        this.salt = salt;
-    }
-
-    public UserTypes getType(){
-        return type;
-    }
-
-    public void setType(UserTypes type) {
-        this.type = type;
-    }
 }

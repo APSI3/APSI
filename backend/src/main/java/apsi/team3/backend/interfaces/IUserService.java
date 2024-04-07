@@ -10,7 +10,10 @@ import java.util.Optional;
 
 public interface IUserService {
     Optional<UserEntity> getUserById(Long id);
+
     Optional<UserEntity> getUserByLogin(String login);
+
     String hashPassword(String password, String salt) throws ApsiException;
+
     LoginResponse login(LoginRequest request) throws ApsiValidationException;
 }

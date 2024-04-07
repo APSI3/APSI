@@ -5,7 +5,7 @@ public class ApsiException extends Exception {
         super(s);
     }
 
-    public ApsiException(Throwable e){
+    public ApsiException(Throwable e) {
         super(e);
     }
 }

@@ -1,11 +1,9 @@
 package apsi.team3.backend.DTOs.Requests;
 
-public class LoginRequest {
-    public String login;
-    public String password;
+import lombok.Value;
 
-    public LoginRequest(String login, String password) {
-        this.login = login;
-        this.password = password;
-    }
+@Value
+public class LoginRequest {
+    String login;
+    String password;
 }

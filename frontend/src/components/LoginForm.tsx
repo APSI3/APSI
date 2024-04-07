@@ -43,7 +43,7 @@ export default function LoginForm () {
                         }
                         else {
                             fh.setFieldValue('password', '', false);
-                            if (res.errors)
+                            if (!!res.errors)
                                 fh.setErrors(res.errors);
                             else
                                 toastDefaultError()

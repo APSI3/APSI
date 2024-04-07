@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -36,9 +37,10 @@ public class Config {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.csrf(c -> c.disable())
             .cors(Customizer.withDefaults())
-            // TODO: dodawanie eventu, etc. tylko dla userów reprezentujących firmę
             .authorizeHttpRequests(r -> r.requestMatchers("/user/login").anonymous())
-            .authorizeHttpRequests(r -> r.requestMatchers("/event/create").hasAnyAuthority(UserTypes.SUPERADMIN.toString(), UserTypes.ORGANIZER.toString()))
+            .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.POST, "/events").hasAnyAuthority(UserTypes.SUPERADMIN.toString(), UserTypes.ORGANIZER.toString()))
+            .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.PUT, "/events**").hasAnyAuthority(UserTypes.SUPERADMIN.toString(), UserTypes.ORGANIZER.toString()))
+            .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.DELETE, "/events**").hasAnyAuthority(UserTypes.SUPERADMIN.toString(), UserTypes.ORGANIZER.toString()))
             .authorizeHttpRequests(r -> r.anyRequest().authenticated())
             .httpBasic(c -> c.authenticationEntryPoint((req, res, authEx) -> {
                 if (!req.getRequestURI().contains("login"))

@@ -1,4 +1,4 @@
-import { EventDTO, LoggedUserDTO } from "./DTOs"
+import { LoggedUserDTO } from "./DTOs"
 
 export type ApiResponse<T> = {
     data?: T,
@@ -10,10 +10,11 @@ export type LoginResponse = {
     user: LoggedUserDTO
 }
 
-export type CreateEventResponse = {
-    event: EventDTO
-}
-
-export type GetEventsResponse = {
-    events: EventDTO[]
+export type LinkResponse<T> = {
+    _embedded? : T,
+    _links: { 
+        [key: string]: {
+            [nestedKey: string]: string
+        }
+    }
 }
