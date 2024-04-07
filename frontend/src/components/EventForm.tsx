@@ -13,7 +13,7 @@ const initialValues: CreateEventRequest = {
 }
 
 export default function EventForm() {
-    // TODO: poprawić wygląd
+    // TODO: JIRA APSI-44
     // TODO: dodać walidację z yupa
     return <>
         <Helmet>

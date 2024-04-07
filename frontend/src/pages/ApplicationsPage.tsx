@@ -1,5 +1,5 @@
 
 export default function ApplicationsPage() {
-    // todo: [JIRA]
+    // todo: [JIRA: APSI-50]
     return <>Work in progress</>
 }

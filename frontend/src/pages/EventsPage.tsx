@@ -3,7 +3,7 @@ import {EventDTO} from "../api/DTOs";
 import {Api} from "../api/Api";
 import EventCard from "../components/EventCard";
 
-// todo: filtering and search bar
+// todo: [JIRA: APSI-16]
 
 export default function EventsPage() {
     const [ events, setEvents ] = useState<EventDTO[]>([]);

@@ -7,7 +7,6 @@ import MainPage from "./pages/MainPage";
 import EventsPage from "./pages/EventsPage";
 import EventPage from "./pages/EventPage";
 import LocationsPage from "./pages/LocationsPage";
-import LocationPage from "./pages/LocationPage";
 import RegistrationPage from "./pages/RegistrationPage";
 import TicketsPage from "./pages/TicketsPage";
 import UsersPage from "./pages/UsersPage";
@@ -23,7 +22,6 @@ export const Paths = {
     event: "/event/:eventId",
     tickets: "/tickets",
     locations: "/locations",
-    location: "/location/:locationId",
     applications: "/applications",
     users: "/users",
 }
@@ -38,7 +36,6 @@ const router = createBrowserRouter(
             <Route path={Paths.tickets} element={<AuthorizedPage page={<TicketsPage />} />} />
             <Route path={Paths.event} element={<AuthorizedPage page={<EventPage />} />} />
             <Route path={Paths.locations} element={<AuthorizedPage page={<LocationsPage />} />} />
-            <Route path={Paths.location} element={<AuthorizedPage page={<LocationPage />} />} />
             <Route path={Paths.applications} element={<AuthorizedPage page={<ApplicationsPage />} />} />
             <Route path={Paths.users} element={<AuthorizedPage page={<UsersPage />} />} />
         </Route>

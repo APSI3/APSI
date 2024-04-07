@@ -1,8 +1,7 @@
-import React, {useState} from "react";
-import {Box, Fab, Tooltip} from "@mui/material";
+import React from "react";
+import { Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import AddLocationIcon from "@mui/icons-material/AddLocation";
-import { makeStyles } from '@mui/styles';
 import FormButton from "./FormButton";
 import EventForm from "./EventForm";
 
@@ -16,7 +15,7 @@ const style = {
     zIndex: 1000,
 };
 
-const ActionButtons: React.FC<{}> = ({}) => {
+const ActionButtons: React.FC = () => {
     const actionButtons = [
         { title: "Dodaj wydarzenie", icon: <AddIcon />, form: <EventForm/> },
         // todo: replace with location form
