@@ -30,7 +30,7 @@ public class DTOMapper {
     }
 
     public static LoggedUserDTO toDTO(UserEntity user, String header) {
-        return new LoggedUserDTO(user.getId(), user.getLogin(), header);
+        return new LoggedUserDTO(user.getId(), user.getLogin(), header, user.getType());
     }
 
     public static UserDTO toDTO(UserEntity user) {

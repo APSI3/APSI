@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,11 @@ public class EventService implements IEventService {
     @Autowired
     public EventService(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
+    }
+
+    private static void validate(EventDTO eventDTO) throws ApsiValidationException {
+        if (eventDTO == null || eventDTO.getName() == null || eventDTO.getName().isBlank())
+            throw new ApsiValidationException("Należy podać nazwę wydarzenia", "name");
     }
 
     @Override
@@ -37,7 +43,7 @@ public class EventService implements IEventService {
 
     @Override
     // TODO: dodać nawet prostą walidację
-    // TODO: przetestować zachowanie dat, nie wiem czy dobrze się ustawiają, strefy czasowe itd 
+    // TODO: przetestować zachowanie dat, nie wiem czy dobrze się ustawiają, strefy czasowe itd
     public EventDTO create(EventDTO eventDTO) throws ApsiValidationException {
         if (eventDTO.getId() != null)
             throw new ApsiValidationException("Id must be null", "id");
@@ -71,11 +77,5 @@ public class EventService implements IEventService {
     public boolean notExists(Long id) {
         return !eventRepository.existsById(id);
     }
-
-    private static void validate(EventDTO eventDTO) throws ApsiValidationException {
-        if (eventDTO == null || eventDTO.getName() == null || eventDTO.getName().isBlank())
-            throw new ApsiValidationException("Należy podać nazwę wydarzenia", "name");
-    }
-
 
 }
