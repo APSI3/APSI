@@ -15,6 +15,6 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({ApsiValidationException.class})
     protected ResponseEntity<Object> handleBackendException(ApsiValidationException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(Map.of(ex.getMessage(), ex.key)));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(Map.of(ex.key, ex.getMessage())));
     }
 }

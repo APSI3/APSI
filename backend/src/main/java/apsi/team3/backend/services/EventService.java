@@ -46,7 +46,7 @@ public class EventService implements IEventService {
     // TODO: przetestować zachowanie dat, nie wiem czy dobrze się ustawiają, strefy czasowe itd
     public EventDTO create(EventDTO eventDTO) throws ApsiValidationException {
         if (eventDTO.getId() != null)
-            throw new ApsiValidationException("Id must be null", "id");
+            throw new ApsiValidationException("Podano niedozwolony identyfikator wydarzenia", "id");
 
         validate(eventDTO);
 
@@ -77,5 +77,4 @@ public class EventService implements IEventService {
     public boolean notExists(Long id) {
         return !eventRepository.existsById(id);
     }
-
 }

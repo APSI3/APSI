@@ -58,12 +58,6 @@ public class EventController {
         return ResponseEntity.ok(withLink);
     }
 
-//    TODO: Patch trochę skomplikowany i może być niepotrzebny
-//    @PatchMapping("/books/{id}")
-//    public ResponseEntity<EventDTO> updateEvent(@PathVariable("id") Long id, @RequestBody EventDTO eventDTO) throws ApsiValidationException {
-//
-//    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable("id") Long id) {
         if (eventService.notExists(id)) {
