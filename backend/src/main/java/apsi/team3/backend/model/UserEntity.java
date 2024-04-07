@@ -25,4 +25,8 @@ public class UserEntity {
     @Column(name = "SALT", nullable = false)
     private String salt;
 
+    @Column(name = "type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserTypes type;
+
 }
