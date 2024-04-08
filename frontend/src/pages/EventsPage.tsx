@@ -7,11 +7,15 @@ import EventCard from "../components/EventCard";
 
 export default function EventsPage() {
     const [ events, setEvents ] = useState<EventDTO[]>([]);
+
     useEffect(() => {
-        Api.GetEvents({}).then(res => { if (res.success && res.data) {
-            setEvents(res.data.events);
-        } })
+        Api.GetEvents().then(res => { 
+            if (res.success && res.data) {
+                setEvents(res.data._embedded?.events ?? []);
+            }
+        })
     }, [])
+
     return <>
         {events.map(event => <EventCard key={`event-${event.id}`} event={event} />)}
     </>

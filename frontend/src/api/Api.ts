@@ -1,51 +1,52 @@
 import axios from "axios";
-import {ApiResponse, CreateEventResponse, GetEventsResponse, LoginResponse} from "./Responses";
-import {CreateEventRequest, GetEventsRequest, LoginRequest} from "./Requests";
+import {ApiResponse, LinkResponse, LoginResponse} from "./Responses";
+import {CreateEventRequest, LoginRequest} from "./Requests";
 import { toastError } from "../helpers/ToastHelpers";
 import { AuthHelpers } from "../helpers/AuthHelpers";
+import { EventDTO } from "./DTOs";
 
 axios.defaults.withCredentials = true;
 
-async function getApiResponse<R, T>(request: R, url: string): Promise<ApiResponse<T>> {
+async function getApiResponse<R, T>(method: string, url: string, request?: R): Promise<ApiResponse<T>> {
     let response: ApiResponse<T> = {
         data: undefined,
         errors: {},
         success: false
     };
-    let statusCode = 400;
 
     const authKey = AuthHelpers.GetAuthKey();
-    await axios.post(url, request ?? {}, {
-        validateStatus: status => status <= 500,
+    await axios({
+        method: method,
+        url: url,
+        data: request,
         headers: {
             "Content-Type": "application/json",
             "Authorization": authKey
         }
     }).then(res => {
-        statusCode = res.status;
         response = {
-            data: res.data.data,
-            errors: res.data.errors ?? {},
-            success: res.data.success ?? false
+            data: res.data,
+            errors: {},
+            success: true,
         }
     }).catch(error => {
-        if (error.response)
+        if (!!error.response) {
             response = {
-                data: error.response.data.data,
+                data: undefined,
                 errors: error.response.data.errors ?? {},
-                success: error.response.data.success ?? false
+                success: false
             }
-        else
-            console.error('Api Error: ', error.message)
+
+            if (error.response.status === 401) {
+                AuthHelpers.ClearAllData();
+                toastError("Należy zalogować się przed wykonaniem operacji");
+            }
+
+            if (error.response.status === 403)
+                toastError("Brak uprawnień do wykonania operacji");
+        }
+        else console.error('Api Error: ', error.message)
     });
-
-    if (statusCode === 401){
-        AuthHelpers.ClearAllData();
-        toastError("Należy zalogować się przed wykonaniem operacji");
-    }
-
-    if (statusCode === 403)
-        toastError("Brak uprawnień do wykonania operacji");
 
     return response;
 }
@@ -54,15 +55,15 @@ export class Api {
     private static url = "http://localhost:8080";
 
     static async Login(request: LoginRequest) {
-        return await getApiResponse<LoginRequest, LoginResponse>(request, this.url + "/user/login");
+        return await getApiResponse<LoginRequest, LoginResponse>("post", this.url + "/user/login", request);
     }
 
     static async CreateEvent(request: CreateEventRequest) {
-        return await getApiResponse<CreateEventRequest, CreateEventResponse>(request, this.url + "/event/create");
+        return await getApiResponse<CreateEventRequest, EventDTO>("post", this.url + "/events", request);
     }
 
-    static async GetEvents(request: GetEventsRequest) {
-        return await getApiResponse<GetEventsRequest, GetEventsResponse>(request, this.url + "/event/all");
+    static async GetEvents() {
+        return await getApiResponse<undefined, LinkResponse<{ events: EventDTO[]}>>("get", this.url + "/events");
     }
 
     static async Session() {

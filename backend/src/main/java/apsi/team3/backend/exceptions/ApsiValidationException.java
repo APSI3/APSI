@@ -8,7 +8,7 @@ public class ApsiValidationException extends ApsiException {
         this.key = key;
     }
 
-    public ApsiValidationException(Throwable e){
+    public ApsiValidationException(Throwable e) {
         super(e);
     }
 }

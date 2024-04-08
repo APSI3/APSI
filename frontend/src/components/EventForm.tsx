@@ -24,7 +24,7 @@ export default function EventForm() {
             onSubmit={async (values, fh) => {
                 await Api.CreateEvent(values).then(res => {
                     if (res.success && res.data) {
-                        toastInfo("Udało się stworzyć wydarzenie " + res.data.event.name);
+                        toastInfo("Udało się stworzyć wydarzenie " + res.data.name);
                     }
                     else {
                         if (res.errors)
