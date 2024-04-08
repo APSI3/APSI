@@ -1,6 +1,6 @@
 package apsi.team3.backend.DTOs;
 
-import apsi.team3.backend.model.UserTypes;
+import apsi.team3.backend.model.UserType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -14,7 +14,7 @@ public class LoggedUserDTO extends UserDTO implements Serializable {
     private final String authHeader;
     private final String type;
 
-    public LoggedUserDTO(Long id, String login, String authHeader, UserTypes type) {
+    public LoggedUserDTO(Long id, String login, String authHeader, UserType type) {
         super(id, login);
         this.authHeader = authHeader;
         this.type = type.toString();

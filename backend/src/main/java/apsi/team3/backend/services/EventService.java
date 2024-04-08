@@ -4,7 +4,7 @@ import apsi.team3.backend.DTOs.DTOMapper;
 import apsi.team3.backend.DTOs.EventDTO;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IEventService;
-import apsi.team3.backend.model.UserEntity;
+import apsi.team3.backend.model.User;
 import apsi.team3.backend.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -50,9 +50,9 @@ public class EventService implements IEventService {
 
         validate(eventDTO);
 
-        var loggedUser = (UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         var entity = DTOMapper.toEntity(eventDTO);
-        entity.setOrganizerId(loggedUser.getId());
+        entity.setOrganizer(loggedUser);
         var saved = eventRepository.save(entity);
 
         return DTOMapper.toDTO(saved);

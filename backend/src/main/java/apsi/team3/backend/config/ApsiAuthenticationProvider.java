@@ -14,7 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import apsi.team3.backend.exceptions.ApsiException;
-import apsi.team3.backend.model.UserEntity;
+import apsi.team3.backend.model.User;
 import apsi.team3.backend.services.UserService;
 
 @Component
@@ -45,7 +45,7 @@ public class ApsiAuthenticationProvider implements AuthenticationProvider {
             .orElse(null);
     }
 
-    private List<GrantedAuthority> getAuthorities(UserEntity user) {
+    private List<GrantedAuthority> getAuthorities(User user) {
         var type = user.getType().toString();
         var list = new ArrayList<GrantedAuthority>();
         list.add(new SimpleGrantedAuthority(type));
