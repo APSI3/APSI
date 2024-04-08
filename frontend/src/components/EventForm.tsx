@@ -13,7 +13,7 @@ const initialValues: CreateEventRequest = {
 }
 
 export default function EventForm() {
-    // TODO: poprawić wygląd
+    // TODO: JIRA APSI-44
     // TODO: dodać walidację z yupa
     return <>
         <Helmet>
@@ -36,28 +36,29 @@ export default function EventForm() {
             }}
         >
             {({ isSubmitting }) => <Form className="form">
-                <label>Nazwa</label>
-                <div>
-                    <Field type="text" name="name" className="form-control" />
+                <header className="mb-4 text-center h2">Nowe wydarzenie</header>
+                <div className="mb-3">
+                    <label htmlFor="name" className="form-label">Nazwa</label>
+                    <Field type="text" name="name" id="name" className="form-control" />
                     <ValidationMessage fieldName="name" />
                 </div>
-                <label>Opis</label>
-                <div>
-                    <Field type="text" name="description" className="form-control" />
+                <div className="mb-3">
+                    <label htmlFor="description" className="form-label">Opis</label>
+                    <Field type="text" name="description" id="description" className="form-control" />
                     <ValidationMessage fieldName="description" />
                 </div>
-                <label>Od</label>
-                <div>
-                    <Field type="date" name="startDate" className="form-control" />
+                <div className="mb-3">
+                    <label htmlFor="startDate" className="form-label">Od</label>
+                    <Field type="date" name="startDate" id="startDate" className="form-control" />
                     <ValidationMessage fieldName="startDate" />
                 </div>
-                <label>Do</label>
-                <div>
-                    <Field type="date" name="endDate" className="form-control" />
+                <div className="mb-3">
+                    <label htmlFor="endDate" className="form-label">Do</label>
+                    <Field type="date" name="endDate" id="endDate" className="form-control" />
                     <ValidationMessage fieldName="endDate" />
                 </div>
-                <div>
-                    <button className="btn btn-primary form-control" type="submit" disabled={isSubmitting}>Dodaj</button>
+                <div className="mb-3 text-center">
+                    <button className="btn btn-primary" type="submit" disabled={isSubmitting}>Dodaj</button>
                 </div>
             </Form>}
         </Formik>

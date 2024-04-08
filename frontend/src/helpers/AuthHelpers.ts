@@ -30,6 +30,11 @@ export class AuthHelpers {
         const data = AuthHelpers.GetUserData();
         return !!data?.type && roles.some(r => r === data?.type)
     }
+
+    public static getRole(): string | undefined {
+        const data = AuthHelpers.GetUserData();
+        return data?.type;
+    }
 }
 
 export class UserTypes {

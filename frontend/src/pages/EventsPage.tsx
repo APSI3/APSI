@@ -1,9 +1,11 @@
 import {useEffect, useState} from "react";
 import {EventDTO} from "../api/DTOs";
 import {Api} from "../api/Api";
-import Event from "../components/Event";
+import EventCard from "../components/EventCard";
 
-export default function CreateEventPage() {
+// todo: [JIRA: APSI-16]
+
+export default function EventsPage() {
     const [ events, setEvents ] = useState<EventDTO[]>([]);
 
     useEffect(() => {
@@ -15,6 +17,6 @@ export default function CreateEventPage() {
     }, [])
 
     return <>
-        {events.map(event => <Event key={`event-${event.id}`} event={event} />)}
+        {events.map(event => <EventCard key={`event-${event.id}`} event={event} />)}
     </>
 }
