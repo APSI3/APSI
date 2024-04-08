@@ -5,12 +5,10 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-import java.io.Serializable;
-
 @Getter
 @ToString
 @EqualsAndHashCode(callSuper = true)
-public class LoggedUserDTO extends UserDTO implements Serializable {
+public class LoggedUserDTO extends UserDTO {
     private final String authHeader;
     private final String type;
 
