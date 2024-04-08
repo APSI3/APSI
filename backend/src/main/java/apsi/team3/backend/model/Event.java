@@ -15,7 +15,7 @@ import java.util.Objects;
 @Builder
 @Entity
 @Table(name = "events")
-public class EventEntity {
+public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -33,8 +33,9 @@ public class EventEntity {
     @Column(name = "description", length = 2000)
     private String description;
 
-    @Column(name = "organizer_id")
-    private Long organizerId;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "organizer_id", nullable = false)
+    private User organizer;
 
 
     @Override
@@ -44,7 +45,7 @@ public class EventEntity {
         Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        EventEntity that = (EventEntity) o;
+        Event that = (Event) o;
         return getId() != null && Objects.equals(getId(), that.getId());
     }
 

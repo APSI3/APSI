@@ -6,7 +6,7 @@ import apsi.team3.backend.DTOs.Responses.LoginResponse;
 import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IUserService;
-import apsi.team3.backend.model.UserEntity;
+import apsi.team3.backend.model.User;
 import apsi.team3.backend.repository.UserRepository;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -31,12 +31,12 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public Optional<UserEntity> getUserById(Long id) {
+    public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
 
     @Override
-    public Optional<UserEntity> getUserByLogin(String login) {
+    public Optional<User> getUserByLogin(String login) {
         return userRepository.findUserByLogin(login);
     }
 
