@@ -13,7 +13,9 @@ public class DTOMapper {
                 .id(event.getId())
                 .name(event.getName())
                 .startDate(event.getStartDate())
+                .startTime(event.getStartTime())
                 .endDate(event.getEndDate())
+                .endTime(event.getEndTime())
                 .description(event.getDescription())
                 .organizer(organizer)
                 .build();
@@ -24,7 +26,9 @@ public class DTOMapper {
                 event.getId(),
                 event.getName(),
                 event.getStartDate(),
+                event.getStartTime(),
                 event.getEndDate(),
+                event.getEndTime(),
                 event.getDescription(),
                 event.getOrganizer().getId()
         );
