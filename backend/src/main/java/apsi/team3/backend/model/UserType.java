@@ -1,6 +1,6 @@
 package apsi.team3.backend.model;
 
-public enum UserTypes {
+public enum UserType {
     PERSON,
     ORGANIZER,
     SUPERADMIN

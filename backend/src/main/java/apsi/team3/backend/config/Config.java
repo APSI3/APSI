@@ -10,13 +10,14 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import apsi.team3.backend.model.UserTypes;
+import apsi.team3.backend.model.UserType;
 
 @Configuration
 @EnableJpaRepositories(
@@ -35,12 +36,12 @@ public class Config {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http.csrf(c -> c.disable())
+        return http.csrf(AbstractHttpConfigurer::disable)
             .cors(Customizer.withDefaults())
             .authorizeHttpRequests(r -> r.requestMatchers("/user/login").anonymous())
-            .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.POST, "/events").hasAnyAuthority(UserTypes.SUPERADMIN.toString(), UserTypes.ORGANIZER.toString()))
-            .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.PUT, "/events**").hasAnyAuthority(UserTypes.SUPERADMIN.toString(), UserTypes.ORGANIZER.toString()))
-            .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.DELETE, "/events**").hasAnyAuthority(UserTypes.SUPERADMIN.toString(), UserTypes.ORGANIZER.toString()))
+            .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.POST, "/events").hasAnyAuthority(UserType.SUPERADMIN.toString(), UserType.ORGANIZER.toString()))
+            .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.PUT, "/events**").hasAnyAuthority(UserType.SUPERADMIN.toString(), UserType.ORGANIZER.toString()))
+            .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.DELETE, "/events**").hasAnyAuthority(UserType.SUPERADMIN.toString(), UserType.ORGANIZER.toString()))
             .authorizeHttpRequests(r -> r.anyRequest().authenticated())
             .httpBasic(c -> c.authenticationEntryPoint((req, res, authEx) -> {
                 if (!req.getRequestURI().contains("login"))
