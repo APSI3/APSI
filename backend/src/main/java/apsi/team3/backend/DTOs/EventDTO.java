@@ -6,7 +6,8 @@ import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Relation(collectionRelation = "events", itemRelation = "event")
 @EqualsAndHashCode(callSuper = false)
@@ -14,8 +15,10 @@ import java.time.LocalDateTime;
 public class EventDTO extends RepresentationModel<EventDTO> implements Serializable {
     Long id;
     String name;
-    LocalDateTime startDate;
-    LocalDateTime endDate;
+    LocalDate startDate;
+    LocalTime startTime;
+    LocalDate endDate;
+    LocalTime endTime;
     String description;
     Long organizerId;
 }
