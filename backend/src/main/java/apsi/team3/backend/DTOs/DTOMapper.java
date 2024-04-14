@@ -1,6 +1,7 @@
 package apsi.team3.backend.DTOs;
 
 import apsi.team3.backend.model.Event;
+import apsi.team3.backend.model.TicketType;
 import apsi.team3.backend.model.User;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +19,16 @@ public class DTOMapper {
                 .endTime(event.getEndTime())
                 .description(event.getDescription())
                 .organizer(organizer)
+                .build();
+    }
+
+    public static TicketType toEntity(TicketTypeDTO ticketType) {
+        Event event = Event.builder().id(ticketType.getEventId()).build();
+        return TicketType.builder()
+                .id(ticketType.getId())
+                .event(event)
+                .price(ticketType.getPrice())
+                .quantityAvailable(ticketType.getQuantityAvailable())
                 .build();
     }
 
@@ -42,4 +53,13 @@ public class DTOMapper {
         return new UserDTO(user.getId(), user.getLogin());
     }
 
+    public static TicketTypeDTO toDTO(TicketType ticketType) {
+        return new TicketTypeDTO(
+                ticketType.getId(),
+                ticketType.getEvent().getId(),
+                ticketType.getName(),
+                ticketType.getPrice(),
+                ticketType.getQuantityAvailable()
+        );
+    }
 }
