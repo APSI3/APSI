@@ -4,12 +4,15 @@ import apsi.team3.backend.DTOs.DTOMapper;
 import apsi.team3.backend.DTOs.TicketTypeDTO;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.ITicketTypeService;
+import apsi.team3.backend.model.TicketType;
 import apsi.team3.backend.repository.TicketTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TicketTypeService implements ITicketTypeService {
@@ -25,7 +28,10 @@ public class TicketTypeService implements ITicketTypeService {
 
     @Override
     public List<TicketTypeDTO> getTicketTypeByEventId(Long eventId) {
-        return ticketTypeRepository.findByEventId(eventId);
+        return ticketTypeRepository
+                .findByEventId(eventId)
+                .stream().map(DTOMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override

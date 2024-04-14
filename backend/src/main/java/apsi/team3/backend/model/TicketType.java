@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "ticket_type")
+@Table(name = "ticket_types")
 public class TicketType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

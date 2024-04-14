@@ -27,6 +27,7 @@ public class DTOMapper {
         return TicketType.builder()
                 .id(ticketType.getId())
                 .event(event)
+                .name(ticketType.getName())
                 .price(ticketType.getPrice())
                 .quantityAvailable(ticketType.getQuantityAvailable())
                 .build();

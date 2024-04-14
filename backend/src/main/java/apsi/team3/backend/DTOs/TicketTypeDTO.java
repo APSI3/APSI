@@ -8,7 +8,7 @@ import org.springframework.hateoas.server.core.Relation;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-@Relation(collectionRelation = "ticket_types", itemRelation = "ticket_type")
+@Relation(collectionRelation = "ticket_types", itemRelation = "ticket_types")
 @EqualsAndHashCode(callSuper = false)
 @Value
 public class TicketTypeDTO extends RepresentationModel<TicketTypeDTO> implements Serializable {

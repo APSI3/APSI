@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface TicketTypeRepository extends JpaRepository<TicketType, Long> {
-    @Query(value = "SELECT * FROM ticket_type WHERE event_id=?", nativeQuery = true)
-    List<TicketTypeDTO> findByEventId(Long eventId);
+    @Query(value = "SELECT * FROM ticket_types WHERE event_id=?", nativeQuery = true)
+    List<TicketType> findByEventId(Long eventId);
 }
