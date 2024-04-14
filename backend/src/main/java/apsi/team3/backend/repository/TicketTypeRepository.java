@@ -1,6 +1,5 @@
 package apsi.team3.backend.repository;
 
-import apsi.team3.backend.DTOs.TicketTypeDTO;
 import apsi.team3.backend.model.TicketType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

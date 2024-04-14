@@ -4,12 +4,10 @@ import apsi.team3.backend.DTOs.DTOMapper;
 import apsi.team3.backend.DTOs.TicketTypeDTO;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.ITicketTypeService;
-import apsi.team3.backend.model.TicketType;
 import apsi.team3.backend.repository.TicketTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
