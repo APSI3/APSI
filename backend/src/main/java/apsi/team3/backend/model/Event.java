@@ -6,6 +6,7 @@ import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -44,6 +45,9 @@ public class Event {
     @JoinColumn(name = "organizer_id", nullable = false)
     private User organizer;
 
+    @OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @ToString.Exclude
+    private List<TicketType> ticketTypes;
 
     @Override
     public final boolean equals(Object o) {

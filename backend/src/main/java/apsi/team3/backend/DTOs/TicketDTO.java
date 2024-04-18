@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Relation(collectionRelation = "tickets", itemRelation = "tickets")
 @EqualsAndHashCode(callSuper = false)
 @Value
-public class TicketDTO extends RepresentationModel {
+public class TicketDTO extends RepresentationModel<TicketDTO> {
     Long id;
     Long ticketTypeId;
     Long holderId;

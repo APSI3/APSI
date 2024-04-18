@@ -1,23 +1,23 @@
 version: '2.23'
 services:
-#    backend:
-#        container_name: backend
-#        build:
-#            context: backend
-#        ports:
-#            - "8080:8080"
-#        environment:
-#            - spring.datasource.url=jdbc:postgresql://database:5432/apsidb
-#        depends_on:
-#            - database
-#    frontend:
-#        container_name: frontend
-#        build:
-#            context: frontend
-#        ports:
-#            - "3000:3000"
-#        depends_on:
-#            - backend
+    backend:
+        container_name: backend
+        build:
+            context: backend
+        ports:
+            - "8080:8080"
+        environment:
+            - spring.datasource.url=jdbc:postgresql://database:5432/apsidb
+        depends_on:
+            - database
+    frontend:
+        container_name: frontend
+        build:
+            context: frontend
+        ports:
+            - "3000:3000"
+        depends_on:
+            - backend
     database:
         container_name: database
         build:
