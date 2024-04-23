@@ -19,3 +19,15 @@ zgodnie z konwencją nazewniczą. Mini poradnik dostępny jest na stronie [Beald
 ### Generowanie plików sql migracji 
 
 Polecam dodatek JPA Buddy do Intellij IDEA, który umożliwia generowanie plików migracji na podstawie zmian w encjach. Wystarczy kliknąć opcję "Create Flyway Versioned Migration" w panelu JPA Explorer. 
+
+## Dokumentacja MkDocs
+
+- Uruchomienie serwera: `mkdocs serve`
+- Budowanie + export PDF: `mkdocs build`
+    - wynikowy PDF : `/docs/dokumentacja.pdf`
+
+### Biblioteki:
+- [mkdocs](https://pypi.org/project/mkdocs/)
+- [mkdocs-material](https://pypi.org/project/mkdocs-material/)
+- [mkdocs-with-pdf](https://pypi.org/project/mkdocs-with-pdf/)
+
