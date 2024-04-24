@@ -66,6 +66,10 @@ export class Api {
         return await getApiResponse<undefined, LinkResponse<{ events: EventDTO[]}>>("get", this.url + "/events");
     }
 
+    static async GetEventById(id: string | undefined) {
+        return await getApiResponse<undefined, LinkResponse<{ event: EventDTO}>>("get", this.url + `/events/${id}`);
+    }
+
     static async Session() {
         const authKey = AuthHelpers.GetAuthKey();
         const isLoggedIn = await axios.post(this.url + "/user/session", {}, {
