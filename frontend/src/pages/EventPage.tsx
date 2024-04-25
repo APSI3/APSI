@@ -2,13 +2,12 @@ import {useEffect, useState} from "react";
 import {EventDTO, TicketTypeDTO} from "../api/DTOs";
 import {Api} from "../api/Api";
 import {useParams} from "react-router-dom";
-import {Typography, Paper, Grid, Button, IconButton, CardMedia} from '@mui/material';
+import {Typography, Paper, Grid, IconButton, CardMedia} from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
-import {AuthHelpers, UserTypes} from "../helpers/AuthHelpers";
+import {AuthHelpers} from "../helpers/AuthHelpers";
 import TicketCard from "../components/TicketCard";
 
 export default function EventPage() {
-    const role = AuthHelpers.getRole();
     const { eventId } = useParams();
     const [ event, setEvent ] = useState<EventDTO | null>(null);
     const [ ticketTypes, setTicketTypes ] = useState<TicketTypeDTO[]>([]);

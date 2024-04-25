@@ -45,7 +45,7 @@ public class TicketTypeService implements ITicketTypeService {
     }
 
     @Override
-    public TicketTypeDTO replace(TicketTypeDTO ticketType) throws ApsiValidationException {
+    public TicketTypeDTO replace(TicketTypeDTO ticketType) {
         var entity = DTOMapper.toEntity(ticketType);
         var saved = ticketTypeRepository.save(entity);
 
