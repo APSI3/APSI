@@ -66,7 +66,7 @@ export default function EventPage() {
                     <Typography variant="body1">{event.description}</Typography>
                 </Grid>
                 <Grid container direction="column" alignItems="flex-center" gap={1}>
-                    {ticketTypes.map(ticket => <TicketCard ticket={ticket} soldCount={5}/>)}
+                    {ticketTypes.map(ticket => <TicketCard ticket={ticket}/>)}
                 </Grid>
             </Grid>
         </Paper>

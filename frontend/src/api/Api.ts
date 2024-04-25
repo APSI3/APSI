@@ -74,6 +74,10 @@ export class Api {
         return await getApiResponse<undefined, LinkResponse<{ ticket_types: TicketTypeDTO[]}>>("get", this.url + `/ticket_types/event/${id}`);
     }
 
+    static async GetSoldTicketsCount(id: number) {
+        return await getApiResponse<undefined, LinkResponse<{ count: number}>>("get", this.url + `/ticket_types/${id}/count`);
+    }
+
     static async Session() {
         const authKey = AuthHelpers.GetAuthKey();
         const isLoggedIn = await axios.post(this.url + "/user/session", {}, {
