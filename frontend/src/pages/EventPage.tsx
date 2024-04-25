@@ -1,39 +1,45 @@
 import {useEffect, useState} from "react";
-import {EventDTO} from "../api/DTOs";
+import {EventDTO, TicketTypeDTO} from "../api/DTOs";
 import {Api} from "../api/Api";
 import {useParams} from "react-router-dom";
 import {Typography, Paper, Grid, Button, IconButton, CardMedia} from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import {AuthHelpers, UserTypes} from "../helpers/AuthHelpers";
+import TicketCard from "../components/TicketCard";
 
 export default function EventPage() {
-    // todo - probably role should be context
     const role = AuthHelpers.getRole();
     const { eventId } = useParams();
     const [ event, setEvent ] = useState<EventDTO | null>(null);
+    const [ ticketTypes, setTicketTypes ] = useState<TicketTypeDTO[]>([]);
 
     useEffect(() => {
         Api.GetEventById(eventId).then(res => {
             if (res.success && res.data) {
                 setEvent(res.data._embedded?.event ?? null);
-                console.log(res.success)
+            }
+        })
+        Api.GetTicketTypesByEvent(eventId).then(res => {
+            if (res.success && res.data) {
+                setTicketTypes(res.data._embedded?.ticket_types ?? []);
+                console.log(res.data._embedded?.ticket_types)
             }
         })
     }, []);
 
-    return <>
+    return event && <>
         <Paper style={{ padding: 20 }}>
-            <Grid container spacing={2}>
+            <Grid container rowSpacing={2}>
                 {/* Back Button */}
                 <Grid item xs={12}>
-                    <IconButton onClick={() => window.history.back()} color="primary">
+                    <IconButton onClick={() => window.history.back()} color="info">
                         <ArrowBack />
                     </IconButton>
                 </Grid>
                 {/* Title */}
                 <Grid item xs={12}>
                     <Typography variant="h4" gutterBottom>
-                        Event Title
+                        {event.name}
                     </Typography>
                 </Grid>
                 {/* Photo */}
@@ -45,30 +51,22 @@ export default function EventPage() {
                         style={{ maxHeight: '15rem', width: 'auto' }}
                     />
                 </Grid>
-                {/* Description */}
-                <Grid item xs={12}>
-                    <Typography variant="body1">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla massa diam, tempus at imperdiet non, efficitur non libero.
-                    </Typography>
-                </Grid>
+                {/*TODO: add localization*/}
                 {/* Date */}
                 <Grid item xs={12}>
                     <Typography variant="body2" color="textSecondary">
-                        Od: January 1, 2025
+                        Od: {new Date(event.startDate).toLocaleDateString()}
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
-                        Do: January 1, 2025
+                        Do: {new Date(event.endDate).toLocaleDateString()}
                     </Typography>
                 </Grid>
+                {/* Description */}
                 <Grid item xs={12}>
-                    <Typography variant="body2" color="textSecondary">Pozostało biletów: 100</Typography>
+                    <Typography variant="body1">{event.description}</Typography>
                 </Grid>
-                <Grid item xs={12}>
-                {role === UserTypes.PERSON &&
-                    <Button variant="contained" color="primary">
-                        Buy Ticket
-                    </Button>
-                }
+                <Grid container direction="column" alignItems="flex-center" gap={1}>
+                    {ticketTypes.map(ticket => <TicketCard ticket={ticket} soldCount={5}/>)}
                 </Grid>
             </Grid>
         </Paper>

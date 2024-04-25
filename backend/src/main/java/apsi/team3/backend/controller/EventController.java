@@ -5,11 +5,16 @@ import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IEventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -35,9 +40,12 @@ public class EventController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EventDTO> getEventById(@PathVariable("id") Long id) {
+    public ResponseEntity<Map<String, Object>> getEventById(@PathVariable("id") Long id) {
         Optional<EventDTO> event = eventService.getEventById(id);
-        return event.map(EventController::addSelfLink).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        Map<String, Object> response = new HashMap<>();
+        response.put("_links", Collections.singletonMap("self", Collections.singletonMap("href", ServletUriComponentsBuilder.fromCurrentRequest().build().toUriString())));
+        event.ifPresent(eventDTO -> response.put("_embedded", Collections.singletonMap("event", addSelfLink(eventDTO))));
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping

@@ -3,7 +3,7 @@ import {ApiResponse, LinkResponse, LoginResponse} from "./Responses";
 import {CreateEventRequest, LoginRequest} from "./Requests";
 import { toastError } from "../helpers/ToastHelpers";
 import { AuthHelpers } from "../helpers/AuthHelpers";
-import { EventDTO } from "./DTOs";
+import {EventDTO, TicketTypeDTO} from "./DTOs";
 
 axios.defaults.withCredentials = true;
 
@@ -68,6 +68,10 @@ export class Api {
 
     static async GetEventById(id: string | undefined) {
         return await getApiResponse<undefined, LinkResponse<{ event: EventDTO}>>("get", this.url + `/events/${id}`);
+    }
+
+    static async GetTicketTypesByEvent(id: string | undefined) {
+        return await getApiResponse<undefined, LinkResponse<{ ticket_types: TicketTypeDTO[]}>>("get", this.url + `/ticket_types/event/${id}`);
     }
 
     static async Session() {
