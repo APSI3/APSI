@@ -9,8 +9,9 @@ import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.Optional;
+import java.util.*;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -28,6 +29,15 @@ public class TicketTypeController {
     public ResponseEntity<TicketTypeDTO> getTicketTypeById(@PathVariable("id") Long id) {
         Optional<TicketTypeDTO> ticketType = ticketTypeService.getTicketTypeById(id);
         return ticketType.map(TicketTypeController::addSelfLink).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/{id}/count")
+    public ResponseEntity<Map<String, Object>> getTicketCountByTypeId(@PathVariable("id") Long id) {
+        Optional<Long> ticketCount = ticketTypeService.getTicketCountByTypeId(id);
+        Map<String, Object> response = new HashMap<>();
+        response.put("_links", Collections.singletonMap("self", Collections.singletonMap("href", ServletUriComponentsBuilder.fromCurrentRequest().build().toUriString())));
+        ticketCount.ifPresent(count -> response.put("_embedded", Collections.singletonMap("count", count)));
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/event/{id}")
@@ -59,5 +69,4 @@ public class TicketTypeController {
         t.add(selfLink);
         return t;
     }
-
 }

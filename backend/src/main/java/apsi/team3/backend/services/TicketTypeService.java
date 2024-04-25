@@ -25,6 +25,11 @@ public class TicketTypeService implements ITicketTypeService {
     }
 
     @Override
+    public Optional<Long> getTicketCountByTypeId(Long id) {
+        return ticketTypeRepository.findTicketCount(id);
+    }
+
+    @Override
     public List<TicketTypeDTO> getTicketTypeByEventId(Long eventId) {
         return ticketTypeRepository
                 .findByEventId(eventId)
