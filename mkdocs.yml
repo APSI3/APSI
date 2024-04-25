@@ -10,11 +10,12 @@ nav:
   - Analiza UX:
       - Aktorzy: ux/ux-actors.md
       - Przypadki użycia:
+          - Lista: ux/uc/uc-list.md
           - Użytkownik prywatny: ux/uc/uc-priv.md
           - Organizator: ux/uc/uc-org.md
           - Administrator: ux/uc/uc-adm.md
           - Uniwersalne: ux/uc/uc-unv.md
-      - Słownik pojęć: ux/uc/ux-dict.md
+      - Słownik pojęć: ux/ux-dict.md
   - Projekt systemu:
       - Ogólny model architektury: proj/arch-general.md
       - Technologie: proj/tech.md
@@ -70,7 +71,7 @@ plugins:
   - with-pdf:
       cover_subtitle: Dokumentacja projektu
       cover_logo: https://i.imgur.com/6ZNSv8A.png
-      copyright: Analiza i projektowanie systemów informacyjnych
+      copyright: Analiza i projektowanie systemów informacyjnych 2024L
       toc_title: Spis treści
       toc_level: 3
       output_path: ../docs/dokumentacja.pdf
