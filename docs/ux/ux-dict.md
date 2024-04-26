@@ -1,0 +1,4 @@
+- **Wydarzenie, event** - zorganizowane zdarzenie, na które sprzedawane są bilety w ramach systemu
+- **Profil** - konto użytkownika w systemie
+- **Organizacja, firma** - podmiot zewnętrzny wykorzystujący system w celu promocji oraz sprzedaży biletów na swoje wydarzenia
+- **Bilet** - dokument uprawniający posiadacza do wzięcia udziału w wydarzeniu
