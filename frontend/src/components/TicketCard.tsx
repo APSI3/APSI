@@ -5,13 +5,14 @@ import {Api} from "../api/Api";
 
 const TicketCard: React.FC<{ ticket: TicketTypeDTO }> = ({ ticket }) => {
     const [soldCount, setSoldCount] = useState(0);
+    
     useEffect(() => {
         Api.GetSoldTicketsCount(ticket.id).then(res => {
             if (res.success && res.data) {
-                setSoldCount(res.data._embedded?.count ?? 0);
+                setSoldCount(res.data ?? 0);
             }
         })
-    }, []);
+    }, [ticket.id]);
 
     return (
         <Paper style={{ alignItems: 'center', display: 'flex', justifyContent: 'space-evenly' }}>

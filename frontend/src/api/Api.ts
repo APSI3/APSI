@@ -1,9 +1,9 @@
 import axios from "axios";
-import {ApiResponse, LinkResponse, LoginResponse} from "./Responses";
+import { ApiResponse } from "./Responses";
 import {CreateEventRequest, LoginRequest} from "./Requests";
 import { toastError } from "../helpers/ToastHelpers";
 import { AuthHelpers } from "../helpers/AuthHelpers";
-import {EventDTO, TicketTypeDTO} from "./DTOs";
+import {EventDTO, LoggedUserDTO, TicketTypeDTO} from "./DTOs";
 
 axios.defaults.withCredentials = true;
 
@@ -55,7 +55,7 @@ export class Api {
     private static url = "http://localhost:8080";
 
     static async Login(request: LoginRequest) {
-        return await getApiResponse<LoginRequest, LoginResponse>("post", this.url + "/user/login", request);
+        return await getApiResponse<LoginRequest, LoggedUserDTO>("post", this.url + "/user/login", request);
     }
 
     static async CreateEvent(request: CreateEventRequest) {
@@ -63,19 +63,19 @@ export class Api {
     }
 
     static async GetEvents() {
-        return await getApiResponse<undefined, LinkResponse<{ events: EventDTO[]}>>("get", this.url + "/events");
+        return await getApiResponse<undefined, EventDTO[]>("get", this.url + "/events");
     }
 
     static async GetEventById(id: string | undefined) {
-        return await getApiResponse<undefined, LinkResponse<{ event: EventDTO}>>("get", this.url + `/events/${id}`);
+        return await getApiResponse<undefined, EventDTO>("get", this.url + `/events/${id}`);
     }
 
     static async GetTicketTypesByEvent(id: string | undefined) {
-        return await getApiResponse<undefined, LinkResponse<{ ticket_types: TicketTypeDTO[]}>>("get", this.url + `/ticket_types/event/${id}`);
+        return await getApiResponse<undefined, TicketTypeDTO[]>("get", this.url + `/ticket_types/event/${id}`);
     }
 
     static async GetSoldTicketsCount(id: number) {
-        return await getApiResponse<undefined, LinkResponse<{ count: number}>>("get", this.url + `/ticket_types/${id}/count`);
+        return await getApiResponse<undefined, number>("get", this.url + `/ticket_types/${id}/count`);
     }
 
     static async Session() {

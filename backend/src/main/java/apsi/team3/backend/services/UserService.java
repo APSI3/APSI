@@ -1,8 +1,8 @@
 package apsi.team3.backend.services;
 
 import apsi.team3.backend.DTOs.DTOMapper;
+import apsi.team3.backend.DTOs.LoggedUserDTO;
 import apsi.team3.backend.DTOs.Requests.LoginRequest;
-import apsi.team3.backend.DTOs.Responses.LoginResponse;
 import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IUserService;
@@ -54,7 +54,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public LoginResponse login(LoginRequest request) throws ApsiValidationException {
+    public LoggedUserDTO login(LoginRequest request) throws ApsiValidationException {
         if (request.getLogin() == null || request.getLogin().isBlank())
             throw new ApsiValidationException("Login jest wymagany", "login");
         if (request.getPassword() == null || request.getPassword().isBlank())
@@ -70,7 +70,7 @@ public class UserService implements IUserService {
                 var str = user.getLogin() + ":" + request.getPassword();
                 var encoded = Base64.getEncoder().encodeToString(str.getBytes());
                 var header = "Basic " + encoded;
-                return new LoginResponse(DTOMapper.toDTO(user, header));
+                return DTOMapper.toDTO(user, header);
             }
         } catch (ApsiException e) {
             throw new ApsiValidationException("Nie udało się zalogować", "password");

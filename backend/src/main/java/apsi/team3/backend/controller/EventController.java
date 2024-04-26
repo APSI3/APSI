@@ -4,21 +4,12 @@ import apsi.team3.backend.DTOs.EventDTO;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IEventService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/events")
@@ -32,27 +23,24 @@ public class EventController {
     }
 
     @GetMapping
-    public ResponseEntity<CollectionModel<EventDTO>> getAllEvents() {
-        var allEvents = eventService.getAllEvents().stream().map(EventController::addSelfLink).toList();
-
-        Link selfLink = linkTo(methodOn(EventController.class).getAllEvents()).withSelfRel();
-        return ResponseEntity.ok(CollectionModel.of(allEvents, selfLink));
+    public ResponseEntity<List<EventDTO>> getAllEvents() {
+        var allEvents = eventService.getAllEvents().stream().toList();
+        return ResponseEntity.ok(allEvents);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> getEventById(@PathVariable("id") Long id) {
+    public ResponseEntity<EventDTO> getEventById(@PathVariable("id") Long id) {
         Optional<EventDTO> event = eventService.getEventById(id);
-        Map<String, Object> response = new HashMap<>();
-        response.put("_links", Collections.singletonMap("self", Collections.singletonMap("href", ServletUriComponentsBuilder.fromCurrentRequest().build().toUriString())));
-        event.ifPresent(eventDTO -> response.put("_embedded", Collections.singletonMap("event", addSelfLink(eventDTO))));
-        return ResponseEntity.ok(response);
+
+        if (!event.isPresent())
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(event.get());
     }
 
     @PostMapping
     public ResponseEntity<EventDTO> createEvent(@RequestBody EventDTO eventDTO) throws ApsiValidationException {
         var resp = eventService.create(eventDTO);
-        var withLink = addSelfLink(resp);
-        return ResponseEntity.status(HttpStatus.CREATED).body(withLink);
+        return ResponseEntity.status(HttpStatus.CREATED).body(resp);
     }
 
     @PutMapping("/{id}")
@@ -62,8 +50,7 @@ public class EventController {
             return ResponseEntity.notFound().build();
         }
         var resp = eventService.replace(eventDTO);
-        var withLink = addSelfLink(resp);
-        return ResponseEntity.ok(withLink);
+        return ResponseEntity.ok(resp);
     }
 
     @DeleteMapping("/{id}")
@@ -73,12 +60,6 @@ public class EventController {
         }
         eventService.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-    private static EventDTO addSelfLink(EventDTO e) {
-        Link selfLink = linkTo(methodOn(EventController.class).getEventById(e.getId())).withSelfRel();
-        e.add(selfLink);
-        return e;
     }
 
     private static void validateSameId(Long id, EventDTO eventDTO) throws ApsiValidationException {

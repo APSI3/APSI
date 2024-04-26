@@ -1,0 +1,9 @@
+version: '2.23'
+services:
+    database:
+        container_name: database
+        build:
+            context: database
+        command: ["postgres", "-c", "log_statement=all"]
+        ports:
+            - "5432:5432"

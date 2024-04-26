@@ -4,7 +4,6 @@ import {Api} from "../api/Api";
 import {useParams} from "react-router-dom";
 import {Typography, Paper, Grid, IconButton, CardMedia} from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
-import {AuthHelpers} from "../helpers/AuthHelpers";
 import TicketCard from "../components/TicketCard";
 
 export default function EventPage() {
@@ -15,16 +14,15 @@ export default function EventPage() {
     useEffect(() => {
         Api.GetEventById(eventId).then(res => {
             if (res.success && res.data) {
-                setEvent(res.data._embedded?.event ?? null);
+                setEvent(res.data ?? null);
             }
         })
         Api.GetTicketTypesByEvent(eventId).then(res => {
             if (res.success && res.data) {
-                setTicketTypes(res.data._embedded?.ticket_types ?? []);
-                console.log(res.data._embedded?.ticket_types)
+                setTicketTypes(res.data ?? []);
             }
         })
-    }, []);
+    }, [eventId]);
 
     return event && <>
         <Paper style={{ padding: 20 }}>
@@ -65,7 +63,7 @@ export default function EventPage() {
                     <Typography variant="body1">{event.description}</Typography>
                 </Grid>
                 <Grid container direction="column" alignItems="flex-center" gap={1}>
-                    {ticketTypes.map(ticket => <TicketCard ticket={ticket}/>)}
+                    {ticketTypes.map(ticket => <TicketCard key={event.id} ticket={ticket}/>)}
                 </Grid>
             </Grid>
         </Paper>
