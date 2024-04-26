@@ -11,7 +11,7 @@ export default function EventsPage() {
     useEffect(() => {
         Api.GetEvents().then(res => { 
             if (res.success && res.data) {
-                setEvents(res.data._embedded?.events ?? []);
+                setEvents(res.data ?? []);
             }
         })
     }, [])

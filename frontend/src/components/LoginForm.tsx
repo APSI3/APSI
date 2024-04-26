@@ -38,7 +38,7 @@ export default function LoginForm () {
                 onSubmit={async (values, fh) => {
                     await Api.Login(values).then(res => {
                         if (res.success && res.data) {
-                            AuthHelpers.StoreUserData(res.data.user, res.data.user.authHeader);
+                            AuthHelpers.StoreUserData(res.data, res.data.authHeader);
                             nav(Paths.main)
                         }
                         else {

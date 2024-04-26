@@ -1,7 +1,7 @@
 package apsi.team3.backend.interfaces;
 
+import apsi.team3.backend.DTOs.LoggedUserDTO;
 import apsi.team3.backend.DTOs.Requests.LoginRequest;
-import apsi.team3.backend.DTOs.Responses.LoginResponse;
 import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.model.User;
@@ -15,5 +15,5 @@ public interface IUserService {
 
     String hashPassword(String password, String salt) throws ApsiException;
 
-    LoginResponse login(LoginRequest request) throws ApsiValidationException;
+    LoggedUserDTO login(LoginRequest request) throws ApsiValidationException;
 }

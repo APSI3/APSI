@@ -1,17 +1,20 @@
 import React from "react";
 import {EventDTO} from "../api/DTOs";
-import {Fab} from "@mui/material";
-import {Delete, Edit, ShoppingCart, Visibility} from "@mui/icons-material";
-import {AuthHelpers, UserTypes} from "../helpers/AuthHelpers";
 
-function getActionButtonsBasedOnRole() {
+import {AuthHelpers, UserTypes} from "../helpers/AuthHelpers";
+import DetailsButton from "./EventCardButtons/DetailsButton";
+import EditButton from "./EventCardButtons/EditButton";
+import DeleteButton from "./EventCardButtons/DeleteButton";
+import BuyButton from "./EventCardButtons/BuyButton";
+
+function getActionButtonsBasedOnRole(id: number) {
     const role = AuthHelpers.getRole()
     switch (role) {
         case UserTypes.SUPERADMIN:
         case UserTypes.ORGANIZER:
-            return [<Visibility/>, <Edit/>, <Delete/>]
+            return [<DetailsButton id={id}/>, <EditButton/>, <DeleteButton/>]
         default:
-            return [<Visibility/>, <ShoppingCart />]
+            return [<DetailsButton id={id}/>, <BuyButton />]
     }
 }
 
@@ -26,7 +29,10 @@ const EventCard: React.FC<{ event: EventDTO }> = ({ event }) => {
                     <li className="list-group-item"><strong>Data końcowa:</strong> {new Date(event.endDate).toLocaleDateString()}</li>
                 </ul>
                 <div className="d-flex justify-content-end gap-1">
-                    {getActionButtonsBasedOnRole().map(button => <Fab size="small">{button}</Fab>)}
+                    {getActionButtonsBasedOnRole(event.id).map((button, index) =>
+                        <React.Fragment key={index}>
+                            {button}
+                        </React.Fragment>)}
                 </div>
             </div>
         </div>

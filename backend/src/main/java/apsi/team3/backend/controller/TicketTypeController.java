@@ -4,16 +4,11 @@ import apsi.team3.backend.DTOs.TicketTypeDTO;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.ITicketTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import java.util.*;
 
 @RestController
 @RequestMapping("/ticket_types")
@@ -27,21 +22,25 @@ public class TicketTypeController {
     @GetMapping("/{id}")
     public ResponseEntity<TicketTypeDTO> getTicketTypeById(@PathVariable("id") Long id) {
         Optional<TicketTypeDTO> ticketType = ticketTypeService.getTicketTypeById(id);
-        return ticketType.map(TicketTypeController::addSelfLink).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return ticketType.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/{id}/count")
+    public ResponseEntity<Long> getTicketCountByTypeId(@PathVariable("id") Long id) {
+        Optional<Long> ticketCount = ticketTypeService.getTicketCountByTypeId(id);
+        return ticketCount.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/event/{id}")
-    public ResponseEntity<CollectionModel<TicketTypeDTO>> getTicketTypeByEventId(@PathVariable("id") Long eventId) {
+    public ResponseEntity<List<TicketTypeDTO>> getTicketTypeByEventId(@PathVariable("id") Long eventId) {
         var eventTicketTypes = ticketTypeService.getTicketTypeByEventId(eventId);
-        Link selfLink = linkTo(methodOn(TicketTypeController.class).getTicketTypeByEventId(eventId)).withSelfRel();
-        return ResponseEntity.ok(CollectionModel.of(eventTicketTypes, selfLink));
+        return ResponseEntity.ok(eventTicketTypes);
     }
 
     @PostMapping
     public ResponseEntity<TicketTypeDTO> createTicketType(@RequestBody TicketTypeDTO ticketTypeDTO) throws ApsiValidationException {
         var resp = ticketTypeService.create(ticketTypeDTO);
-        var withLink = addSelfLink(resp);
-        return ResponseEntity.status(HttpStatus.CREATED).body(withLink);
+        return ResponseEntity.status(HttpStatus.CREATED).body(resp);
     }
 
     @PutMapping("/{id}")
@@ -50,14 +49,6 @@ public class TicketTypeController {
             return ResponseEntity.notFound().build();
         }
         var resp = ticketTypeService.replace(ticketTypeDTO);
-        var withLink = addSelfLink(resp);
-        return ResponseEntity.ok(withLink);
+        return ResponseEntity.ok(resp);
     }
-
-    private static TicketTypeDTO addSelfLink(TicketTypeDTO t) {
-        Link selfLink = linkTo(methodOn(TicketTypeController.class).getTicketTypeById(t.getId())).withSelfRel();
-        t.add(selfLink);
-        return t;
-    }
-
 }

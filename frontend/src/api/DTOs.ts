@@ -16,3 +16,11 @@ export interface EventDTO {
     description: string;
     organizerId: number;
 }
+
+export interface TicketTypeDTO {
+    id: number,
+    eventId: number,
+    name: string,
+    price: number,
+    quantityAvailable: number,
+}

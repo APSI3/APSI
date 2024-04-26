@@ -1,7 +1,7 @@
 package apsi.team3.backend.controller;
 
+import apsi.team3.backend.DTOs.LoggedUserDTO;
 import apsi.team3.backend.DTOs.Requests.LoginRequest;
-import apsi.team3.backend.DTOs.Responses.LoginResponse;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public LoginResponse Login(@RequestBody LoginRequest request) throws ApsiValidationException {
+    public LoggedUserDTO Login(@RequestBody LoginRequest request) throws ApsiValidationException {
         return userService.login(request);
     }
 }
