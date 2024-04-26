@@ -21,7 +21,7 @@ nav:
       - Technologie: proj/tech.md
 
 theme:
-  name: material
+  name: readthedocs
   language: pl
   analytics:
     gtag: G-ABC123
@@ -68,14 +68,4 @@ theme:
 
 plugins:
   - search
-  - with-pdf:
-      cover_subtitle: Dokumentacja projektu
-      cover_logo: https://i.imgur.com/6ZNSv8A.png
-      copyright: Analiza i projektowanie systemów informacyjnych 2024L
-      toc_title: Spis treści
-      toc_level: 3
-      output_path: ../docs/dokumentacja.pdf
-      
-      # enabled_if_env: ENABLE_PDF_EXPORT  # odkomentować, żeby się nie budowało podczas dewelopmentu
-      
       
