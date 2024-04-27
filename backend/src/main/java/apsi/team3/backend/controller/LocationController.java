@@ -18,7 +18,7 @@ import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.ILocationService;
 
 @RestController
-@RequestMapping("/countries")
+@RequestMapping("/locations")
 @CrossOrigin(origins = { "http://localhost:3000" }, allowCredentials = "true")
 public class LocationController {
     private final ILocationService locationService;
