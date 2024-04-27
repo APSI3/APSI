@@ -73,7 +73,7 @@ public class DTOMapper {
                 event.getEndTime(),
                 event.getDescription(),
                 event.getOrganizer().getId(),
-                DTOMapper.toDTO(event.getLocation())
+                event.getLocation() != null ? DTOMapper.toDTO(event.getLocation()) : null
         );
     }
 
