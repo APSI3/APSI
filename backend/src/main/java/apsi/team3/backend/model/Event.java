@@ -48,6 +48,10 @@ public class Event {
     @OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @ToString.Exclude
     private List<TicketType> ticketTypes;
+    
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "location_id", nullable = true)
+    private Location location;
 
     @Override
     public final boolean equals(Object o) {
