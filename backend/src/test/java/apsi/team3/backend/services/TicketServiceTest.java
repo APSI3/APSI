@@ -1,10 +1,9 @@
-package apsi.team3.backend.service;
+package apsi.team3.backend.services;
 
 import apsi.team3.backend.DTOs.DTOMapper;
 import apsi.team3.backend.DTOs.TicketDTO;
 import apsi.team3.backend.model.Ticket;
 import apsi.team3.backend.repository.TicketRepository;
-import apsi.team3.backend.services.TicketService;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;

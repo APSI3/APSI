@@ -1,4 +1,4 @@
-package apsi.team3.backend.service;
+package apsi.team3.backend.services;
 
 import apsi.team3.backend.DTOs.LoggedUserDTO;
 import apsi.team3.backend.DTOs.Requests.LoginRequest;
@@ -6,7 +6,6 @@ import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.model.User;
 import apsi.team3.backend.model.UserType;
 import apsi.team3.backend.repository.UserRepository;
-import apsi.team3.backend.services.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;

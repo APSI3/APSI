@@ -1,4 +1,4 @@
-package apsi.team3.backend.service;
+package apsi.team3.backend.services;
 
 import apsi.team3.backend.DTOs.DTOMapper;
 import apsi.team3.backend.DTOs.EventDTO;
@@ -7,7 +7,6 @@ import apsi.team3.backend.model.Event;
 import apsi.team3.backend.model.User;
 import apsi.team3.backend.model.UserType;
 import apsi.team3.backend.repository.EventRepository;
-import apsi.team3.backend.services.EventService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
