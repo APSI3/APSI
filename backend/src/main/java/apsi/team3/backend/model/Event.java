@@ -45,6 +45,10 @@ public class Event {
     @JoinColumn(name = "organizer_id", nullable = false)
     private User organizer;
 
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "location_id", nullable = true)
+    private Location location;
+
     @OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @ToString.Exclude
     private List<TicketType> ticketTypes;
