@@ -21,4 +21,5 @@ public class EventDTO extends RepresentationModel<EventDTO> implements Serializa
     LocalTime endTime;
     String description;
     Long organizerId;
+    LocationDTO location;
 }
