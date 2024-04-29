@@ -5,10 +5,11 @@ import apsi.team3.backend.DTOs.TicketTypeDTO;
 import apsi.team3.backend.model.*;
 import apsi.team3.backend.repository.TicketTypeRepository;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@ExtendWith(SpringExtension.class)
 public class TicketTypeServiceTest {
     @Mock
     TicketTypeRepository ticketTypeRepository;
