@@ -1,6 +1,8 @@
 package apsi.team3.backend.DTOs;
 
+import apsi.team3.backend.model.Country;
 import apsi.team3.backend.model.Event;
+import apsi.team3.backend.model.Location;
 import apsi.team3.backend.model.Ticket;
 import apsi.team3.backend.model.TicketType;
 import apsi.team3.backend.model.User;
@@ -45,6 +47,22 @@ public class DTOMapper {
                 .build();
     }
 
+    public static Location toEntity(LocationDTO loc) {
+        var user = User.builder().id(loc.getCreator_id()).build();
+        var country = Country.builder().id(loc.getCountry_id()).build();
+        return Location.builder()
+                .id(loc.getId())
+                .creator(user)
+                .country(country)
+                .apartment_nr(loc.getApartment_nr())
+                .building_nr(loc.getBuilding_nr())
+                .capacity(loc.getCapacity())
+                .city(loc.getCity())
+                .street(loc.getStreet())
+                .zip_code(loc.getZip_code())
+                .build();
+    }
+
     public static EventDTO toDTO(Event event) {
         return new EventDTO(
                 event.getId(),
@@ -54,7 +72,8 @@ public class DTOMapper {
                 event.getEndDate(),
                 event.getEndTime(),
                 event.getDescription(),
-                event.getOrganizer().getId()
+                event.getOrganizer().getId(),
+                event.getLocation() != null ? DTOMapper.toDTO(event.getLocation()) : null
         );
     }
 
@@ -64,6 +83,24 @@ public class DTOMapper {
 
     public static UserDTO toDTO(User user) {
         return new UserDTO(user.getId(), user.getLogin());
+    }
+
+    public static LocationDTO toDTO(Location loc) {
+        return new LocationDTO(
+            loc.getId(), 
+            loc.getCountry().getId(),
+            loc.getCapacity(),
+            loc.getCity(),
+            loc.getStreet(),
+            loc.getBuilding_nr(),
+            loc.getApartment_nr(),
+            loc.getZip_code(),
+            loc.getCreator().getId()
+        );
+    }
+
+    public static CountryDTO toDTO(Country country) {
+        return new CountryDTO(country.getId(), country.getCode(), country.getFull_name());
     }
 
     public static TicketTypeDTO toDTO(TicketType ticketType) {
