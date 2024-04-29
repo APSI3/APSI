@@ -28,6 +28,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-hateoas:3.2.4'
 	implementation 'org.flywaydb:flyway-core:10.11.0'
 	runtimeOnly 'org.flywaydb:flyway-database-postgresql:10.11.0'
+	runtimeOnly 'com.h2database:h2'
 
 	compileOnly 'org.projectlombok:lombok:1.18.32'
 	annotationProcessor 'org.projectlombok:lombok:1.18.32'
@@ -36,8 +37,11 @@ dependencies {
 	testAnnotationProcessor 'org.projectlombok:lombok:1.18.32'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.mockito:mockito-core:5.11.0'
+	testImplementation 'com.h2database:h2'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+	systemProperty "spring.config.location", "classpath:application-test.properties"
+	systemProperty "spring.profiles.active", "test"
 }
