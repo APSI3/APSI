@@ -47,6 +47,7 @@ public class EventServiceTest {
                 null,
                 "desc",
                 new User(2L, "", "", "", UserType.ORGANIZER, null),
+                null,
                 null
         );
         EventDTO eventDTO = DTOMapper.toDTO(event);
@@ -59,9 +60,9 @@ public class EventServiceTest {
     public void testGetAllEvents() {
         List<Event> eventList = new ArrayList<>();
         User organizer = new User(1L, "login", "hash", "salt", UserType.ORGANIZER, null);
-        eventList.add(new Event(1L, "1", null, null, null, null, "desc", organizer, null));
-        eventList.add(new Event(2L, "2", null, null, null, null, "desc", organizer, null));
-        eventList.add(new Event(3L, "3", null, null, null, null, "desc", organizer, null));
+        eventList.add(new Event(1L, "1", null, null, null, null, "desc", organizer, null, null));
+        eventList.add(new Event(2L, "2", null, null, null, null, "desc", organizer, null, null));
+        eventList.add(new Event(3L, "3", null, null, null, null, "desc", organizer, null, null));
         when(eventRepository.findAll()).thenReturn(eventList);
         List<EventDTO> eventDTOList = new ArrayList<>();
         for (var event: eventList) {
@@ -73,13 +74,13 @@ public class EventServiceTest {
 
     @Test
     public void testCreateNull() {
-        EventDTO nullEventDto = new EventDTO(null, null, null, null, null, null, null, null);
+        EventDTO nullEventDto = new EventDTO(null, null, null, null, null, null, null, null, null);
         assertThrows(ApsiValidationException.class, () -> eventService.create(nullEventDto));
     }
 
     @Test
     public void testCreate() {
-        EventDTO eventDTO = new EventDTO(null, "name", null, null, null, null, "desc", 1L);
+        EventDTO eventDTO = new EventDTO(null, "name", null, null, null, null, "desc", 1L, null);
         Event event = DTOMapper.toEntity(eventDTO);
         try (var securityContextHolderMockedStatic = mockStatic(SecurityContextHolder.class)) {
             User user = new User(420L, "login", "hash", "salt", UserType.ORGANIZER, null);
@@ -100,7 +101,7 @@ public class EventServiceTest {
 
     @Test
     public void testReplace() {
-        EventDTO eventDTO = new EventDTO(null, "name", LocalDate.of(2024, 4, 27), null, null, null, "desc", 1L);
+        EventDTO eventDTO = new EventDTO(null, "name", LocalDate.of(2024, 4, 27), null, null, null, "desc", 1L, null);
         when(eventRepository.save(any())).thenReturn(DTOMapper.toEntity(eventDTO));
         try {
             assertEquals(eventService.replace(eventDTO), eventDTO);
