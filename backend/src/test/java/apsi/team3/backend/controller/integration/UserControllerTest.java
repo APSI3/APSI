@@ -33,16 +33,6 @@ public class UserControllerTest {
 
     @Test
     public void testLogin() throws Exception {
-        /*
-                LoginRequest loginRequest = new LoginRequest(LOGIN, PASSWORD);
-        String stringLoginRequest = objectMapper.writeValueAsString(loginRequest);
-        String responseContent = mockMvc.perform(MockMvcRequestBuilders.post("/user/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(stringLoginRequest)
-                )
-                .andReturn().getResponse().getContentAsString();
-        return objectMapper.readValue(responseContent, LoggedUserDTO.class);
-         */
         LoginRequest loginRequest = new LoginRequest("testuser1", "apsi");
         mockMvc.perform(MockMvcRequestBuilders.post("/user/login")
                 .contentType(MediaType.APPLICATION_JSON)
