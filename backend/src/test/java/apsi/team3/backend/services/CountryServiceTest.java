@@ -29,7 +29,7 @@ public class CountryServiceTest {
     public void testGetAllCountries() {
         List<Country> countries = new ArrayList<>();
         countries.add(new Country(1L, "PL", "POLSKA")); //gurom
-        countries.add(new Country(2L, "UF", "Afganistan"));
+        countries.add(new Country(2L, "AF", "Afganistan"));
         when(countryRepository.findAll()).thenReturn(countries);
         List<CountryDTO> countryDTOS = new ArrayList<>();
         for (var country: countries) {
