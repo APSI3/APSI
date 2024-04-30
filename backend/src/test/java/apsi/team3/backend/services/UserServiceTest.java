@@ -2,6 +2,7 @@ package apsi.team3.backend.services;
 
 import apsi.team3.backend.DTOs.LoggedUserDTO;
 import apsi.team3.backend.DTOs.Requests.LoginRequest;
+import apsi.team3.backend.TestHelper;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.model.User;
 import apsi.team3.backend.model.UserType;
@@ -31,7 +32,7 @@ public class UserServiceTest {
     @Test
     public void testGetUserByIdReturnsUserObject() {
         Long userId = 1234L;
-        User user = new User(userId, "login", "hash", "pepper", UserType.PERSON, new ArrayList<>());
+        User user = TestHelper.getTestUser(userId, "login");
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         assertEquals(userService.getUserById(userId), Optional.of(user));
     }
@@ -39,7 +40,7 @@ public class UserServiceTest {
     @Test
     public void testGetUserByLoginReturnsUserObject() {
         String login = "andrzej1234";
-        User user = new User(1234L, login, "hash", "pepper", UserType.PERSON, new ArrayList<>());
+        User user = TestHelper.getTestUser(1234L, login);
         when(userRepository.findUserByLogin(login)).thenReturn(Optional.of(user));
         assertEquals(userService.getUserByLogin(login), Optional.of(user));
     }

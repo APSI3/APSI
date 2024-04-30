@@ -2,6 +2,7 @@ package apsi.team3.backend.services;
 
 import apsi.team3.backend.DTOs.DTOMapper;
 import apsi.team3.backend.DTOs.EventDTO;
+import apsi.team3.backend.TestHelper;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.model.Event;
 import apsi.team3.backend.model.User;
@@ -13,7 +14,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,18 +38,7 @@ public class EventServiceTest {
     @Test
     public void testGetEventByIdReturnsEvent() {
         Long eventId = 1L;
-        Event event = new Event(
-                eventId,
-                "",
-                null,
-                null,
-                null,
-                null,
-                "desc",
-                new User(2L, "", "", "", UserType.ORGANIZER, null),
-                null,
-                null
-        );
+        Event event = TestHelper.getTestEvent(eventId);
         EventDTO eventDTO = DTOMapper.toDTO(event);
         when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
         Optional<EventDTO> result = eventService.getEventById(eventId);
@@ -59,10 +48,9 @@ public class EventServiceTest {
     @Test
     public void testGetAllEventsReturnsListOfAllEvents() {
         List<Event> eventList = new ArrayList<>();
-        User organizer = new User(1L, "login", "hash", "salt", UserType.ORGANIZER, null);
-        eventList.add(new Event(1L, "1", null, null, null, null, "desc", organizer, null, null));
-        eventList.add(new Event(2L, "2", null, null, null, null, "desc", organizer, null, null));
-        eventList.add(new Event(3L, "3", null, null, null, null, "desc", organizer, null, null));
+        eventList.add(TestHelper.getTestEvent(1L));
+        eventList.add(TestHelper.getTestEvent(2L));
+        eventList.add(TestHelper.getTestEvent(2L, "some name"));
         when(eventRepository.findAll()).thenReturn(eventList);
         List<EventDTO> eventDTOList = new ArrayList<>();
         for (var event: eventList) {
@@ -74,14 +62,14 @@ public class EventServiceTest {
 
     @Test
     public void testCreateEventWithNullNameThrowsException() {
-        EventDTO nullEventDto = new EventDTO(null, null, null, null, null, null, null, null, null);
+        EventDTO nullEventDto = DTOMapper.toDTO(TestHelper.getTestEvent(null, null));
         assertThrows(ApsiValidationException.class, () -> eventService.create(nullEventDto));
     }
 
     @Test
     public void testCreateReturnsCreatedEvent() {
-        EventDTO eventDTO = new EventDTO(null, "name", null, null, null, null, "desc", 1L, null);
-        Event event = DTOMapper.toEntity(eventDTO);
+        Event event = TestHelper.getTestEvent(null);
+        EventDTO eventDTO = DTOMapper.toDTO(event);
         try (var securityContextHolderMockedStatic = mockStatic(SecurityContextHolder.class)) {
             User user = new User(420L, "login", "hash", "salt", UserType.ORGANIZER, null);
             SecurityContext securityContextMock = mock(SecurityContext.class);
@@ -101,8 +89,9 @@ public class EventServiceTest {
 
     @Test
     public void testReplaceReturnsReplacedEvent() throws Exception {
-        EventDTO eventDTO = new EventDTO(null, "name", LocalDate.of(2024, 4, 27), null, null, null, "desc", 1L, null);
-        when(eventRepository.save(any())).thenReturn(DTOMapper.toEntity(eventDTO));
+        Event event = TestHelper.getTestEvent(null, "changed name");
+        EventDTO eventDTO = DTOMapper.toDTO(event);
+        when(eventRepository.save(any())).thenReturn(event);
         assertEquals(eventService.replace(eventDTO), eventDTO);
     }
 
