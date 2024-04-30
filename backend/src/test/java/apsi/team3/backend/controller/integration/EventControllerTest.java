@@ -47,14 +47,14 @@ public class EventControllerTest {
     }
 
     @Test
-    public void testGetAllEventsUnauthorized() throws Exception {
+    public void testGetAllEventsReturns401ForUnauthorizedUser() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/events"))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError())
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
     @Test
-    public void testGetAllEvents() throws Exception {
+    public void testGetAllEventsReturnsListOfAllEventsFromTestDB() throws Exception {
         LoggedUserDTO loggedUser = login();
         String expectedJson = """
             [
@@ -83,14 +83,14 @@ public class EventControllerTest {
     }
 
     @Test
-    public void testGetEventByIdUnauthorized() throws Exception {
+    public void testGetEventByIdReturns401ForUnauthorizedUser() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/events/1"))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError())
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
     @Test
-    public void testGetEventById() throws Exception {
+    public void testGetEventByIdReturnsUser() throws Exception {
         LoggedUserDTO loggedUserDTO = login();
         String expectedJson = """
             {
@@ -108,7 +108,7 @@ public class EventControllerTest {
     }
 
     @Test
-    public void testCreateEventByIdUnauthorized() throws Exception {
+    public void testCreateEventByIdReturns401ForUnauthorizedUser() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/events/"))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError())
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
@@ -116,7 +116,7 @@ public class EventControllerTest {
 
     @Test
     @Transactional
-    public void testCreateEvent() throws Exception {
+    public void testCreateEventReturnsCreatedObject() throws Exception {
         LoggedUserDTO loggedUser = login();
         String expectedJson = """
             {
@@ -149,7 +149,7 @@ public class EventControllerTest {
     }
 
     @Test
-    public void testReplaceEventUnauthorized() throws Exception {
+    public void testReplaceEventReturns401ForUnauthorizedUser() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.put("/events/1"))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError())
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
@@ -157,7 +157,7 @@ public class EventControllerTest {
 
     @Test
     @Transactional
-    public void testReplaceEvent() throws Exception {
+    public void testReplaceEventReplacesEvent() throws Exception {
         LoggedUserDTO loggedUser = login();
         String expectedJson = """
             {
@@ -188,7 +188,7 @@ public class EventControllerTest {
     }
 
     @Test
-    public void testDeleteUnauthorized() throws Exception {
+    public void testDeleteReturns401ForUnauthorizedUser() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/events/1"))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError())
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
@@ -196,7 +196,7 @@ public class EventControllerTest {
 
     @Test
     @Transactional
-    public void testDelete() throws Exception {
+    public void testDeleteReturns204() throws Exception {
         LoggedUserDTO loggedUser = login();
         mockMvc.perform(MockMvcRequestBuilders.delete("/events/1")
                         .header("Authorization", loggedUser.getAuthHeader()))

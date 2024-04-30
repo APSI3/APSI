@@ -32,7 +32,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testLogin() throws Exception {
+    public void testLoginReturns200() throws Exception {
         LoginRequest loginRequest = new LoginRequest("testuser1", "apsi");
         mockMvc.perform(MockMvcRequestBuilders.post("/user/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -41,7 +41,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testSession() throws Exception {
+    public void testSessionReturns200() throws Exception {
         LoginRequest loginRequest = new LoginRequest("testuser1", "apsi");
         String stringLoginRequest = objectMapper.writeValueAsString(loginRequest);
         String responseContent = mockMvc.perform(MockMvcRequestBuilders.post("/user/login")

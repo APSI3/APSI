@@ -36,7 +36,7 @@ public class EventServiceTest {
     private EventRepository eventRepository;
 
     @Test
-    public void testGetEventById() {
+    public void testGetEventByIdReturnsEvent() {
         Long eventId = 1L;
         Event event = new Event(
                 eventId,
@@ -57,7 +57,7 @@ public class EventServiceTest {
     }
 
     @Test
-    public void testGetAllEvents() {
+    public void testGetAllEventsReturnsListOfAllEvents() {
         List<Event> eventList = new ArrayList<>();
         User organizer = new User(1L, "login", "hash", "salt", UserType.ORGANIZER, null);
         eventList.add(new Event(1L, "1", null, null, null, null, "desc", organizer, null, null));
@@ -73,13 +73,13 @@ public class EventServiceTest {
     }
 
     @Test
-    public void testCreateNull() {
+    public void testCreateEventWithNullNameThrowsException() {
         EventDTO nullEventDto = new EventDTO(null, null, null, null, null, null, null, null, null);
         assertThrows(ApsiValidationException.class, () -> eventService.create(nullEventDto));
     }
 
     @Test
-    public void testCreate() {
+    public void testCreateReturnsCreatedEvent() {
         EventDTO eventDTO = new EventDTO(null, "name", null, null, null, null, "desc", 1L, null);
         Event event = DTOMapper.toEntity(eventDTO);
         try (var securityContextHolderMockedStatic = mockStatic(SecurityContextHolder.class)) {
@@ -100,21 +100,21 @@ public class EventServiceTest {
     }
 
     @Test
-    public void testReplace() throws Exception {
+    public void testReplaceReturnsReplacedEvent() throws Exception {
         EventDTO eventDTO = new EventDTO(null, "name", LocalDate.of(2024, 4, 27), null, null, null, "desc", 1L, null);
         when(eventRepository.save(any())).thenReturn(DTOMapper.toEntity(eventDTO));
         assertEquals(eventService.replace(eventDTO), eventDTO);
     }
 
     @Test
-    public void testDelete() {
+    public void testDeleteCallsEventRepositoryDeleteById() {
         Long idToDelete = 18L;  // "How to forget?" #pdk
         eventService.delete(idToDelete);
         verify(eventRepository).deleteById(idToDelete);
     }
 
     @Test
-    public void testNotExist() {
+    public void testNotExistReturnsStateOfEventExistence() {
         when(eventRepository.existsById(any())).thenReturn(true);
         assertFalse(eventService.notExists(1L));
         when(eventRepository.existsById(any())).thenReturn(false);

@@ -15,7 +15,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Optional;
@@ -30,7 +29,7 @@ public class UserServiceTest {
     UserService userService;
 
     @Test
-    public void testGetUserById() {
+    public void testGetUserByIdReturnsUserObject() {
         Long userId = 1234L;
         User user = new User(userId, "login", "hash", "pepper", UserType.PERSON, new ArrayList<>());
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
@@ -38,7 +37,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testGetUserByLogin() {
+    public void testGetUserByLoginReturnsUserObject() {
         String login = "andrzej1234";
         User user = new User(1234L, login, "hash", "pepper", UserType.PERSON, new ArrayList<>());
         when(userRepository.findUserByLogin(login)).thenReturn(Optional.of(user));
@@ -46,7 +45,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testHashPassword() throws Exception {
+    public void testHashPasswordReturnsCorrectHash() throws Exception {
         String password = "apsi";
         String salt = "1234";
         String expectedHash = "098813193d97d1e2ba71c76753eb4a2ce90a6c0229658e168294e619ab00cfec";
@@ -54,19 +53,19 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testLoginEmptyLogin() {
+    public void testLoginEmptyLoginThrowsException() {
         LoginRequest loginRequest = new LoginRequest("", "apsi");
         assertThrows(ApsiValidationException.class, () -> userService.login(loginRequest));
     }
 
     @Test
-    public void testLoginEmptyPassword() {
+    public void testLoginEmptyPasswordThrowsException() {
         LoginRequest loginRequest = new LoginRequest("apsi", "");
         assertThrows(ApsiValidationException.class, () -> userService.login(loginRequest));
     }
 
     @Test
-    public void testLogin() throws Exception {
+    public void testLoginReturnsLoggedUser() throws Exception {
         String login = "apsi";
         String password = "apsi";
         String salt = "1234";

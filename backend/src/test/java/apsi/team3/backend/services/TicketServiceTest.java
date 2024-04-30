@@ -26,7 +26,7 @@ public class TicketServiceTest {
     TicketRepository ticketRepository;
 
     @Test
-    public void testGetTicketById() {
+    public void testGetTicketByIdReturnsTicketObject() {
         Long ticketId = 1L;
         TicketDTO ticketDTO = new TicketDTO(ticketId, null, null, null);
         when(ticketRepository.findById(ticketId)).thenReturn(Optional.of(DTOMapper.toEntity(ticketDTO)));
@@ -34,7 +34,7 @@ public class TicketServiceTest {
     }
 
     @Test
-    public void testCreate() {
+    public void testCreateReturnsCreatedObject() {
         TicketDTO ticketDTO = new TicketDTO(1L, 1L, 1L, LocalDate.of(2024, 4, 27));
         Ticket ticket = DTOMapper.toEntity(ticketDTO);
         when(ticketRepository.save(any())).thenReturn(ticket);

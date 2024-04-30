@@ -26,7 +26,7 @@ public class CountryServiceTest {
     CountryService countryService;
 
     @Test
-    public void testGetAllCountries() {
+    public void testGetAllCountriesReturnsListOfCountriesFromDB() {
         List<Country> countries = new ArrayList<>();
         countries.add(new Country(1L, "PL", "POLSKA")); //gurom
         countries.add(new Country(2L, "AF", "Afganistan"));

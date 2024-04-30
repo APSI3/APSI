@@ -30,7 +30,7 @@ public class LocationServiceTest {
     LocationService locationService;
 
     @Test
-    public void testGetLocationById() {
+    public void testGetLocationByIdReturnsLocation() {
         User creator = new User(1L, "login", "hash", "salt", UserType.ORGANIZER, new ArrayList<>());
         Location location = new Location(
                 1L,
@@ -48,7 +48,7 @@ public class LocationServiceTest {
     }
 
     @Test
-    public void testCreate() {
+    public void testCreateReturnsCreatedLocation() {
         User creator = new User(1L, "login", "hash", "salt", UserType.ORGANIZER, new ArrayList<>());
         Location location = new Location(
                 null,

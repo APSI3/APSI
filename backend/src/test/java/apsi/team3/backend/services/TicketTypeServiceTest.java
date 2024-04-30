@@ -28,7 +28,7 @@ public class TicketTypeServiceTest {
     TicketTypeService ticketTypeService;
 
     @Test
-    public void testGetTicketTypeById() {
+    public void testGetTicketTypeByIdReturnsTicketTypeObject() {
         Long ticketTypeId = 1L;
         TicketType ticketType = new TicketType(ticketTypeId, new Event(), "name", null, 10);
         TicketTypeDTO ticketTypeDTO = DTOMapper.toDTO(ticketType);
@@ -37,7 +37,7 @@ public class TicketTypeServiceTest {
     }
 
     @Test
-    public void testGetTicketTypeByEventId() {
+    public void testGetTicketTypeByEventIdReturnsListOfTicketTypes() {
         Long eventId = 1L;
         List<TicketType> ticketTypeList = new ArrayList<>();
         ticketTypeList.add(new TicketType(1L, new Event(), "name", null, 10));
@@ -51,7 +51,7 @@ public class TicketTypeServiceTest {
     }
 
     @Test
-    public void testCreate() throws Exception {
+    public void testCreateReturnsCreatedTicketTypeObject() throws Exception {
         TicketTypeDTO ticketTypeDTO = new TicketTypeDTO(1L, 1L, "name", BigDecimal.valueOf(100L), 10);
         TicketType ticketType = DTOMapper.toEntity(ticketTypeDTO);
         when(ticketTypeRepository.save(any())).thenReturn(ticketType);
@@ -60,7 +60,7 @@ public class TicketTypeServiceTest {
     }
 
     @Test
-    public void testReplace() {
+    public void testReplaceReturnsReplacedTicketTypeObject() {
         TicketTypeDTO ticketTypeDTO = new TicketTypeDTO(1L, 1L, "name", BigDecimal.valueOf(100L), 10);
         TicketType ticketType = DTOMapper.toEntity(ticketTypeDTO);
         when(ticketTypeRepository.save(any())).thenReturn(ticketType);
@@ -69,14 +69,14 @@ public class TicketTypeServiceTest {
     }
 
     @Test
-    public void testDelete() {
+    public void testDeleteCallsDeleteByIdRepositoryMethod() {
         Long ticketTypeId = 2L;
         ticketTypeService.delete(ticketTypeId);
         verify(ticketTypeRepository).deleteById(ticketTypeId);
     }
 
     @Test
-    public void testNotExist() {
+    public void testNotExistReturnsStateOfObjectExistence() {
         when(ticketTypeRepository.existsById(any())).thenReturn(true);
         assertFalse(ticketTypeService.notExists(1L));
         when(ticketTypeRepository.existsById(any())).thenReturn(false);
