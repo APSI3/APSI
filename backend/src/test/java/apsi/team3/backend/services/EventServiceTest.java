@@ -100,14 +100,10 @@ public class EventServiceTest {
     }
 
     @Test
-    public void testReplace() {
+    public void testReplace() throws Exception {
         EventDTO eventDTO = new EventDTO(null, "name", LocalDate.of(2024, 4, 27), null, null, null, "desc", 1L, null);
         when(eventRepository.save(any())).thenReturn(DTOMapper.toEntity(eventDTO));
-        try {
-            assertEquals(eventService.replace(eventDTO), eventDTO);
-        } catch (Exception e) {
-            fail();
-        }
+        assertEquals(eventService.replace(eventDTO), eventDTO);
     }
 
     @Test

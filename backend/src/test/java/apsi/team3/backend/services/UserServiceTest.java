@@ -46,15 +46,11 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testHashPassword() {
+    public void testHashPassword() throws Exception {
         String password = "apsi";
         String salt = "1234";
         String expectedHash = "098813193d97d1e2ba71c76753eb4a2ce90a6c0229658e168294e619ab00cfec";
-        try {
-            assertEquals(userService.hashPassword(password, salt), expectedHash);
-        } catch (Exception e) {
-            fail();
-        }
+        assertEquals(userService.hashPassword(password, salt), expectedHash);
     }
 
     @Test
@@ -70,22 +66,18 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testLogin() {
+    public void testLogin() throws Exception {
         String login = "apsi";
         String password = "apsi";
         String salt = "1234";
         Long userId = 1234L;
         LoginRequest loginRequest = new LoginRequest(login, password);
-        try {
-            String hash = userService.hashPassword(password, salt);
-            User user = new User(userId, login, hash, salt, UserType.PERSON, new ArrayList<>());
-            when(userRepository.findUserByLogin(login)).thenReturn(Optional.of(user));
-            var encoded = Base64.getEncoder().encodeToString("apsi:apsi".getBytes());
-            String expectedAuthHeader = "Basic " + encoded;
-            LoggedUserDTO loggedUserDTO = new LoggedUserDTO(userId, login, expectedAuthHeader, UserType.PERSON);
-            assertEquals(userService.login(loginRequest), loggedUserDTO);
-        } catch (Exception e) {
-            fail();
-        }
+        String hash = userService.hashPassword(password, salt);
+        User user = new User(userId, login, hash, salt, UserType.PERSON, new ArrayList<>());
+        when(userRepository.findUserByLogin(login)).thenReturn(Optional.of(user));
+        var encoded = Base64.getEncoder().encodeToString("apsi:apsi".getBytes());
+        String expectedAuthHeader = "Basic " + encoded;
+        LoggedUserDTO loggedUserDTO = new LoggedUserDTO(userId, login, expectedAuthHeader, UserType.PERSON);
+        assertEquals(userService.login(loginRequest), loggedUserDTO);
     }
 }

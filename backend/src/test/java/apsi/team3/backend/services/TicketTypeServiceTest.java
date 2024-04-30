@@ -51,16 +51,12 @@ public class TicketTypeServiceTest {
     }
 
     @Test
-    public void testCreate() {
+    public void testCreate() throws Exception {
         TicketTypeDTO ticketTypeDTO = new TicketTypeDTO(1L, 1L, "name", BigDecimal.valueOf(100L), 10);
         TicketType ticketType = DTOMapper.toEntity(ticketTypeDTO);
         when(ticketTypeRepository.save(any())).thenReturn(ticketType);
-        try {
-            assertEquals(ticketTypeService.create(ticketTypeDTO), ticketTypeDTO);
-            verify(ticketTypeRepository).save(ArgumentMatchers.refEq(ticketType));
-        } catch (Exception e) {
-            fail();
-        }
+        assertEquals(ticketTypeService.create(ticketTypeDTO), ticketTypeDTO);
+        verify(ticketTypeRepository).save(ArgumentMatchers.refEq(ticketType));
     }
 
     @Test
@@ -68,12 +64,8 @@ public class TicketTypeServiceTest {
         TicketTypeDTO ticketTypeDTO = new TicketTypeDTO(1L, 1L, "name", BigDecimal.valueOf(100L), 10);
         TicketType ticketType = DTOMapper.toEntity(ticketTypeDTO);
         when(ticketTypeRepository.save(any())).thenReturn(ticketType);
-        try {
-            assertEquals(ticketTypeService.replace(ticketTypeDTO), ticketTypeDTO);
-            verify(ticketTypeRepository).save(ArgumentMatchers.refEq(ticketType));
-        } catch (Exception e) {
-            fail();
-        }
+        assertEquals(ticketTypeService.replace(ticketTypeDTO), ticketTypeDTO);
+        verify(ticketTypeRepository).save(ArgumentMatchers.refEq(ticketType));
     }
 
     @Test
