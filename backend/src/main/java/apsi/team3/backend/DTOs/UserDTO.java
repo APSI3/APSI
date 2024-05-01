@@ -1,9 +1,6 @@
 package apsi.team3.backend.DTOs;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -11,7 +8,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 @ToString
 @EqualsAndHashCode
+@NoArgsConstructor
 public class UserDTO implements Serializable {
-    private final Long id;
-    private final String login;
+    private Long id;
+    private String login;
+
 }
