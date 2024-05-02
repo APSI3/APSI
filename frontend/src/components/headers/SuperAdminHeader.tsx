@@ -14,7 +14,7 @@ export default function PersonHeader() {
                 <a className="nav-link" href={Paths.events}>Wydarzenia</a>
             </li>
             <li className="nav-item">
-                <a className="nav-link" href={Paths.tickets}>Lokalizacje</a>
+                <a className="nav-link" href={Paths.locations}>Lokalizacje</a>
             </li>
         </ul>
     </div>
