@@ -1,6 +1,7 @@
 package apsi.team3.backend.services;
 
 import apsi.team3.backend.DTOs.DTOMapper;
+import apsi.team3.backend.DTOs.EventDTO;
 import apsi.team3.backend.DTOs.LocationDTO;
 import apsi.team3.backend.model.Country;
 import apsi.team3.backend.model.Location;
@@ -9,8 +10,12 @@ import apsi.team3.backend.model.UserType;
 import apsi.team3.backend.repository.LocationRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
@@ -49,22 +54,33 @@ public class LocationServiceTest {
 
     @Test
     public void testCreateReturnsCreatedLocation() {
-        User creator = new User(1L, "login", "hash", "salt", UserType.ORGANIZER, new ArrayList<>());
-        Location location = new Location(
+        LocationDTO locationDTO = new LocationDTO(
                 null,
-                creator,
-                new Country(1L, "PL", "POLSKA"),
+                1L,
                 100,
                 "Warszawa",
                 "Waryńskiego",
                 "12",
                 "1601",
-                "00-631"
+                "00-631",
+                null
         );
-        LocationDTO locationDTO = DTOMapper.toDTO(location);
+        Location location = DTOMapper.toEntity(locationDTO);
         location.setId(1L);
-        LocationDTO expectedDTO = DTOMapper.toDTO(location);
-        when(locationRepository.save(any())).thenReturn(location);
-        assertEquals(locationService.create(locationDTO), expectedDTO);
+        try (var securityContextHolderMockedStatic = mockStatic(SecurityContextHolder.class)) {
+            User creator = new User(1L, "login", "hash", "salt", UserType.ORGANIZER, new ArrayList<>());
+            SecurityContext securityContextMock = mock(SecurityContext.class);
+            securityContextHolderMockedStatic.when(SecurityContextHolder::getContext).thenReturn(securityContextMock);
+            Authentication authenticationMock = mock(Authentication.class);
+            when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
+            when(authenticationMock.getPrincipal()).thenReturn(creator);
+            when(locationRepository.save(any())).thenReturn(location);
+            location.setCreator(creator);
+            LocationDTO expectedDTO = DTOMapper.toDTO(location);
+            assertEquals(locationService.create(locationDTO), expectedDTO);
+        } catch (Exception e) {
+            fail();
+        }
+
     }
 }
