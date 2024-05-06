@@ -98,7 +98,7 @@ const LocationForm: React.FC = () => {
                 <div className="form-group row justify-content-center mb-2">
                     <label className="col-sm-6 col-form-label">Opis</label>
                     <div className="col-sm-6">
-                        <Field type="string" name="description" className="form-control" />
+                            <Field as="textarea" name="description" className="form-control" style={{ minHeight: '100px' }} />
                     </div>
                 </div>
                 <div className="form-group row justify-content-center mb-2">
