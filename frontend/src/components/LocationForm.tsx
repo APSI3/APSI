@@ -29,16 +29,20 @@ const createLocationValidationSchema = object<CreateLocationRequest>().shape({
         .min(1, "ID kraju musi być dodatnie"),
     capacity: number()
         .max(8000000000, "Cała populacja ziemi to trochę przesada")
-        .min(1, "Pojemność musi być większa od zera")
-        .required("Należy podać pojemność"),
+        .min(1, "Pojemność musi być większa od zera"),
+    description: string()
+        .max(2000, "Zbyt długi opis"),
     city: string()
+        .max(256, "Zbyt długa nazwa miejscowości")
         .required("Należy podać miejscowość"),
     street: string()
-        .required("Należy podać ulicę"),
+        .max(256, "Zbyt długa nazwa ulicy"),
     building_nr: string()
-        .required("Należy podać number budynku"),
+        .max(32, "Zbyt długi numer budynku"),
+    apartment_nr: string()
+        .max(32, "Zbyt długi numer lokalu"),
     zip_code: string()
-        .required("Należy podać kod pocztowy")
+        .max(16, "Zbyt długi kod pocztowy")
 })
 
 
@@ -100,6 +104,7 @@ const LocationForm: React.FC = () => {
                     <label className="col-sm-6 col-form-label">Opis</label>
                     <div className="col-sm-6">
                             <Field as="textarea" name="description" className="form-control" style={{ minHeight: '100px' }} />
+                            <ValidationMessage fieldName="description" />
                     </div>
                 </div>
                 <div className="form-group row justify-content-center mb-2">
@@ -163,6 +168,7 @@ const LocationForm: React.FC = () => {
                     <label className="col-sm-6 col-form-label">Numer lokalu</label>
                     <div className="col-sm-6">
                         <Field type="text" name="apartment_nr" className="form-control" />
+                        <ValidationMessage fieldName="apartment_nr" />
                     </div>
                 </div>
                 <div className="form-group row justify-content-center mb-2">
