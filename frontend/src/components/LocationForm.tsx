@@ -104,15 +104,16 @@ const LocationForm: React.FC = () => {
                 </div>
                 <div className="form-group row justify-content-center mb-2">
                     <label className="col-sm-6 col-form-label">Kraj</label>
-                    <div className="col-sm-6">
+                    <div className="col-sm-6" style={{ position: 'relative' }}>
                         <Field 
                             type="string" 
-                            name="country_name" 
+                            name="country_name"
                             className="form-control"
                             value={typedCountryName}
                             autoComplete="off"
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => searchCountry(e.target.value, setFieldValue)}
                         />
+                        <div className="search-results-container">
                         {
                             typedCountryName.length > 0 && values.country_id == null && matchingCountries.map((matched, idx) => (
                                 <CountriesSearchResult 
@@ -125,6 +126,7 @@ const LocationForm: React.FC = () => {
                                 />
                             ))
                         }
+                        </div>
                         <input type="text" name="country_id" hidden/>
                         <ValidationMessage fieldName="country_id" />
                     </div>
