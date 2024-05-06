@@ -11,8 +11,8 @@ import { toastDefaultError, toastInfo } from "../helpers/ToastHelpers";
 import "../style/forms.css"
 
 const initialValues: CreateLocationRequest = {
-    country_id: null,
-    capacity: null,
+    country_id: 1,
+    capacity: undefined,
     description: '',
     city: '',
     street: '',
@@ -113,14 +113,15 @@ const LocationForm: React.FC = () => {
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => searchCountry(e.target.value, setFieldValue)}
                         />
                         {
-                            typedCountryName.length > 0 && values.country_id == null && matchingCountries.map(matched => (
+                            typedCountryName.length > 0 && values.country_id == null && matchingCountries.map((matched, idx) => (
                                 <CountriesSearchResult 
                                     country={matched} 
                                     onClick={(c: CountryDTO) => {
                                         setFieldValue("country_id", c.id);
                                         setTypedCountryName(c.full_name);
-                                    }
-                                }/>
+                                    }}
+                                    key={idx}
+                                />
                             ))
                         }
                         <input type="text" name="country_id" hidden/>

@@ -1,8 +1,9 @@
 import React, {useState} from "react";
-import {Fab, Tooltip} from "@mui/material";
+import {Fab, Tooltip, IconButton} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
+import CloseIcon from '@mui/icons-material/Close';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -27,14 +28,20 @@ const FormButton: React.FC<{title: string, icon: React.ReactNode, form: React.Re
                     {icon}
                 </Fab>
             </Tooltip>
-
             <Modal
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box sx={style}>{form}</Box>
+                <div>
+                    <Box sx={style}>
+                        <IconButton aria-label="close" onClick={handleClose} style={{ position: 'absolute', top: 10, right: 10 }}>
+                            <CloseIcon />
+                        </IconButton>
+                        {form}
+                    </Box>
+                </div>
             </Modal>
         </>
     );
