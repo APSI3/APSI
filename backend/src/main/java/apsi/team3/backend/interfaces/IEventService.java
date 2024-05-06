@@ -1,15 +1,16 @@
 package apsi.team3.backend.interfaces;
 
 import apsi.team3.backend.DTOs.EventDTO;
+import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 
-import java.util.List;
+import java.time.LocalDate;
 import java.util.Optional;
 
 public interface IEventService {
     Optional<EventDTO> getEventById(Long id);
 
-    List<EventDTO> getAllEvents();
+    PaginatedList<EventDTO> getEvents(LocalDate from, LocalDate to, int pageIndex) throws ApsiValidationException;
 
     EventDTO create(EventDTO event) throws ApsiValidationException;
 
