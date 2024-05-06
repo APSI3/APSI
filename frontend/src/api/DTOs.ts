@@ -24,3 +24,10 @@ export interface TicketTypeDTO {
     price: number,
     quantityAvailable: number,
 }
+
+export interface PaginatedList<T>{
+    items: T[],
+    pageIndex: number,
+    totalItems: number,
+    totalPages: number,
+}
