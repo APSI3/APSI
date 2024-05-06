@@ -17,7 +17,7 @@ const style = {
     p: 4,
 };
 
-const FormButton: React.FC<{ title: string, icon: React.ReactNode, Form: React.FC<{ onClose: () => void }> }> = ({ title, icon = <AddIcon/>, Form }) => {
+const FormButton: React.FC<{title: string, icon: React.ReactNode, Form: React.FC<{ onClose: () => void }> }> = ({ title, icon = <AddIcon/>, Form }) => {
     const [ open, setOpen ] = useState<boolean>(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
