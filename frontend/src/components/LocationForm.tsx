@@ -46,7 +46,7 @@ const createLocationValidationSchema = object<CreateLocationRequest>().shape({
 })
 
 
-const LocationForm: React.FC = () => {
+const LocationForm: React.FC<{ onClose: () => void }> = ({onClose}) => {
     const [ countries, setCountries ] = useState<CountryDTO[]>([]);
     const [ matchingCountries, setMatchingCountries ] = useState<CountryDTO[]>([]);
     const [ typedCountryName, setTypedCountryName ] = useState<string>("");
@@ -91,6 +91,7 @@ const LocationForm: React.FC = () => {
                 await Api.CreateLocation(values).then(res => {
                     if (res.success && res.data) {
                         toastInfo("Pomyślnie dodano nową lokalizację");
+                        onClose();
                     }
                     else {
                         toastDefaultError();
