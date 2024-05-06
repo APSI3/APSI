@@ -12,7 +12,7 @@ import "../style/forms.css"
 
 const initialValues: CreateLocationRequest = {
     country_id: 1,
-    capacity: undefined,
+    capacity: '',
     description: '',
     city: '',
     street: '',
@@ -48,6 +48,7 @@ const LocationForm: React.FC = () => {
     const [ typedCountryName, setTypedCountryName ] = useState<string>("");
 
     useEffect(() => {
+        setTypedCountryName("Polska");
         getCountries();
     }, [])
 

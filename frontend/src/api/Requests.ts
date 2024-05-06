@@ -12,7 +12,7 @@ export type CreateEventRequest = {
 
 export type CreateLocationRequest = {
     country_id: number,
-    capacity: number | undefined,
+    capacity: number | string,
     description: string,
     city: string,
     street: string,
