@@ -4,6 +4,7 @@ import AddIcon from "@mui/icons-material/Add";
 import AddLocationIcon from "@mui/icons-material/AddLocation";
 import FormButton from "./FormButton";
 import EventForm from "./EventForm";
+import LocationForm from "./LocationForm";
 
 const style = {
     position: 'fixed',
@@ -17,9 +18,8 @@ const style = {
 
 const ActionButtons: React.FC = () => {
     const actionButtons = [
-        { title: "Dodaj wydarzenie", icon: <AddIcon />, form: <EventForm/> },
-        // todo: replace with location form
-        { title: "Dodaj lokalizację", icon: <AddLocationIcon />, form: <EventForm/> },
+        { title: "Dodaj wydarzenie", icon: <AddIcon />, form: EventForm },
+        { title: "Dodaj lokalizację", icon: <AddLocationIcon />, form: LocationForm},
     ]
 
     return (
@@ -29,7 +29,7 @@ const ActionButtons: React.FC = () => {
                     key={`form-button-${idx}`}
                     title={button.title}
                     icon={button.icon}
-                    form={button.form}
+                    Form={button.form}
             />)}
         </Box>
     );

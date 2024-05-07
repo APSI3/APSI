@@ -12,7 +12,7 @@ const initialValues: CreateEventRequest = {
     endDate: new Date(),
 }
 
-export default function EventForm() {
+const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     // TODO: JIRA APSI-44
     // TODO: dodać walidację z yupa
     return <>
@@ -25,6 +25,7 @@ export default function EventForm() {
                 await Api.CreateEvent(values).then(res => {
                     if (res.success && res.data) {
                         toastInfo("Udało się stworzyć wydarzenie " + res.data.name);
+                        onClose();
                     }
                     else {
                         if (res.errors)
@@ -64,3 +65,4 @@ export default function EventForm() {
         </Formik>
     </>
 }
+export default EventForm;

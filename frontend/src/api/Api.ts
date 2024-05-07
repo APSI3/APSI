@@ -1,9 +1,9 @@
 import axios from "axios";
 import { ApiResponse } from "./Responses";
-import {CreateEventRequest, LoginRequest} from "./Requests";
+import {CreateEventRequest, CreateLocationRequest, LoginRequest} from "./Requests";
 import { toastError } from "../helpers/ToastHelpers";
 import { AuthHelpers } from "../helpers/AuthHelpers";
-import {EventDTO, LoggedUserDTO, TicketTypeDTO} from "./DTOs";
+import {CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO} from "./DTOs";
 
 axios.defaults.withCredentials = true;
 
@@ -76,6 +76,14 @@ export class Api {
 
     static async GetSoldTicketsCount(id: number) {
         return await getApiResponse<undefined, number>("get", this.url + `/ticket_types/${id}/count`);
+    }
+
+    static async GetCountries() {
+        return await getApiResponse<undefined, CountryDTO[]>("get", this.url + "/countries");
+    }
+
+    static async CreateLocation(request: CreateLocationRequest) {
+        return await getApiResponse<CreateLocationRequest, LocationDTO>("post", this.url + "/locations", request);
     }
 
     static async Session() {

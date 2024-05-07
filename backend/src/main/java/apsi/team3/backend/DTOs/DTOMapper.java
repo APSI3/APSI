@@ -57,6 +57,7 @@ public class DTOMapper {
                 .apartment_nr(loc.getApartment_nr())
                 .building_nr(loc.getBuilding_nr())
                 .capacity(loc.getCapacity())
+                .description(loc.getDescription())
                 .city(loc.getCity())
                 .street(loc.getStreet())
                 .zip_code(loc.getZip_code())
@@ -90,6 +91,7 @@ public class DTOMapper {
             loc.getId(), 
             loc.getCountry().getId(),
             loc.getCapacity(),
+            loc.getDescription(),
             loc.getCity(),
             loc.getStreet(),
             loc.getBuilding_nr(),

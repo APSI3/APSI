@@ -28,6 +28,9 @@ public class Location {
     @Column(name = "capacity", nullable = true)
     private int capacity;
 
+    @Column(name = "description", nullable = true)
+    private String description;
+
     @Column(name = "city", nullable = false)
     private String city;
 

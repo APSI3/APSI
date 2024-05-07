@@ -24,3 +24,22 @@ export interface TicketTypeDTO {
     price: number,
     quantityAvailable: number,
 }
+
+export interface CountryDTO {
+    id: number,
+    code: string,
+    full_name: string,
+}
+
+export interface LocationDTO {
+    id: number,
+    country_id: number,
+    capacity: number,
+    description: string,
+    city: string,
+    street: string,
+    building_nr: string,
+    apartment_nr: string,
+    zip_code: string,
+    creator_id: number,
+}
