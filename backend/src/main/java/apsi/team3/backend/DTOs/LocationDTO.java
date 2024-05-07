@@ -8,6 +8,7 @@ public class LocationDTO implements Serializable {
     Long id;
     Long country_id;
     int capacity;
+    String description;
     String city;
     String street;
     String building_nr;

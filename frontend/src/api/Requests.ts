@@ -9,3 +9,14 @@ export type CreateEventRequest = {
     startDate: Date,
     endDate: Date,
 }
+
+export type CreateLocationRequest = {
+    country_id: number,
+    capacity: number | string,
+    description: string,
+    city: string,
+    street: string,
+    building_nr: string,
+    apartment_nr: string,
+    zip_code: string,
+}
