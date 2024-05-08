@@ -28,7 +28,7 @@ export function AuthorizedPage({ page }: AuththorizedPageProps) {
         checkIfLoggedIn();
     }, [nav])
 
-    const isOrganizer = AuthHelpers.HasAnyRole([UserTypes.ORGANIZER]);
+    const isOrganizer = AuthHelpers.HasAnyRole([UserTypes.ORGANIZER, UserTypes.SUPERADMIN]);
 
     return <>
         <header>

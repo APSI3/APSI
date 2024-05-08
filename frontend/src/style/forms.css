@@ -1,0 +1,18 @@
+.search-result-item {
+    padding: 5px;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.search-result-item:hover {
+    background-color: darkgrey;
+    cursor: pointer;
+}
+
+.search-results-container {
+    z-index: 1;
+    position: absolute;
+    background-color: rgb(218, 214, 214);
+    border-radius: 4px;
+    width: 90%;
+}
