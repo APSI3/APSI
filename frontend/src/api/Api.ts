@@ -3,7 +3,7 @@ import { ApiResponse } from "./Responses";
 import {CreateEventRequest, CreateLocationRequest, LoginRequest} from "./Requests";
 import { toastError } from "../helpers/ToastHelpers";
 import { AuthHelpers } from "../helpers/AuthHelpers";
-import {CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO} from "./DTOs";
+import { CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO, PaginatedList } from "./DTOs";
 
 axios.defaults.withCredentials = true;
 
@@ -62,8 +62,9 @@ export class Api {
         return await getApiResponse<CreateEventRequest, EventDTO>("post", this.url + "/events", request);
     }
 
-    static async GetEvents() {
-        return await getApiResponse<undefined, EventDTO[]>("get", this.url + "/events");
+    static async GetEvents(from: Date, to: Date, pageIndex: number) {
+        return await getApiResponse<undefined, PaginatedList<EventDTO>>("get", 
+            this.url + `/events?from=${from.toISOString()}&to=${to.toISOString()}&pageIndex=${pageIndex}`);
     }
 
     static async GetEventById(id: string | undefined) {

@@ -43,3 +43,10 @@ export interface LocationDTO {
     zip_code: string,
     creator_id: number,
 }
+
+export interface PaginatedList<T>{
+    items: T[],
+    pageIndex: number,
+    totalItems: number,
+    totalPages: number,
+}

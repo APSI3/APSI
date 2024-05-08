@@ -1,5 +1,7 @@
 package apsi.team3.backend;
 
+import java.time.LocalDate;
+
 import apsi.team3.backend.model.Event;
 import apsi.team3.backend.model.User;
 import apsi.team3.backend.model.UserType;
@@ -9,9 +11,9 @@ public class TestHelper {
         return new Event(
                 eventId,
                 name,
+                LocalDate.now(),
                 null,
-                null,
-                null,
+                LocalDate.now().plusDays(7),
                 null,
                 "description",
                 new User(1L, "login", "hash", "salt", UserType.ORGANIZER, null),

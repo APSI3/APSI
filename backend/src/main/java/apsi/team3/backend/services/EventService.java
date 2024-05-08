@@ -2,20 +2,23 @@ package apsi.team3.backend.services;
 
 import apsi.team3.backend.DTOs.DTOMapper;
 import apsi.team3.backend.DTOs.EventDTO;
+import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IEventService;
 import apsi.team3.backend.model.User;
 import apsi.team3.backend.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class EventService implements IEventService {
+    private final int PAGE_SIZE = 10;
     private final EventRepository eventRepository;
 
     @Autowired
@@ -34,11 +37,24 @@ public class EventService implements IEventService {
     }
 
     @Override
-    public List<EventDTO> getAllEvents() {
-        return eventRepository.findAll()
-                .stream()
-                .map(DTOMapper::toDTO)
-                .collect(Collectors.toList());
+    public PaginatedList<EventDTO> getEvents(LocalDate from, LocalDate to, int pageIndex) throws ApsiValidationException {
+        if (from == null)
+            throw new ApsiValidationException("Należy podać datę początkową", "from");
+        if (to == null)
+            throw new ApsiValidationException("Należy podać datę końcową", "to");
+        if (from.isAfter(to))
+            throw new ApsiValidationException("Data końcowa nie może być mniejsza niż początkowa", "to");
+        if (pageIndex < 0)
+            throw new ApsiValidationException("Indeks strony nie może być ujemny", "pageIndex");
+
+        var page = eventRepository.getEventsWithDatesBetween(PageRequest.of(pageIndex, PAGE_SIZE), from, to);
+
+        var items = page
+            .stream()
+            .map(DTOMapper::toDTO)
+            .collect(Collectors.toList());
+
+        return new PaginatedList<EventDTO>(items, pageIndex, page.getTotalElements(), page.getTotalPages());
     }
 
     @Override

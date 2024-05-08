@@ -14,6 +14,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,8 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,18 +49,23 @@ public class EventServiceTest {
     }
 
     @Test
-    public void testGetAllEventsReturnsListOfAllEvents() {
+    public void testGetAllEventsReturnsListOfAllEvents() throws ApsiValidationException {
         List<Event> eventList = new ArrayList<>();
         eventList.add(TestHelper.getTestEvent(1L));
         eventList.add(TestHelper.getTestEvent(2L));
         eventList.add(TestHelper.getTestEvent(2L, "some name"));
-        when(eventRepository.findAll()).thenReturn(eventList);
+
+        var from = LocalDate.now();
+        var to = from.plusDays(7);
+        var pager = PageRequest.of(0, 10);
+
+        when(eventRepository.getEventsWithDatesBetween(pager, from, to)).thenReturn(new PageImpl<Event>(eventList, pager, eventList.size()));
         List<EventDTO> eventDTOList = new ArrayList<>();
         for (var event: eventList) {
             eventDTOList.add(DTOMapper.toDTO(event));
         }
-        List<EventDTO> result = eventService.getAllEvents();
-        assertEquals(eventDTOList, result);
+        var result = eventService.getEvents(from, to, 0);
+        assertEquals(eventDTOList, result.items);
     }
 
     @Test
