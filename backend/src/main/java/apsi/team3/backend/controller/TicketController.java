@@ -2,12 +2,15 @@ package apsi.team3.backend.controller;
 
 import apsi.team3.backend.DTOs.TicketDTO;
 import apsi.team3.backend.exceptions.ApsiValidationException;
+import apsi.team3.backend.helpers.QRCodeGenerator;
 import apsi.team3.backend.interfaces.ITicketService;
+import com.google.zxing.WriterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @RestController
@@ -25,8 +28,9 @@ public class TicketController {
     }
 
     @PostMapping
-    public ResponseEntity<TicketDTO> createTicketType(@RequestBody TicketDTO ticketDTO) throws ApsiValidationException {
+    public ResponseEntity<TicketDTO> createTicketType(@RequestBody TicketDTO ticketDTO) throws ApsiValidationException, IOException, WriterException {
         var resp = ticketService.create(ticketDTO);
+        resp.setQRCode(QRCodeGenerator.generateQRCode(ticketDTO.toString()));
         return ResponseEntity.status(HttpStatus.CREATED).body(resp);
     }
 }
