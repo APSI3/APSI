@@ -44,6 +44,13 @@ export interface LocationDTO {
     creator_id: number,
 }
 
+export interface TicketDTO {
+    id: number,
+    ticketTypeId: number,
+    holderId: number,
+    purchaseDate: Date,
+}
+
 export interface PaginatedList<T>{
     items: T[],
     pageIndex: number,

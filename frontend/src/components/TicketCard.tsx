@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import { TicketTypeDTO} from "../api/DTOs";
 import { Grid, Paper, Typography} from "@mui/material";
 import {Api} from "../api/Api";
+import BuyButton from "./EventCardButtons/BuyButton";
 
 const TicketCard: React.FC<{ ticket: TicketTypeDTO }> = ({ ticket }) => {
     const [soldCount, setSoldCount] = useState(0);
@@ -21,13 +22,16 @@ const TicketCard: React.FC<{ ticket: TicketTypeDTO }> = ({ ticket }) => {
                     {ticket.name}
                 </Typography>
             </Grid>
-            <Grid item container direction="column" alignItems="flex-end">
-                <Typography variant="body1" color="textSecondary" style={{marginRight: '1rem'}}>
-                    <strong>{ticket.price.toFixed(2)} zł</strong>
-                </Typography>
-                <Typography variant="body2" color="textSecondary" style={{marginRight: '1rem'}}>
-                    Dostępność: {ticket.quantityAvailable - soldCount}/{ticket.quantityAvailable}
-                </Typography>
+            <Grid item container direction="row">
+                <BuyButton ticketTypeId={ticket.id} />
+                <Grid item container direction="column" alignItems="flex-end">
+                    <Typography variant="body1" color="textSecondary" style={{marginRight: '1rem'}}>
+                        <strong>{ticket.price.toFixed(2)} zł</strong>
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary" style={{marginRight: '1rem'}}>
+                        Dostępność: {ticket.quantityAvailable - soldCount}/{ticket.quantityAvailable}
+                    </Typography>
+                </Grid>
             </Grid>
         </Paper>
     );
