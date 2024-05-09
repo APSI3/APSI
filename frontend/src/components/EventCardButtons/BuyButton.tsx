@@ -19,7 +19,6 @@ const BuyButton: React.FC<{ ticketTypeId: number }> = ({ ticketTypeId }) => {
             purchaseDate: new Date(),
         };
 
-        // create ticket in db
         Api.CreateTicket(createTicketRequest).then(res => {
             if (res.success && res.data) {
                 toastInfo("Zakupiono bilet");
