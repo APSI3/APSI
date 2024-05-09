@@ -1,9 +1,9 @@
 import axios from "axios";
 import { ApiResponse } from "./Responses";
-import { CreateEventRequest, CreateLocationRequest, LoginRequest} from "./Requests";
+import { CreateEventRequest, CreateLocationRequest, LoginRequest, CreateTicketRequest } from "./Requests";
 import { toastError } from "../helpers/ToastHelpers";
 import { AuthHelpers } from "../helpers/AuthHelpers";
-import { CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO, PaginatedList } from "./DTOs";
+import { CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO, TicketDTO, PaginatedList } from "./DTOs";
 
 axios.defaults.withCredentials = true;
 
@@ -63,7 +63,7 @@ export class Api {
         const body = {
             event: JSON.stringify(eventPart),
             image: request.image
-        }  
+        }
         return await getApiResponse<object, EventDTO>("post", this.url + "/events", body, true);
     }
 
@@ -82,6 +82,10 @@ export class Api {
 
     static async GetSoldTicketsCount(id: number) {
         return await getApiResponse<undefined, number>("get", this.url + `/ticket_types/${id}/count`);
+    }
+
+    static async CreateTicket(request: CreateTicketRequest) {
+        return await getApiResponse<CreateTicketRequest, TicketDTO>("post", this.url + "/tickets", request);
     }
 
     static async GetCountries() {
