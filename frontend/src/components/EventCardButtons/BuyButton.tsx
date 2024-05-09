@@ -5,8 +5,11 @@ import {toastDefaultError, toastInfo} from "../../helpers/ToastHelpers";
 import {Api} from "../../api/Api";
 import {CreateTicketRequest} from "../../api/Requests";
 import {AuthHelpers} from "../../helpers/AuthHelpers";
+import {useNavigate} from "react-router-dom";
+import {Paths} from "../../App";
 
 const BuyButton: React.FC<{ ticketTypeId: number }> = ({ ticketTypeId }) => {
+    const nav = useNavigate();
     const handleOnClick = () => {
         // TODO: check available ticket numbers
         const userData = AuthHelpers.GetUserData();
@@ -22,7 +25,7 @@ const BuyButton: React.FC<{ ticketTypeId: number }> = ({ ticketTypeId }) => {
         Api.CreateTicket(createTicketRequest).then(res => {
             if (res.success && res.data) {
                 toastInfo("Zakupiono bilet");
-                // todo navigate to summary
+                nav(`/ticketSummary/${res.data.id}`, { state: res.data });
             }
             else {
                 toastDefaultError();

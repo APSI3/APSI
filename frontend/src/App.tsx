@@ -11,6 +11,7 @@ import RegistrationPage from "./pages/RegistrationPage";
 import TicketsPage from "./pages/TicketsPage";
 import UsersPage from "./pages/UsersPage";
 import ApplicationsPage from "./pages/ApplicationsPage";
+import TicketSummaryPage from "./pages/TicketSummaryPage";
 
 
 export const Paths = {
@@ -24,6 +25,7 @@ export const Paths = {
     locations: "/locations",
     applications: "/applications",
     users: "/users",
+    ticketSummary: "/ticketSummary/:ticketId",
 }
 
 const router = createBrowserRouter(
@@ -38,6 +40,7 @@ const router = createBrowserRouter(
             <Route path={Paths.locations} element={<AuthorizedPage page={<LocationsPage />} />} />
             <Route path={Paths.applications} element={<AuthorizedPage page={<ApplicationsPage />} />} />
             <Route path={Paths.users} element={<AuthorizedPage page={<UsersPage />} />} />
+            <Route path={Paths.ticketSummary} element={<AuthorizedPage page={<TicketSummaryPage />} />} />
         </Route>
     )
 )
