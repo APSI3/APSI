@@ -43,6 +43,7 @@ public class Config {
             .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.PUT, "/events**").hasAnyAuthority(UserType.SUPERADMIN.toString(), UserType.ORGANIZER.toString()))
             .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.DELETE, "/events**").hasAnyAuthority(UserType.SUPERADMIN.toString(), UserType.ORGANIZER.toString()))
             .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.POST, "/locations**").hasAnyAuthority(UserType.SUPERADMIN.toString(), UserType.ORGANIZER.toString()))
+            .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.GET, "/locations").hasAnyAuthority(UserType.SUPERADMIN.toString(), UserType.ORGANIZER.toString()))
             .authorizeHttpRequests(r -> r.anyRequest().authenticated())
             .httpBasic(c -> c.authenticationEntryPoint((req, res, authEx) -> {
                 if (!req.getRequestURI().contains("login"))

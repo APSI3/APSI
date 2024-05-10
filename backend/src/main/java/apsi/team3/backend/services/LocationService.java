@@ -1,5 +1,6 @@
 package apsi.team3.backend.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import apsi.team3.backend.model.User;
@@ -31,5 +32,12 @@ public class LocationService implements ILocationService {
         loc.setCreator(loggedUser);
         var saved = locationRepository.save(loc);
         return DTOMapper.toDTO(saved);
+    }
+
+    @Override
+    public List<LocationDTO> getLocations() {
+        var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return locationRepository.geLocationsForCreatorId(loggedUser.getId())
+            .stream().map(DTOMapper::toDTO).toList();
     }
 }

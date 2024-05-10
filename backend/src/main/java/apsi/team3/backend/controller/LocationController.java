@@ -1,6 +1,7 @@
 package apsi.team3.backend.controller;
 
 import java.util.Optional;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,5 +39,11 @@ public class LocationController {
     public ResponseEntity<LocationDTO> createLocation(@RequestBody LocationDTO locationDTO) throws ApsiValidationException {
         var resp = locationService.create(locationDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(resp);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<LocationDTO>> getLocations(){
+        var resp = locationService.getLocations();
+        return ResponseEntity.ok(resp);
     }
 }
