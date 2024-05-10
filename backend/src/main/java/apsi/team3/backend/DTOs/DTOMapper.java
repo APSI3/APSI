@@ -12,17 +12,22 @@ import org.springframework.stereotype.Component;
 public class DTOMapper {
 
     public static Event toEntity(EventDTO event) {
-        User organizer = User.builder().id(event.getOrganizerId()).build();
+        var organizer = User.builder().id(event.getOrganizerId()).build();
+        var loc = Location.builder().id(event.getLocation().getId()).build();
+        var ticketTypes = event.getTicketTypes().stream().map(DTOMapper::toEntity).toList();
+    
         return Event.builder()
-                .id(event.getId())
-                .name(event.getName())
-                .startDate(event.getStartDate())
-                .startTime(event.getStartTime())
-                .endDate(event.getEndDate())
-                .endTime(event.getEndTime())
-                .description(event.getDescription())
-                .organizer(organizer)
-                .build();
+            .id(event.getId())
+            .name(event.getName())
+            .startDate(event.getStartDate())
+            .startTime(event.getStartTime())
+            .endDate(event.getEndDate())
+            .endTime(event.getEndTime())
+            .description(event.getDescription())
+            .organizer(organizer)
+            .location(loc)
+            .ticketTypes(ticketTypes)
+            .build();
     }
 
     public static TicketType toEntity(TicketTypeDTO ticketType) {
@@ -51,30 +56,31 @@ public class DTOMapper {
         var user = User.builder().id(loc.getCreator_id()).build();
         var country = Country.builder().id(loc.getCountry_id()).build();
         return Location.builder()
-                .id(loc.getId())
-                .creator(user)
-                .country(country)
-                .apartment_nr(loc.getApartment_nr())
-                .building_nr(loc.getBuilding_nr())
-                .capacity(loc.getCapacity())
-                .description(loc.getDescription())
-                .city(loc.getCity())
-                .street(loc.getStreet())
-                .zip_code(loc.getZip_code())
-                .build();
+            .id(loc.getId())
+            .creator(user)
+            .country(country)
+            .apartment_nr(loc.getApartment_nr())
+            .building_nr(loc.getBuilding_nr())
+            .capacity(loc.getCapacity())
+            .description(loc.getDescription())
+            .city(loc.getCity())
+            .street(loc.getStreet())
+            .zip_code(loc.getZip_code())
+            .build();
     }
 
     public static EventDTO toDTO(Event event) {
         return new EventDTO(
-                event.getId(),
-                event.getName(),
-                event.getStartDate(),
-                event.getStartTime(),
-                event.getEndDate(),
-                event.getEndTime(),
-                event.getDescription(),
-                event.getOrganizer().getId(),
-                event.getLocation() != null ? DTOMapper.toDTO(event.getLocation()) : null
+            event.getId(),
+            event.getName(),
+            event.getStartDate(),
+            event.getStartTime(),
+            event.getEndDate(),
+            event.getEndTime(),
+            event.getDescription(),
+            event.getOrganizer().getId(),
+            event.getLocation() != null ? DTOMapper.toDTO(event.getLocation()) : null,
+            event.getTicketTypes().stream().map(DTOMapper::toDTO).toList()
         );
     }
 

@@ -30,7 +30,7 @@ public class TicketTypeService implements ITicketTypeService {
     }
 
     @Override
-    public List<TicketTypeDTO> getTicketTypeByEventId(Long eventId) {
+    public List<TicketTypeDTO> getTicketTypesByEventId(Long eventId) {
         return ticketTypeRepository
                 .findByEventId(eventId)
                 .stream().map(DTOMapper::toDTO)

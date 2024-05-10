@@ -47,7 +47,7 @@ public class TicketTypeServiceTest {
             ticketTypeDTOList.add(DTOMapper.toDTO(ticketType));
         }
         when(ticketTypeRepository.findByEventId(eventId)).thenReturn(ticketTypeList);
-        assertEquals(ticketTypeService.getTicketTypeByEventId(eventId), ticketTypeDTOList);
+        assertEquals(ticketTypeService.getTicketTypesByEventId(eventId), ticketTypeDTOList);
     }
 
     @Test

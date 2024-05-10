@@ -2,12 +2,14 @@ package apsi.team3.backend.DTOs;
 
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Relation(collectionRelation = "events", itemRelation = "event")
 @EqualsAndHashCode(callSuper = false)
@@ -22,4 +24,5 @@ public class EventDTO extends RepresentationModel<EventDTO> implements Serializa
     String description;
     Long organizerId;
     LocationDTO location;
+    List<TicketTypeDTO> ticketTypes;
 }

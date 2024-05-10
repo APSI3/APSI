@@ -7,6 +7,8 @@ import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IEventService;
 import apsi.team3.backend.model.User;
 import apsi.team3.backend.repository.EventRepository;
+import apsi.team3.backend.repository.LocationRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,16 +21,43 @@ import java.util.stream.Collectors;
 @Service
 public class EventService implements IEventService {
     private final int PAGE_SIZE = 10;
+    private final LocationRepository locationRepository;
     private final EventRepository eventRepository;
 
     @Autowired
-    public EventService(EventRepository eventRepository) {
+    public EventService(
+        EventRepository eventRepository,
+        LocationRepository locationRepository
+    ) {
         this.eventRepository = eventRepository;
+        this.locationRepository = locationRepository;
     }
 
-    private static void validate(EventDTO eventDTO) throws ApsiValidationException {
+    private void validateEvent(EventDTO eventDTO) throws ApsiValidationException {
         if (eventDTO == null || eventDTO.getName() == null || eventDTO.getName().isBlank())
             throw new ApsiValidationException("Należy podać nazwę wydarzenia", "name");
+        if (eventDTO.getName().length() > 255)
+            throw new ApsiValidationException("Zbyt długa nazwa wydarzenia", "name");
+        if (eventDTO.getDescription().length() > 2000)
+            throw new ApsiValidationException("Zbyt długi opis wydarzenia", "description");
+        if (eventDTO.getStartDate().isBefore(eventDTO.getEndDate()))
+            throw new ApsiValidationException("Data początkowa nie może być wcześniejsza niż data końcowa", "startDate");
+        if (eventDTO.getStartTime() != null && eventDTO.getEndTime() != null)
+            if (eventDTO.getStartDate().atTime(eventDTO.getStartTime()).isAfter(eventDTO.getEndDate().atTime(eventDTO.getEndTime())))
+                throw new ApsiValidationException("Data początkowa nie może być wcześniejsza niż data końcowa", "startDate");
+
+        if (eventDTO.getLocation() != null && eventDTO.getLocation().getId() != null) {
+            var location = locationRepository.findById(eventDTO.getLocation().getId());
+            if (location.isEmpty())
+                throw new ApsiValidationException("Wybrana lokacja nie istnieje", "location.id");
+
+            if (eventDTO.getTicketTypes().size() > 0 && 
+                location.get().getCapacity() != 0 && 
+                location.get().getCapacity() < eventDTO.getTicketTypes().stream().mapToInt(e -> e.getQuantityAvailable()).sum())
+            {
+                throw new ApsiValidationException("Ilość biletów większa niż dopuszczalna w danej lokalizacji", "ticketTypes");
+            }
+        }
     }
 
     @Override
@@ -58,13 +87,11 @@ public class EventService implements IEventService {
     }
 
     @Override
-    // TODO: dodać nawet prostą walidację
-    // TODO: przetestować zachowanie dat, nie wiem czy dobrze się ustawiają, strefy czasowe itd
     public EventDTO create(EventDTO eventDTO) throws ApsiValidationException {
         if (eventDTO.getId() != null)
             throw new ApsiValidationException("Podano niedozwolony identyfikator wydarzenia", "id");
 
-        validate(eventDTO);
+        validateEvent(eventDTO);
 
         var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         var entity = DTOMapper.toEntity(eventDTO);
@@ -76,7 +103,7 @@ public class EventService implements IEventService {
 
     @Override
     public EventDTO replace(EventDTO eventDTO) throws ApsiValidationException {
-        validate(eventDTO);
+        validateEvent(eventDTO);
 
         var entity = DTOMapper.toEntity(eventDTO);
         var saved = eventRepository.save(entity);
