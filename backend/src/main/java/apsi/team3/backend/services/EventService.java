@@ -8,6 +8,7 @@ import apsi.team3.backend.interfaces.IEventService;
 import apsi.team3.backend.model.User;
 import apsi.team3.backend.repository.EventRepository;
 import apsi.team3.backend.repository.LocationRepository;
+import apsi.team3.backend.repository.TicketTypeRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -23,14 +24,17 @@ public class EventService implements IEventService {
     private final int PAGE_SIZE = 10;
     private final LocationRepository locationRepository;
     private final EventRepository eventRepository;
+    private final TicketTypeRepository ticketTypeRepository;
 
     @Autowired
     public EventService(
         EventRepository eventRepository,
-        LocationRepository locationRepository
+        LocationRepository locationRepository,
+        TicketTypeRepository ticketTypeRepository
     ) {
         this.eventRepository = eventRepository;
         this.locationRepository = locationRepository;
+        this.ticketTypeRepository = ticketTypeRepository;
     }
 
     private void validateEvent(EventDTO eventDTO, User loggedUser) throws ApsiValidationException {
@@ -57,18 +61,18 @@ public class EventService implements IEventService {
                 location.get().getCapacity() != 0 && 
                 location.get().getCapacity() < eventDTO.getTicketTypes().stream().mapToInt(e -> e.getQuantityAvailable()).sum()
             )
-                throw new ApsiValidationException("Ilość biletów większa niż dopuszczalna w danej lokalizacji", "ticketTypes");
+                throw new ApsiValidationException("Ilość biletów większa niż dopuszczalna w danej lokalizacji", "tickets");
 
             if (location.get().getCreator().getId() != loggedUser.getId())
                 throw new ApsiValidationException("Lokalizacja niedostępna", "location");
         }
 
         if (eventDTO.getTicketTypes().size() < 1)
-            throw new ApsiValidationException("Należy stworzyć przynajmniej jeden typ biletów", "ticketTypes");
+            throw new ApsiValidationException("Należy stworzyć przynajmniej jeden typ biletów", "tickets");
         if (eventDTO.getTicketTypes().size() > 16)
-            throw new ApsiValidationException("Można stworzyć maksymalnie 16 typów biletów", "ticketTypes");
+            throw new ApsiValidationException("Można stworzyć maksymalnie 16 typów biletów", "tickets");
         if (!eventDTO.getTicketTypes().stream().allMatch(x -> x.getName() != null && !x.getName().isEmpty() && x.getName().length() < 100))
-            throw new ApsiValidationException("Dla każdego typu biletów należy podać maksymalnie 100-znakową nazwę", "ticketTypes");
+            throw new ApsiValidationException("Dla każdego typu biletów należy podać maksymalnie 100-znakową nazwę", "tickets");
     }
 
     @Override
@@ -108,6 +112,12 @@ public class EventService implements IEventService {
         var entity = DTOMapper.toEntity(eventDTO);
         entity.setOrganizer(loggedUser);
         var saved = eventRepository.save(entity);
+        
+        if (!eventDTO.getTicketTypes().isEmpty()){
+            var entities = eventDTO.getTicketTypes().stream().map(e -> DTOMapper.toEntity(e, saved)).toList();
+            var savedTickets = ticketTypeRepository.saveAll(entities);
+            saved.setTicketTypes(savedTickets);
+        }
 
         return DTOMapper.toDTO(saved);
     }

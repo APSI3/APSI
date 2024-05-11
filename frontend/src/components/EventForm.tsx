@@ -6,7 +6,7 @@ import { toastDefaultError, toastInfo } from "../helpers/ToastHelpers";
 import { ValidationMessage } from "../helpers/FormHelpers";
 import { array, date, number, object, string } from "yup";
 import DatePicker from "react-datepicker";
-import TicketCard from "./TicketCard";
+import { Grid, Paper } from "@mui/material";
 
 const initialValues: CreateEventRequest = {
     name: "",
@@ -40,9 +40,11 @@ const createEventValidationSchema = object<CreateEventRequest>().shape({
                 .max(100, "Zbyt długa nazwa typu biletu")
                 .required("Należy podać nazwę typu biletu"),
             quantityAvailable: number()
-                .max(1000000, "Zbyt duża pula biletów"),
+                .max(1000000, "Zbyt duża pula biletów")
+                .min(1, "Musi być dostępny przynajmniej 1 bilet"),
             price: number()
                 .required("Należy podać cenę biletu")
+                .min(0, "Cena nie może być ujemna")
                 .max(100000, "Zbyt wysoka cena za bilet"),
         })
     ),
@@ -122,18 +124,45 @@ const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     <label htmlFor="ticketTypes" className="form-label">Typy biletów</label>
                     <FieldArray name="ticketTypes" 
                         render={helpers => <div className="p-1">
-                            {values.ticketTypes.map((tt, idx) => <div key={idx} className="m-1" > 
-                                <TicketCard ticket={{ ...tt, eventId: 0, id: idx}} skipApiCheck/>
-                                <ValidationMessage fieldName={`ticketTypes.${idx}`} />
-                            </div>)}
+                            {values.ticketTypes.map((tt, idx) => {
+                                const name = `ticketTypes.${idx}`;
+                                return <Paper key={idx} className="m-1"> 
+                                    <Grid item xs={3} style={{ justifyContent:'center', display: 'flex'}}>
+                                        <div className="m-1">
+                                            <label htmlFor={name + ".name"} className="form-label">Nazwa</label>
+                                            <Field type="string" name={name + ".name"}
+                                                id={name + ".name"} className="form-control"
+                                            />
+                                            <ValidationMessage fieldName={name + ".name"} />
+                                        </div>
+                                        <div className="m-1">
+                                            <label htmlFor={name + ".price"} className="form-label">Cena</label>
+                                            <Field type="number" name={name + ".price"}
+                                                id={name + ".price"} className="form-control"
+                                            />
+                                            <ValidationMessage fieldName={name + ".price"} />
+                                        </div>
+                                        <div className="m-1">
+                                            <label htmlFor={name + ".quantityAvailable"} className="form-label">Dostępna ilość</label>
+                                            <Field type="number" name={name + ".quantityAvailable"}
+                                                id={name + ".quantityAvailable"} className="form-control"
+                                            />
+                                            <ValidationMessage fieldName={name + ".quantityAvailable"} />
+                                        </div>
+                                    </Grid>
+                                    <button className="btn btn-danger" type="button" onClick={() => helpers.remove(idx)}>
+                                        Usuń
+                                    </button>
+                                </Paper>}
+                            )}
                             <button className="btn btn-primary" type="button"
-                                onClick={e => helpers.push({ name: "test", price: 1, quantityAvailable: 1 })}
+                                onClick={e => helpers.push({ name: "", price: 0, quantityAvailable: 0 })}
                             >
                                 Dodaj typ biletu
                             </button>
                         </div>}
                     />
-                    <ValidationMessage fieldName="ticketTypes" />
+                    <ValidationMessage fieldName="tickets" />
                 </div>
                 <div className="mb-3 text-center">
                     <button className="btn btn-primary" type="submit" disabled={isSubmitting}>Dodaj</button>

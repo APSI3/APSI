@@ -13,8 +13,9 @@ public class DTOMapper {
 
     public static Event toEntity(EventDTO event) {
         var organizer = User.builder().id(event.getOrganizerId()).build();
-        var loc = Location.builder().id(event.getLocation().getId()).build();
-        var ticketTypes = event.getTicketTypes().stream().map(DTOMapper::toEntity).toList();
+        var loc = event.getLocation() != null ? 
+            Location.builder().id(event.getLocation().getId()).build() :
+            null;
     
         return Event.builder()
             .id(event.getId())
@@ -26,12 +27,15 @@ public class DTOMapper {
             .description(event.getDescription())
             .organizer(organizer)
             .location(loc)
-            .ticketTypes(ticketTypes)
+            .ticketTypes(null)
             .build();
     }
 
-    public static TicketType toEntity(TicketTypeDTO ticketType) {
-        Event event = Event.builder().id(ticketType.getEventId()).build();
+    public static TicketType toEntity(TicketTypeDTO ticketType, Event existingEvent) {
+        var event = existingEvent == null ?
+            Event.builder().id(ticketType.getEventId()).build() :
+            existingEvent;
+
         return TicketType.builder()
                 .id(ticketType.getId())
                 .event(event)
