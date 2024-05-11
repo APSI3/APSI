@@ -111,6 +111,12 @@ public class EventService implements IEventService {
         
         var entity = DTOMapper.toEntity(eventDTO);
         entity.setOrganizer(loggedUser);
+
+        if (entity.getLocation() != null){
+            var loc = locationRepository.findById(entity.getLocation().getId()).get();
+            entity.setLocation(loc);
+        }
+
         var saved = eventRepository.save(entity);
         
         if (!eventDTO.getTicketTypes().isEmpty()){

@@ -2,11 +2,13 @@ import { Field, FieldArray, Form, Formik } from "formik";
 import { Helmet } from "react-helmet";
 import { CreateEventRequest } from "../api/Requests";
 import { Api } from "../api/Api";
-import { toastDefaultError, toastInfo } from "../helpers/ToastHelpers";
-import { ValidationMessage } from "../helpers/FormHelpers";
+import { toastDefaultError, toastError, toastInfo } from "../helpers/ToastHelpers";
+import { ValidationMessage, getLocationString } from "../helpers/FormHelpers";
 import { array, date, number, object, string } from "yup";
 import DatePicker from "react-datepicker";
 import { Grid, Paper } from "@mui/material";
+import { useEffect, useState } from "react";
+import { LocationDTO } from "../api/DTOs";
 
 const initialValues: CreateEventRequest = {
     name: "",
@@ -54,6 +56,22 @@ const createEventValidationSchema = object<CreateEventRequest>().shape({
 })
 
 const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+    const [locations, setLocations] = useState<LocationDTO[]>([])
+
+    useEffect(() => {
+        Api.GetLocations().then(res => {
+            if (res.success && res.data)
+                setLocations(res.data)
+            else
+                toastError("Nie udało się pobrać dostępnych lokalizacji")
+        })
+    }, [])
+
+    const options = [
+        { label: "Nie wybrano", value: 0},
+        ...locations.map(l => ({ label: getLocationString(l), value: l.id }))
+    ]
+
     return <>
         <Helmet>
             <title>APSI - Dodawanie wydarzenia</title>
@@ -62,7 +80,11 @@ const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             initialValues={initialValues}
             validationSchema={createEventValidationSchema}
             onSubmit={async (values, fh) => {
-                await Api.CreateEvent(values).then(res => {
+                let newValues = values;
+                if (values.location?.id === 0)
+                    newValues = { ...newValues, location: undefined}
+
+                await Api.CreateEvent(newValues).then(res => {
                     if (res.success && res.data) {
                         toastInfo("Udało się stworzyć wydarzenie " + res.data.name);
                         onClose();
@@ -121,6 +143,14 @@ const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     <ValidationMessage fieldName="endTime" />
                 </div>
                 <div className="mb-3">
+                    <label htmlFor="location.id" className="form-label">Lokacja</label>
+                    <Field as="select" name="location.id" id="location.id" className="form-control">
+                        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)} 
+                    </Field>
+                    <ValidationMessage fieldName="location.id" />
+                    <ValidationMessage fieldName="location" />
+                </div>
+                <div className="mb-3">
                     <label htmlFor="ticketTypes" className="form-label">Typy biletów</label>
                     <FieldArray name="ticketTypes" 
                         render={helpers => <div className="p-1">
@@ -162,8 +192,8 @@ const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                             </button>
                         </div>}
                     />
-                    <ValidationMessage fieldName="tickets" />
                 </div>
+                <ValidationMessage fieldName="tickets" />
                 <div className="mb-3 text-center">
                     <button className="btn btn-primary" type="submit" disabled={isSubmitting}>Dodaj</button>
                 </div>
