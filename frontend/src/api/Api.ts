@@ -87,6 +87,10 @@ export class Api {
         return await getApiResponse<CreateLocationRequest, LocationDTO>("post", this.url + "/locations", request);
     }
 
+    static async GetLocations() {
+        return await getApiResponse<undefined, LocationDTO[]>("get", this.url + "/locations");
+    }
+
     static async Session() {
         const authKey = AuthHelpers.GetAuthKey();
         const isLoggedIn = await axios.post(this.url + "/user/session", {}, {

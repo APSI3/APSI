@@ -3,16 +3,18 @@ import { TicketTypeDTO} from "../api/DTOs";
 import { Grid, Paper, Typography} from "@mui/material";
 import {Api} from "../api/Api";
 
-const TicketCard: React.FC<{ ticket: TicketTypeDTO }> = ({ ticket }) => {
+const TicketCard: React.FC<{ ticket: TicketTypeDTO, skipApiCheck?: boolean }> = ({ ticket, skipApiCheck }) => {
     const [soldCount, setSoldCount] = useState(0);
     
     useEffect(() => {
-        Api.GetSoldTicketsCount(ticket.id).then(res => {
-            if (res.success && res.data) {
-                setSoldCount(res.data ?? 0);
-            }
-        })
-    }, [ticket.id]);
+        if (!skipApiCheck) {
+            Api.GetSoldTicketsCount(ticket.id).then(res => {
+                if (res.success && res.data) {
+                    setSoldCount(res.data ?? 0);
+                }
+            })
+        }
+    }, [ticket.id, skipApiCheck]);
 
     return (
         <Paper style={{ alignItems: 'center', display: 'flex', justifyContent: 'space-evenly' }}>

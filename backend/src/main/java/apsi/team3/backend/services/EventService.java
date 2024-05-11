@@ -33,7 +33,7 @@ public class EventService implements IEventService {
         this.locationRepository = locationRepository;
     }
 
-    private void validateEvent(EventDTO eventDTO) throws ApsiValidationException {
+    private void validateEvent(EventDTO eventDTO, User loggedUser) throws ApsiValidationException {
         if (eventDTO == null || eventDTO.getName() == null || eventDTO.getName().isBlank())
             throw new ApsiValidationException("Należy podać nazwę wydarzenia", "name");
         if (eventDTO.getName().length() > 255)
@@ -41,7 +41,9 @@ public class EventService implements IEventService {
         if (eventDTO.getDescription().length() > 2000)
             throw new ApsiValidationException("Zbyt długi opis wydarzenia", "description");
         if (eventDTO.getStartDate().isBefore(eventDTO.getEndDate()))
-            throw new ApsiValidationException("Data początkowa nie może być wcześniejsza niż data końcowa", "startDate");
+            throw new ApsiValidationException("Data końcowa nie może być wcześniejsza niż data początkowa", "endDate");
+        if (eventDTO.getEndDate().isBefore(LocalDate.now()))
+            throw new ApsiValidationException("Data końcowa nie może być przeszła", "endDate");
         if (eventDTO.getStartTime() != null && eventDTO.getEndTime() != null)
             if (eventDTO.getStartDate().atTime(eventDTO.getStartTime()).isAfter(eventDTO.getEndDate().atTime(eventDTO.getEndTime())))
                 throw new ApsiValidationException("Data początkowa nie może być wcześniejsza niż data końcowa", "startDate");
@@ -49,15 +51,24 @@ public class EventService implements IEventService {
         if (eventDTO.getLocation() != null && eventDTO.getLocation().getId() != null) {
             var location = locationRepository.findById(eventDTO.getLocation().getId());
             if (location.isEmpty())
-                throw new ApsiValidationException("Wybrana lokacja nie istnieje", "location.id");
+                throw new ApsiValidationException("Wybrana lokacja nie istnieje", "location");
 
             if (eventDTO.getTicketTypes().size() > 0 && 
                 location.get().getCapacity() != 0 && 
-                location.get().getCapacity() < eventDTO.getTicketTypes().stream().mapToInt(e -> e.getQuantityAvailable()).sum())
-            {
+                location.get().getCapacity() < eventDTO.getTicketTypes().stream().mapToInt(e -> e.getQuantityAvailable()).sum()
+            )
                 throw new ApsiValidationException("Ilość biletów większa niż dopuszczalna w danej lokalizacji", "ticketTypes");
-            }
+
+            if (location.get().getCreator().getId() != loggedUser.getId())
+                throw new ApsiValidationException("Lokalizacja niedostępna", "location");
         }
+
+        if (eventDTO.getTicketTypes().size() < 1)
+            throw new ApsiValidationException("Należy stworzyć przynajmniej jeden typ biletów", "ticketTypes");
+        if (eventDTO.getTicketTypes().size() > 16)
+            throw new ApsiValidationException("Można stworzyć maksymalnie 16 typów biletów", "ticketTypes");
+        if (!eventDTO.getTicketTypes().stream().allMatch(x -> x.getName() != null && !x.getName().isEmpty() && x.getName().length() < 100))
+            throw new ApsiValidationException("Dla każdego typu biletów należy podać maksymalnie 100-znakową nazwę", "ticketTypes");
     }
 
     @Override
@@ -91,9 +102,9 @@ public class EventService implements IEventService {
         if (eventDTO.getId() != null)
             throw new ApsiValidationException("Podano niedozwolony identyfikator wydarzenia", "id");
 
-        validateEvent(eventDTO);
-
         var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        validateEvent(eventDTO, loggedUser);
+        
         var entity = DTOMapper.toEntity(eventDTO);
         entity.setOrganizer(loggedUser);
         var saved = eventRepository.save(entity);
@@ -103,7 +114,8 @@ public class EventService implements IEventService {
 
     @Override
     public EventDTO replace(EventDTO eventDTO) throws ApsiValidationException {
-        validateEvent(eventDTO);
+        var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        validateEvent(eventDTO, loggedUser);
 
         var entity = DTOMapper.toEntity(eventDTO);
         var saved = eventRepository.save(entity);

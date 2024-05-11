@@ -5,9 +5,21 @@ export type LoginRequest = {
 
 export type CreateEventRequest = {
     name: string,
-    description: string,
+    description?: string,
     startDate: Date,
     endDate: Date,
+    startTime?: string,
+    endTime?: string,
+    location?: {
+        id: number
+    },
+    ticketTypes: SimpleTicketTypeDTO[]
+}
+
+export type SimpleTicketTypeDTO = {
+    name: string,
+    price: number,
+    quantityAvailable: number
 }
 
 export type CreateLocationRequest = {
