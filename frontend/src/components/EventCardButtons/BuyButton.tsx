@@ -30,7 +30,7 @@ const BuyButton: React.FC<{ ticketTypeId: number }> = ({ ticketTypeId }) => {
             else {
                 toastDefaultError();
             }
-        // generate pdf (QR)
+
         // send email to user
         })
     }
