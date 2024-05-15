@@ -13,9 +13,10 @@ import lombok.ToString;
 public class LoggedUserDTO extends UserDTO {
     private String authHeader;
     private String type;
+    private String email;
 
-    public LoggedUserDTO(Long id, String login, String authHeader, UserType type) {
-        super(id, login);
+    public LoggedUserDTO(Long id, String login,  String email, String authHeader, UserType type) {
+        super(id, login, email);
         this.authHeader = authHeader;
         this.type = type.toString();
     }
