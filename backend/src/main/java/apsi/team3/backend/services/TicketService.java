@@ -13,12 +13,9 @@ import java.util.Optional;
 @Service
 public class TicketService implements ITicketService {
     private final TicketRepository ticketRepository;
-    private final MailService mailSenderService;
 
     @Autowired
-    public TicketService(TicketRepository ticketRepository, MailService mailSenderService) { this.ticketRepository = ticketRepository;
-        this.mailSenderService = mailSenderService;
-    }
+    public TicketService(TicketRepository ticketRepository) { this.ticketRepository = ticketRepository; }
 
     @Override
     public Optional<TicketDTO> getTicketById(Long id) {
@@ -29,7 +26,6 @@ public class TicketService implements ITicketService {
     public TicketDTO create(TicketDTO ticketDTO) {
         var ticket = DTOMapper.toEntity(ticketDTO);
         var saved = ticketRepository.save(ticket);
-
         return DTOMapper.toDTO(saved);
     }
 }
