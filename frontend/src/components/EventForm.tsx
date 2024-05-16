@@ -1,6 +1,5 @@
 import { Field, FieldArray, Form, Formik } from "formik";
 import { Helmet } from "react-helmet";
-import { CreateEventRequest } from "../api/Requests";
 import { Api } from "../api/Api";
 import { toastDefaultError, toastError, toastInfo } from "../helpers/ToastHelpers";
 import { ValidationMessage, getLocationString } from "../helpers/FormHelpers";
@@ -9,13 +8,20 @@ import DatePicker from "react-datepicker";
 import { Grid, Paper } from "@mui/material";
 import { useEffect, useState } from "react";
 import { LocationDTO } from "../api/DTOs";
+import { CreateEventRequest } from "../api/Requests";
 
 const initialValues: CreateEventRequest = {
     name: "",
     description: "",
     startDate: new Date(),
     endDate: new Date(),
-    ticketTypes: [],
+    ticketTypes: [
+        {
+            name: "Nowy typ biletu",
+            price: 0,
+            quantityAvailable: 0,
+        }
+    ],
     startTime: "",
     endTime: "",
 }
@@ -98,8 +104,8 @@ const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 })
             }}
         >
-            {({ isSubmitting, values, setFieldValue, errors }) => <Form className="form">
-                <header className="mb-4 text-center h2">Nowe wydarzenie</header>
+            {({ isSubmitting, values, setFieldValue, setFieldError }) => <Form className="form">
+                <header className="mb-4 mt-3 text-center h2">Nowe wydarzenie</header>
                 <div className="mb-3">
                     <label htmlFor="name" className="form-label">Nazwa</label>
                     <Field type="text" name="name" id="name" className="form-control" />
@@ -151,7 +157,28 @@ const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     <ValidationMessage fieldName="location" />
                 </div>
                 <div className="mb-3">
+                    <label htmlFor="image" className="form-label">Obraz</label>
+                    <input className="form-control" type="file" accept="image/*" id="image" name="image" onChange={e => {
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                            if (reader.readyState === 2) 
+                                setFieldValue("image", reader.result)
+                            else 
+                                setFieldError("image", "Nie udało się wczytać obrazu")
+                        }
+
+                        if (!!e.target.files) {
+                            if (e.target.files[0].size > 10_000_000)
+                                setFieldError("image", "Maksymalna wielkość pliku to 10 MB")
+                            else
+                                reader.readAsArrayBuffer(e.target.files[0])
+                        }
+                    }}/>
+                    <ValidationMessage fieldName="image" />
+                </div>
+                <div className="mb-3">
                     <label htmlFor="ticketTypes" className="form-label">Typy biletów</label>
+                    <ValidationMessage fieldName="tickets" />
                     <FieldArray name="ticketTypes" 
                         render={helpers => <div className="p-1">
                             {values.ticketTypes.map((tt, idx) => {
@@ -193,7 +220,6 @@ const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                         </div>}
                     />
                 </div>
-                <ValidationMessage fieldName="tickets" />
                 <div className="mb-3 text-center">
                     <button className="btn btn-primary" type="submit" disabled={isSubmitting}>Dodaj</button>
                 </div>

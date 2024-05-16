@@ -4,12 +4,19 @@ import apsi.team3.backend.DTOs.EventDTO;
 import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IEventService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -44,10 +51,18 @@ public class EventController {
         return ResponseEntity.ok(event.get());
     }
 
-    @PostMapping
-    public ResponseEntity<EventDTO> createEvent(@RequestBody EventDTO eventDTO) throws ApsiValidationException {
-        var resp = eventService.create(eventDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(resp);
+    @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<EventDTO> createEvent(@RequestParam("image") MultipartFile image, @RequestParam("event") String event) throws ApsiValidationException {
+        try {
+            var mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            var dto = mapper.readValue(event, EventDTO.class);
+            var resp = eventService.create(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(resp);
+        }
+        catch (JsonProcessingException e){
+            throw new ApsiValidationException("Niepoprawne żądanie", "id");
+        }
     }
 
     @PutMapping("/{id}")

@@ -15,9 +15,9 @@ export const ValidationMessage = ({ fieldName }: { fieldName: string }) => {
 
 export const getLocationString = (loc: LocationDTO) => {
     let string = "";
-    if (!loc.street)
+    if (!!loc.street)
         string += loc.street + " "
-    if (!loc.building_nr)
+    if (!!loc.building_nr)
         string += loc.building_nr + " "
     
     string += loc.city;

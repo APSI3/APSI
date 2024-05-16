@@ -13,7 +13,8 @@ export type CreateEventRequest = {
     location?: {
         id: number
     },
-    ticketTypes: SimpleTicketTypeDTO[]
+    ticketTypes: SimpleTicketTypeDTO[],
+    image?: File
 }
 
 export type SimpleTicketTypeDTO = {

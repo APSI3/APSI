@@ -1,7 +1,10 @@
 package apsi.team3.backend.DTOs;
 
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
@@ -13,7 +16,10 @@ import java.util.List;
 
 @Relation(collectionRelation = "events", itemRelation = "event")
 @EqualsAndHashCode(callSuper = false)
-@Value
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class EventDTO extends RepresentationModel<EventDTO> implements Serializable {
     Long id;
     String name;

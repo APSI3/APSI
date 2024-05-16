@@ -44,7 +44,7 @@ public class EventService implements IEventService {
             throw new ApsiValidationException("Zbyt długa nazwa wydarzenia", "name");
         if (eventDTO.getDescription().length() > 2000)
             throw new ApsiValidationException("Zbyt długi opis wydarzenia", "description");
-        if (eventDTO.getStartDate().isBefore(eventDTO.getEndDate()))
+        if (eventDTO.getStartDate().isAfter(eventDTO.getEndDate()))
             throw new ApsiValidationException("Data końcowa nie może być wcześniejsza niż data początkowa", "endDate");
         if (eventDTO.getEndDate().isBefore(LocalDate.now()))
             throw new ApsiValidationException("Data końcowa nie może być przeszła", "endDate");

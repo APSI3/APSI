@@ -1,7 +1,10 @@
 package apsi.team3.backend.DTOs;
 
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
@@ -10,7 +13,10 @@ import java.math.BigDecimal;
 
 @Relation(collectionRelation = "ticket_types", itemRelation = "ticket_types")
 @EqualsAndHashCode(callSuper = false)
-@Value
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class TicketTypeDTO extends RepresentationModel<TicketTypeDTO> implements Serializable {
     Long id;
     Long eventId;

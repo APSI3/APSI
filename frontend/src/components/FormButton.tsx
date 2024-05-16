@@ -30,6 +30,7 @@ const FormButton: React.FC<{title: string, icon: React.ReactNode, Form: React.FC
                 </Fab>
             </Tooltip>
             <Modal
+                style={{ overflow: "scroll" }}
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="modal-modal-title"

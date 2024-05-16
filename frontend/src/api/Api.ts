@@ -1,13 +1,13 @@
 import axios from "axios";
 import { ApiResponse } from "./Responses";
-import {CreateEventRequest, CreateLocationRequest, LoginRequest} from "./Requests";
+import { CreateEventRequest, CreateLocationRequest, LoginRequest} from "./Requests";
 import { toastError } from "../helpers/ToastHelpers";
 import { AuthHelpers } from "../helpers/AuthHelpers";
 import { CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO, PaginatedList } from "./DTOs";
 
 axios.defaults.withCredentials = true;
 
-async function getApiResponse<R, T>(method: string, url: string, request?: R): Promise<ApiResponse<T>> {
+async function getApiResponse<R, T>(method: string, url: string, request?: R, multipart?: boolean): Promise<ApiResponse<T>> {
     let response: ApiResponse<T> = {
         data: undefined,
         errors: {},
@@ -20,7 +20,7 @@ async function getApiResponse<R, T>(method: string, url: string, request?: R): P
         url: url,
         data: request,
         headers: {
-            "Content-Type": "application/json",
+            "Content-Type": !!multipart ? "multipart/form-data" : "application/json",
             "Authorization": authKey
         }
     }).then(res => {
@@ -59,7 +59,12 @@ export class Api {
     }
 
     static async CreateEvent(request: CreateEventRequest) {
-        return await getApiResponse<CreateEventRequest, EventDTO>("post", this.url + "/events", request);
+        const eventPart = { ...request, image: undefined }
+        const body = {
+            event: JSON.stringify(eventPart),
+            image: request.image
+        }  
+        return await getApiResponse<object, EventDTO>("post", this.url + "/events", body, true);
     }
 
     static async GetEvents(from: Date, to: Date, pageIndex: number) {
