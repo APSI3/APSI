@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-import { borders } from '@mui/system';
 import { TicketTypeDTO} from "../api/DTOs";
 import { Grid, Paper, Typography} from "@mui/material";
 import {Api} from "../api/Api";
@@ -26,7 +25,7 @@ const TicketCard: React.FC<{ ticket: TicketTypeDTO, skipApiCheck?: boolean }> = 
                 </Typography>
             </Grid>
             <Grid item container direction="row" justifyContent="flex-end" padding='1rem' style={{background: '#ffffff'}}>
-                <BuyButton ticketTypeId={ticket.id}/>
+                {(ticket.quantityAvailable - soldCount) > 0 && <BuyButton ticketTypeId={ticket.id}/>}
                 <Grid item container direction="column" alignItems="flex-end">
                     <Typography variant="body1" color="textSecondary" style={{ marginTop: '1rem' }}>
                         <strong>{ticket.price.toFixed(2)} zł</strong>
