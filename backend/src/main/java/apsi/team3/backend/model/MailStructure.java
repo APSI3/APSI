@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.core.io.ByteArrayResource;
 
+import java.util.Map;
+
 @Setter
 @Getter
 @AllArgsConstructor
@@ -12,4 +14,5 @@ public class MailStructure {
     private String subject;
     private String message;
     private String attachment;
+    private Map<String, String> ticketData;
 }
