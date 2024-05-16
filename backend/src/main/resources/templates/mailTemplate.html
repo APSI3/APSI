@@ -1,0 +1,45 @@
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Ticket</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .ticket {
+            width: 300px;
+            margin: 20px auto;
+            background-color: #fff;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .event-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .ticket-info {
+            margin-bottom: 15px;
+        }
+        .ticket-info span {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="ticket">
+    <div class="event-name">$eventName</div>
+    <div class="ticket-info"><span>Kiedy:</span> $date</div>
+    <div class="ticket-info"><span>Typ biletu:</span> $ticketType</div>
+    <div class="ticket-info"><span>Cena:</span> $price</div>
+    <div class="ticket-info"><span>Użytkownik:</span> $holderName</div>
+    <div class="ticket-info">QR kod twojego biletu znajduje się w załączniku</div>
+</div>
+</body>
+</html>

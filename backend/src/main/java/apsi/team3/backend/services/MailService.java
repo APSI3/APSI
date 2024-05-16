@@ -14,6 +14,8 @@ import net.glxn.qrgen.javase.QRCode;
 
 import java.io.ByteArrayOutputStream;
 
+import static apsi.team3.backend.helpers.MailGenerator.generateTicket;
+
 @Service
 public class MailService {
 
@@ -25,7 +27,7 @@ public class MailService {
 
     public void sendMail(String mail, MailStructure mailStructure) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
         helper.setFrom(fromMail);
         helper.setSubject(mailStructure.getSubject());
 
@@ -33,8 +35,7 @@ public class MailService {
         byte[] qrCodeBytes = outputStream.toByteArray();
         ByteArrayResource qrCodeResource = new ByteArrayResource(qrCodeBytes);
 
-        String htmlContent = "<html><body><h1>QR Code:</h1><img src='data:image/png;base64," +
-                mailStructure.getMessage() + "'></body></html>";
+        String htmlContent = generateTicket(mailStructure.getTicketData());
         helper.setText(htmlContent, true);
         helper.setTo(mail);
         helper.addAttachment("ticket.png", qrCodeResource);

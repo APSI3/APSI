@@ -3,9 +3,13 @@ package apsi.team3.backend.controller;
 import apsi.team3.backend.DTOs.TicketDTO;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.helpers.QRCodeGenerator;
+import apsi.team3.backend.interfaces.IEventService;
 import apsi.team3.backend.interfaces.ITicketService;
+import apsi.team3.backend.interfaces.ITicketTypeService;
+import apsi.team3.backend.interfaces.IUserService;
 import apsi.team3.backend.model.MailStructure;
 import apsi.team3.backend.model.User;
+import apsi.team3.backend.services.EventService;
 import apsi.team3.backend.services.MailService;
 import apsi.team3.backend.services.UserService;
 import com.google.zxing.WriterException;
@@ -19,20 +23,27 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
+
+import static apsi.team3.backend.helpers.MailGenerator.getDateString;
 
 @RestController
 @RequestMapping("/tickets")
 @CrossOrigin(origins = {"http://localhost:3000"}, allowCredentials = "true")
 public class TicketController {
     private final ITicketService ticketService;
+    private final ITicketTypeService ticketTypeService;
     private final MailService mailService;
-    private final UserService userService;
+    private final IUserService userService;
+    private final IEventService eventService;
 
-    @Autowired TicketController(ITicketService ticketService, MailService mailService, UserService userService) {
+    @Autowired TicketController(ITicketService ticketService, ITicketTypeService ticketTypeService, MailService mailService, IUserService userService, IEventService eventService) {
         this.ticketService = ticketService;
+        this.ticketTypeService = ticketTypeService;
         this.mailService = mailService;
         this.userService = userService;
+        this.eventService = eventService;
     }
 
     @GetMapping("/{id}")
@@ -45,16 +56,27 @@ public class TicketController {
     public ResponseEntity<TicketDTO> createTicketType(@RequestBody TicketDTO ticketDTO) throws ApsiValidationException, IOException, WriterException, MessagingException {
         var resp = ticketService.create(ticketDTO);
         var user = userService.getUserById(ticketDTO.getHolderId());
+        var ticketType = ticketTypeService.getTicketTypeById(ticketDTO.getTicketTypeId());
+        var event = eventService.getEventById(ticketType.get().getEventId());
+
         var QRCode = QRCodeGenerator.generateQRCode(ticketDTO.toString());
         resp.setQRCode(QRCode);
 
-        ByteArrayResource qrCodeResource = new ByteArrayResource(QRCode.getBytes());
+//        String mailMessage =
 
-        String mailSubject = "Your ticket is here!";
+        String mailSubject = "Twój bilet jest tutaj!";
+        Map<String, String> ticketData =  Map.of(
+                "eventName", event.get().getName(),
+                "date", getDateString(event.get().getStartDate(), event.get().getEndDate()),
+                "ticketType", ticketType.get().getName(),
+                "price", ticketType.get().getPrice().toString(),
+                "holderName", user.get().getLogin()
+        );
         MailStructure mailStructure = new MailStructure(
                 mailSubject,
                 resp.getQRCode(),
-                QRCode
+                QRCode,
+                ticketData
         );
         mailService.sendMail(user.get().getEmail(), mailStructure);
 
