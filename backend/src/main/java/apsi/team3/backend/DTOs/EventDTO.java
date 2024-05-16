@@ -31,4 +31,5 @@ public class EventDTO extends RepresentationModel<EventDTO> implements Serializa
     Long organizerId;
     LocationDTO location;
     List<TicketTypeDTO> ticketTypes;
+    List<Long> imageIds;
 }

@@ -7,12 +7,14 @@ import apsi.team3.backend.exceptions.ApsiValidationException;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public interface IEventService {
     Optional<EventDTO> getEventById(Long id);
 
     PaginatedList<EventDTO> getEvents(LocalDate from, LocalDate to, int pageIndex) throws ApsiValidationException;
 
-    EventDTO create(EventDTO event) throws ApsiValidationException;
+    EventDTO create(EventDTO event, MultipartFile image) throws ApsiValidationException;
 
     EventDTO replace(EventDTO event) throws ApsiValidationException;
 

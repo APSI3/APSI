@@ -84,7 +84,8 @@ public class DTOMapper {
             event.getDescription(),
             event.getOrganizer().getId(),
             event.getLocation() != null ? DTOMapper.toDTO(event.getLocation()) : null,
-            event.getTicketTypes().stream().map(DTOMapper::toDTO).toList()
+            event.getTicketTypes().stream().map(DTOMapper::toDTO).toList(),
+            event.getImages().stream().map(i -> i.getId()).toList()
         );
     }
 

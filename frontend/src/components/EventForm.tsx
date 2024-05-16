@@ -106,6 +106,7 @@ const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         >
             {({ isSubmitting, values, setFieldValue, setFieldError }) => <Form className="form">
                 <header className="mb-4 mt-3 text-center h2">Nowe wydarzenie</header>
+                <ValidationMessage fieldName="id" />
                 <div className="mb-3">
                     <label htmlFor="name" className="form-label">Nazwa</label>
                     <Field type="text" name="name" id="name" className="form-control" />
@@ -168,8 +169,8 @@ const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                         }
 
                         if (!!e.target.files) {
-                            if (e.target.files[0].size > 10_000_000)
-                                setFieldError("image", "Maksymalna wielkość pliku to 10 MB")
+                            if (e.target.files[0].size > 500_000)
+                                setFieldError("image", "Maksymalna wielkość pliku to 500 KB")
                             else
                                 reader.readAsArrayBuffer(e.target.files[0])
                         }

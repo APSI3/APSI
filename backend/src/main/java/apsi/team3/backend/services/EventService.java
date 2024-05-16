@@ -5,7 +5,9 @@ import apsi.team3.backend.DTOs.EventDTO;
 import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IEventService;
+import apsi.team3.backend.model.EventImage;
 import apsi.team3.backend.model.User;
+import apsi.team3.backend.repository.EventImageRepository;
 import apsi.team3.backend.repository.EventRepository;
 import apsi.team3.backend.repository.LocationRepository;
 import apsi.team3.backend.repository.TicketTypeRepository;
@@ -14,8 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -25,16 +30,19 @@ public class EventService implements IEventService {
     private final LocationRepository locationRepository;
     private final EventRepository eventRepository;
     private final TicketTypeRepository ticketTypeRepository;
+    private final EventImageRepository eventImageRepository;
 
     @Autowired
     public EventService(
         EventRepository eventRepository,
         LocationRepository locationRepository,
-        TicketTypeRepository ticketTypeRepository
+        TicketTypeRepository ticketTypeRepository,
+        EventImageRepository eventImageRepository
     ) {
         this.eventRepository = eventRepository;
         this.locationRepository = locationRepository;
         this.ticketTypeRepository = ticketTypeRepository;
+        this.eventImageRepository = eventImageRepository;
     }
 
     private void validateEvent(EventDTO eventDTO, User loggedUser) throws ApsiValidationException {
@@ -102,7 +110,7 @@ public class EventService implements IEventService {
     }
 
     @Override
-    public EventDTO create(EventDTO eventDTO) throws ApsiValidationException {
+    public EventDTO create(EventDTO eventDTO, MultipartFile image) throws ApsiValidationException {
         if (eventDTO.getId() != null)
             throw new ApsiValidationException("Podano niedozwolony identyfikator wydarzenia", "id");
 
@@ -117,12 +125,32 @@ public class EventService implements IEventService {
             entity.setLocation(loc);
         }
 
+        byte[] bytes = null;
+        if (image != null) {
+            try{
+                bytes = image.getBytes();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+                throw new ApsiValidationException("Uszkodzony plik obrazu", "image");
+            }
+        }
+
         var saved = eventRepository.save(entity);
         
         if (!eventDTO.getTicketTypes().isEmpty()){
             var entities = eventDTO.getTicketTypes().stream().map(e -> DTOMapper.toEntity(e, saved)).toList();
             var savedTickets = ticketTypeRepository.saveAll(entities);
             saved.setTicketTypes(savedTickets);
+        }
+
+        if (bytes != null){
+            var eventImage = EventImage.builder()
+                .image(bytes)
+                .event(saved)
+                .build();
+            eventImageRepository.save(eventImage);
+            saved.setImages(new ArrayList<>() {{ add(eventImage); }});
         }
 
         return DTOMapper.toDTO(saved);
