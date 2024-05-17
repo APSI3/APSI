@@ -43,6 +43,13 @@ public class TicketController {
     @GetMapping("/{id}")
     public ResponseEntity<TicketDTO> getTicketById(@PathVariable("id") Long id) {
         Optional<TicketDTO> ticket = ticketService.getTicketById(id);
+        ticket.ifPresent(t -> {
+            try {
+                t.setQRCode(QRCodeGenerator.generateQRCode(t.toString()));
+            } catch (WriterException | IOException e) {
+                t.setQRCode(null);
+            }
+        });
         return ticket.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -53,7 +60,7 @@ public class TicketController {
         var ticketType = ticketTypeService.getTicketTypeById(ticketDTO.getTicketTypeId());
         var event = eventService.getEventById(ticketType.get().getEventId());
 
-        var QRCode = QRCodeGenerator.generateQRCode(ticketDTO.toString());
+        var QRCode = QRCodeGenerator.generateQRCode(resp.toString());
         resp.setQRCode(QRCode);
 
         String mailSubject = "Twój bilet jest tutaj!";
