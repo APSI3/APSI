@@ -60,8 +60,8 @@ public class EventController {
     }
 
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<EventDTO> createEvent(@RequestParam("image") MultipartFile image, @RequestParam("event") String event) throws ApsiValidationException {
-        if (image.getSize() > 500_000)
+    public ResponseEntity<EventDTO> createEvent(@RequestParam(name = "image", required = false) MultipartFile image, @RequestParam("event") String event) throws ApsiValidationException {
+        if (image != null && image.getSize() > 500_000)
             throw new ApsiValidationException("Zbyt duży obraz. Maksymalna wielkość to 500 KB", "image");
 
         try {

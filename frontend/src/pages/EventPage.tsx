@@ -19,11 +19,17 @@ export default function EventPage() {
             }
             else toastError("Nie udało się pobrać danych wydarzenia")
         })
-        Api.GetEventImageByEventId(eventId!).then(res => {
-            if (res) setImage(`data:image/png;base64,${res}`);
-            else toastError("Nie udało się pobrać obrazów dla tego wydarzenia")
-        })
+
     }, [eventId]);
+
+    useEffect(() => {
+        if (event != null && event.imageIds.length > 0 && image != null) {
+            Api.GetEventImageByEventId(eventId!).then(res => {
+                if (res) setImage(`data:image/png;base64,${res}`);
+                else toastError("Nie udało się pobrać obrazów dla tego wydarzenia")
+            })
+        }
+    }, [event, eventId, image])
 
     return event && <>
         <Paper style={{ padding: 20 }}>

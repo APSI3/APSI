@@ -2,10 +2,14 @@ package apsi.team3.backend.DTOs;
 
 import apsi.team3.backend.model.Country;
 import apsi.team3.backend.model.Event;
+import apsi.team3.backend.model.EventImage;
 import apsi.team3.backend.model.Location;
 import apsi.team3.backend.model.Ticket;
 import apsi.team3.backend.model.TicketType;
 import apsi.team3.backend.model.User;
+
+import java.util.ArrayList;
+
 import org.springframework.stereotype.Component;
 
 @Component
@@ -74,6 +78,10 @@ public class DTOMapper {
     }
 
     public static EventDTO toDTO(Event event) {
+        var images = event.getImages();
+        if (images == null)
+            images = new ArrayList<EventImage>();
+
         return new EventDTO(
             event.getId(),
             event.getName(),
@@ -85,7 +93,7 @@ public class DTOMapper {
             event.getOrganizer().getId(),
             event.getLocation() != null ? DTOMapper.toDTO(event.getLocation()) : null,
             event.getTicketTypes().stream().map(DTOMapper::toDTO).toList(),
-            event.getImages().stream().map(i -> i.getId()).toList()
+            images.stream().map(i -> i.getId()).toList()
         );
     }
 

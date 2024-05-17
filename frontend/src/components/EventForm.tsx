@@ -55,7 +55,7 @@ const createEventValidationSchema = object<CreateEventRequest>().shape({
                 .min(0, "Cena nie może być ujemna")
                 .max(100000, "Zbyt wysoka cena za bilet"),
         })
-    ),
+    ).min(1, "Należy dodać przynajmniej jeden typ biletów"),
     location: object().shape({
         id: number()
     })
@@ -106,11 +106,11 @@ const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         >
             {({ isSubmitting, values, setFieldValue, setFieldError }) => <Form className="form">
                 <header className="mb-4 mt-3 text-center h2">Nowe wydarzenie</header>
-                <ValidationMessage fieldName="id" />
                 <div className="mb-3">
                     <label htmlFor="name" className="form-label">Nazwa</label>
                     <Field type="text" name="name" id="name" className="form-control" />
                     <ValidationMessage fieldName="name" />
+                    <ValidationMessage fieldName="id" />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="description" className="form-label">Opis</label>
@@ -179,7 +179,6 @@ const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 </div>
                 <div className="mb-3">
                     <label htmlFor="ticketTypes" className="form-label">Typy biletów</label>
-                    <ValidationMessage fieldName="tickets" />
                     <FieldArray name="ticketTypes" 
                         render={helpers => <div className="p-1">
                             {values.ticketTypes.map((tt, idx) => {
@@ -220,6 +219,8 @@ const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                             </button>
                         </div>}
                     />
+                    <ValidationMessage fieldName="tickets" />
+                    <ValidationMessage fieldName="ticketTypes" />
                 </div>
                 <div className="mb-3 text-center">
                     <button className="btn btn-primary" type="submit" disabled={isSubmitting}>Dodaj</button>
