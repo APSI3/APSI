@@ -1,5 +1,6 @@
 package apsi.team3.backend.controller;
 
+import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.DTOs.TicketDTO;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.helpers.QRCodeGenerator;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -51,6 +53,19 @@ public class TicketController {
             }
         });
         return ticket.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/user/{id}")
+    public ResponseEntity<List<TicketDTO>> getTicketByUserId(@PathVariable("id") Long id) {
+        var tickets = ticketService.getTicketsByUserId(id);
+        tickets.forEach(ticket -> {
+            try {
+                ticket.setQRCode(QRCodeGenerator.generateQRCode(ticket.toString()));
+            } catch (WriterException | IOException e) {
+                ticket.setQRCode(null);
+            }
+        });
+        return ResponseEntity.ok(tickets);
     }
 
     @PostMapping

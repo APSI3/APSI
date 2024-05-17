@@ -72,12 +72,20 @@ export class Api {
             this.url + `/events?from=${from.toISOString()}&to=${to.toISOString()}&pageIndex=${pageIndex}`);
     }
 
-    static async GetEventById(id: string | undefined) {
+    static async GetEventById(id: string | number | undefined) {
         return await getApiResponse<undefined, EventDTO>("get", this.url + `/events/${id}`);
+    }
+
+    static async GetTicketsByHolderId(id: string | undefined) {
+        return await getApiResponse<undefined, TicketDTO[]>("get", this.url + `/tickets/user/${id}`);
     }
 
     static async GetTicketTypesByEvent(id: string | undefined) {
         return await getApiResponse<undefined, TicketTypeDTO[]>("get", this.url + `/ticket_types/event/${id}`);
+    }
+
+    static async GetTicketTypeById(id: number | undefined) {
+        return await getApiResponse<undefined, TicketTypeDTO>("get", this.url + `/ticket_types/${id}`);
     }
 
     static async GetSoldTicketsCount(id: number) {

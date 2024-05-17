@@ -7,6 +7,7 @@ import {CreateTicketRequest} from "../../api/Requests";
 import {AuthHelpers} from "../../helpers/AuthHelpers";
 import {useNavigate} from "react-router-dom";
 
+
 const BuyButton: React.FC<{ ticketTypeId: number }> = ({ ticketTypeId }) => {
     const nav = useNavigate();
     const handleOnClick = () => {
@@ -29,8 +30,6 @@ const BuyButton: React.FC<{ ticketTypeId: number }> = ({ ticketTypeId }) => {
             else {
                 toastDefaultError();
             }
-
-        // send email to user
         })
     }
 
