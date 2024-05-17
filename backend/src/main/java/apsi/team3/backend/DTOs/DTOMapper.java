@@ -2,7 +2,6 @@ package apsi.team3.backend.DTOs;
 
 import apsi.team3.backend.model.Country;
 import apsi.team3.backend.model.Event;
-import apsi.team3.backend.model.EventImage;
 import apsi.team3.backend.model.Location;
 import apsi.team3.backend.model.Ticket;
 import apsi.team3.backend.model.TicketType;
@@ -80,7 +79,11 @@ public class DTOMapper {
     public static EventDTO toDTO(Event event) {
         var images = event.getImages();
         if (images == null)
-            images = new ArrayList<EventImage>();
+            images = new ArrayList<>();
+
+        var ticketTypes = event.getTicketTypes();
+        if (ticketTypes == null)
+            ticketTypes = new ArrayList<>();
 
         return new EventDTO(
             event.getId(),
@@ -92,7 +95,7 @@ public class DTOMapper {
             event.getDescription(),
             event.getOrganizer().getId(),
             event.getLocation() != null ? DTOMapper.toDTO(event.getLocation()) : null,
-            event.getTicketTypes().stream().map(DTOMapper::toDTO).toList(),
+            ticketTypes.stream().map(DTOMapper::toDTO).toList(),
             images.stream().map(i -> i.getId()).toList()
         );
     }

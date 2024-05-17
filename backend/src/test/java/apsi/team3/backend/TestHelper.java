@@ -1,6 +1,7 @@
 package apsi.team3.backend;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 import apsi.team3.backend.model.Event;
 import apsi.team3.backend.model.User;
@@ -17,8 +18,9 @@ public class TestHelper {
                 null,
                 "description",
                 new User(1L, "login", "hash", "salt", UserType.ORGANIZER, null),
+                new ArrayList<>(),
                 null,
-                null
+                new ArrayList<>()
         );
     }
 
