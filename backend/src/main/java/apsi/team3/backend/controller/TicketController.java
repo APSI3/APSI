@@ -8,20 +8,14 @@ import apsi.team3.backend.interfaces.ITicketService;
 import apsi.team3.backend.interfaces.ITicketTypeService;
 import apsi.team3.backend.interfaces.IUserService;
 import apsi.team3.backend.model.MailStructure;
-import apsi.team3.backend.model.User;
-import apsi.team3.backend.services.EventService;
 import apsi.team3.backend.services.MailService;
-import apsi.team3.backend.services.UserService;
 import com.google.zxing.WriterException;
-import com.google.zxing.qrcode.encoder.QRCode;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
@@ -53,7 +47,7 @@ public class TicketController {
     }
 
     @PostMapping
-    public ResponseEntity<TicketDTO> createTicketType(@RequestBody TicketDTO ticketDTO) throws ApsiValidationException, IOException, WriterException, MessagingException {
+    public ResponseEntity<TicketDTO> createTicket(@RequestBody TicketDTO ticketDTO) throws ApsiValidationException, IOException, WriterException, MessagingException {
         var resp = ticketService.create(ticketDTO);
         var user = userService.getUserById(ticketDTO.getHolderId());
         var ticketType = ticketTypeService.getTicketTypeById(ticketDTO.getTicketTypeId());
@@ -61,8 +55,6 @@ public class TicketController {
 
         var QRCode = QRCodeGenerator.generateQRCode(ticketDTO.toString());
         resp.setQRCode(QRCode);
-
-//        String mailMessage =
 
         String mailSubject = "Twój bilet jest tutaj!";
         Map<String, String> ticketData =  Map.of(
