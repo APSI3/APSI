@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.time.LocalDate;
+import java.util.Base64;
 import java.util.Optional;
 
 @RestController
@@ -49,6 +50,13 @@ public class EventController {
         if (!event.isPresent())
             return ResponseEntity.notFound().build();
         return ResponseEntity.ok(event.get());
+    }
+
+    @GetMapping("/images/{id}")
+    public ResponseEntity<byte[]> getEventImage(@PathVariable("id") Long eventId) {
+        var image = eventService.getImageByEventId(eventId);
+        var base64encodedData = Base64.getEncoder().encode(image);
+        return ResponseEntity.ok(base64encodedData);
     }
 
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })

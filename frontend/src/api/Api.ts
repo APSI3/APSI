@@ -96,6 +96,19 @@ export class Api {
         return await getApiResponse<undefined, LocationDTO[]>("get", this.url + "/locations");
     }
 
+    static async GetEventImageByEventId(id: string) {
+        const authKey = AuthHelpers.GetAuthKey();
+        const data = await axios.get(this.url + "/events/images/" + id, {
+            validateStatus: status => status <= 500,
+            responseType: "text",
+            headers: {
+                "Authorization": authKey
+            }
+        }).then(r => r.data)
+
+        return data;
+    }
+
     static async Session() {
         const authKey = AuthHelpers.GetAuthKey();
         const isLoggedIn = await axios.post(this.url + "/user/session", {}, {

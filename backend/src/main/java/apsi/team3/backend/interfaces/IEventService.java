@@ -21,4 +21,6 @@ public interface IEventService {
     void delete(Long id);
 
     boolean notExists(Long id);
+
+    byte[] getImageByEventId(Long id);
 }

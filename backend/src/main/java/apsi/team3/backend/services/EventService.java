@@ -176,4 +176,15 @@ public class EventService implements IEventService {
     public boolean notExists(Long id) {
         return !eventRepository.existsById(id);
     }
+
+    @Override
+    public byte[] getImageByEventId(Long id) {
+        var images = eventImageRepository.findByEventId(id);
+
+        if (images.size() == 0)
+            return new byte[0];
+        
+        // na razie spodziewamy się 1 obrazka per event 
+        return images.get(0).getImage();
+    }
 }
