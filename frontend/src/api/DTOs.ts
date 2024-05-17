@@ -50,6 +50,7 @@ export interface LocationDTO {
 }
 
 export interface TicketDTO {
+    qrcode?: string;
     id: number,
     ticketTypeId: number,
     holderId: number,
