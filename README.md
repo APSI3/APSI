@@ -23,7 +23,7 @@ Polecam dodatek JPA Buddy do Intellij IDEA, który umożliwia generowanie plikó
 ## Dokumentacja MkDocs
 
 - Uruchomienie serwera: `mkdocs serve`
-- Budowanie + export PDF: `mkdocs build`
+- Budowanie + export PDF: `mkdocs build` + odkomentowanie kodu w `mkdocs.yml`
     - wynikowy PDF : `/docs/dokumentacja.pdf`
 
 ### Biblioteki:
