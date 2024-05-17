@@ -9,18 +9,19 @@ const UserTicketCard: React.FC<{ ticket: TicketDTO }> = ({ ticket }) => {
     const [ event, setEvent ] = useState<EventDTO>();
 
     useEffect(() => {
-        Api.GetTicketTypeById(ticket?.id)
+        Api.GetTicketTypeById(ticket?.ticketTypeId)
             .then(res => {
-                if (res.success && res.data) {
-                    setTicketType(res.data);
+                let tt = res.data;
+                if (res.success && tt) {
+                    setTicketType(tt);
                 }
-                Api.GetEventById(res.data?.id).then(res => {
-                    if (res.success && res.data) {
-                        setEvent(res.data);
+                Api.GetEventById(tt?.eventId).then(res2 => {
+                    if (res2.success && res2.data) {
+                        setEvent(res2.data);
                     }
                 })
             })
-    })
+    }, [])
 
     return (
         <Card style={{ margin: '1rem' }} elevation={3}>
