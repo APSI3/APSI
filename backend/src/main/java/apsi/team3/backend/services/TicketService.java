@@ -3,7 +3,6 @@ package apsi.team3.backend.services;
 import apsi.team3.backend.DTOs.DTOMapper;
 import apsi.team3.backend.DTOs.TicketDTO;
 import apsi.team3.backend.interfaces.ITicketService;
-import apsi.team3.backend.model.MailStructure;
 import apsi.team3.backend.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

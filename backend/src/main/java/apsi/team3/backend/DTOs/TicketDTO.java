@@ -2,7 +2,6 @@ package apsi.team3.backend.DTOs;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Value;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
@@ -33,6 +32,7 @@ public class TicketDTO extends RepresentationModel<TicketDTO> {
         this.QRCode = qrCode;
     }
 
+    @SuppressWarnings("null")
     @Override
     public String toString() {
         return "{\"id\": " + this.id + ",\n"
