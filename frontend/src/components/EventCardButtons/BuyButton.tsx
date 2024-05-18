@@ -6,7 +6,6 @@ import {Api} from "../../api/Api";
 import {CreateTicketRequest} from "../../api/Requests";
 import {AuthHelpers} from "../../helpers/AuthHelpers";
 import {useNavigate} from "react-router-dom";
-import {Paths} from "../../App";
 
 const BuyButton: React.FC<{ ticketTypeId: number }> = ({ ticketTypeId }) => {
     const nav = useNavigate();

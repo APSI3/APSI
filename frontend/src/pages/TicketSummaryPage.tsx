@@ -1,15 +1,9 @@
-import {useLocation, useParams} from "react-router-dom";
-import {useEffect} from "react";
+import {useLocation} from "react-router-dom";
 import {Grid, Paper, Typography} from "@mui/material";
 
 export default function TicketSummaryPage() {
     const location = useLocation();
-    const { ticketId } = useParams();
     const ticketInfo = location.state;
-
-    useEffect(() => {
-        console.log(ticketInfo);
-    }, []);
 
     return <Paper elevation={3} style={{ padding: '20px', margin: '20px', maxWidth: '600px' }}>
         <Grid container spacing={2}>

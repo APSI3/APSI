@@ -5,7 +5,6 @@ import {AuthHelpers, UserTypes} from "../helpers/AuthHelpers";
 import DetailsButton from "./EventCardButtons/DetailsButton";
 import EditButton from "./EventCardButtons/EditButton";
 import DeleteButton from "./EventCardButtons/DeleteButton";
-import BuyButton from "./EventCardButtons/BuyButton";
 
 function getActionButtonsBasedOnRole(id: number) {
     const role = AuthHelpers.getRole()
