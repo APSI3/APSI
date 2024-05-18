@@ -5,15 +5,18 @@ import apsi.team3.backend.DTOs.EventDTO;
 import apsi.team3.backend.TestHelper;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.model.Event;
+import apsi.team3.backend.model.TicketType;
 import apsi.team3.backend.model.User;
 import apsi.team3.backend.model.UserType;
 import apsi.team3.backend.repository.EventRepository;
+import apsi.team3.backend.repository.TicketTypeRepository;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,12 +34,16 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 public class EventServiceTest {
+    private static User mockedUser = null;
 
     @InjectMocks
     private EventService eventService;
 
     @Mock
     private EventRepository eventRepository;
+
+    @Mock
+    private TicketTypeRepository ticketTypeRepository;
 
     @Test
     public void testGetEventByIdReturnsEvent() {
@@ -70,26 +77,43 @@ public class EventServiceTest {
 
     @Test
     public void testCreateEventWithNullNameThrowsException() {
+        mockAuthUser();
         EventDTO nullEventDto = DTOMapper.toDTO(TestHelper.getTestEvent(null, null));
-        assertThrows(ApsiValidationException.class, () -> eventService.create(nullEventDto));
+        assertThrows(ApsiValidationException.class, () -> eventService.create(nullEventDto, null));
+    }
+
+    private User mockAuthUser(){
+        if (mockedUser != null)
+            return mockedUser;
+
+        var securityContextHolderMockedStatic = mockStatic(SecurityContextHolder.class);
+        User user = new User(420L, "login", "hash", "salt", UserType.ORGANIZER, "email", null);
+        var securityContextMock = mock(SecurityContext.class);
+        securityContextHolderMockedStatic.when(SecurityContextHolder::getContext).thenReturn(securityContextMock);
+        var authenticationMock = mock(Authentication.class);
+        when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
+        when(authenticationMock.getPrincipal()).thenReturn(user);
+        mockedUser = user;
+        return user;
     }
 
     @Test
     public void testCreateReturnsCreatedEvent() {
-        Event event = TestHelper.getTestEvent(null);
-        EventDTO eventDTO = DTOMapper.toDTO(event);
-        try (var securityContextHolderMockedStatic = mockStatic(SecurityContextHolder.class)) {
-            User user = new User(420L, "login", "hash", "salt", UserType.ORGANIZER, "email", null);
-            SecurityContext securityContextMock = mock(SecurityContext.class);
-            securityContextHolderMockedStatic.when(SecurityContextHolder::getContext).thenReturn(securityContextMock);
-            Authentication authenticationMock = mock(Authentication.class);
-            when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
-            when(authenticationMock.getPrincipal()).thenReturn(user);
-            when(eventRepository.save(any())).thenReturn(event);
-            EventDTO result = eventService.create(eventDTO);
+        var event = TestHelper.getTestEvent(null);
+        event.getTicketTypes().add(new TicketType(null, event, "type", BigDecimal.valueOf(50), 50));
+        var eventDTO = DTOMapper.toDTO(event);
+        try {
+            var user = mockAuthUser();
+            when(eventRepository.save(any())).thenReturn(event);  
+            when(ticketTypeRepository.saveAll(any())).thenReturn(event.getTicketTypes());  
+            var result = eventService.create(eventDTO, null);
             event.setOrganizer(user);
-            verify(eventRepository).save(ArgumentMatchers.refEq(event));
-            assertEquals(result, eventDTO);
+            assertEquals(result.getDescription(), eventDTO.getDescription());
+            assertEquals(result.getEndDate(), eventDTO.getEndDate());
+            assertEquals(result.getStartDate(), eventDTO.getStartDate());
+            assertEquals(result.getTicketTypes(), eventDTO.getTicketTypes());
+            assertEquals(result.getLocation(), eventDTO.getLocation());
+            assertEquals(result.getName(), eventDTO.getName());
         } catch (Exception e) {
             fail();
         }
@@ -97,7 +121,9 @@ public class EventServiceTest {
 
     @Test
     public void testReplaceReturnsReplacedEvent() throws Exception {
+        mockAuthUser();
         Event event = TestHelper.getTestEvent(null, "changed name");
+        event.getTicketTypes().add(new TicketType(null, event, "type", BigDecimal.valueOf(50), 50));
         EventDTO eventDTO = DTOMapper.toDTO(event);
         when(eventRepository.save(any())).thenReturn(event);
         assertEquals(eventService.replace(eventDTO), eventDTO);

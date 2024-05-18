@@ -4,14 +4,22 @@ import apsi.team3.backend.DTOs.EventDTO;
 import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IEventService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.time.LocalDate;
+import java.util.Base64;
 import java.util.Optional;
 
 @RestController
@@ -44,10 +52,28 @@ public class EventController {
         return ResponseEntity.ok(event.get());
     }
 
-    @PostMapping
-    public ResponseEntity<EventDTO> createEvent(@RequestBody EventDTO eventDTO) throws ApsiValidationException {
-        var resp = eventService.create(eventDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(resp);
+    @GetMapping("/images/{id}")
+    public ResponseEntity<byte[]> getEventImage(@PathVariable("id") Long eventId) {
+        var image = eventService.getImageByEventId(eventId);
+        var base64encodedData = Base64.getEncoder().encode(image);
+        return ResponseEntity.ok(base64encodedData);
+    }
+
+    @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<EventDTO> createEvent(@RequestParam(name = "image", required = false) MultipartFile image, @RequestParam("event") String event) throws ApsiValidationException {
+        if (image != null && image.getSize() > 500_000)
+            throw new ApsiValidationException("Zbyt duży obraz. Maksymalna wielkość to 500 KB", "image");
+
+        try {
+            var mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            var dto = mapper.readValue(event, EventDTO.class);
+            var resp = eventService.create(dto, image);
+            return ResponseEntity.status(HttpStatus.CREATED).body(resp);
+        }
+        catch (JsonProcessingException e){
+            throw new ApsiValidationException("Niepoprawne żądanie", "id");
+        }
     }
 
     @PutMapping("/{id}")

@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -43,6 +44,7 @@ public class Config {
             .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.PUT, "/events**").hasAnyAuthority(UserType.SUPERADMIN.toString(), UserType.ORGANIZER.toString()))
             .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.DELETE, "/events**").hasAnyAuthority(UserType.SUPERADMIN.toString(), UserType.ORGANIZER.toString()))
             .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.POST, "/locations**").hasAnyAuthority(UserType.SUPERADMIN.toString(), UserType.ORGANIZER.toString()))
+            .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.GET, "/locations").hasAnyAuthority(UserType.SUPERADMIN.toString(), UserType.ORGANIZER.toString()))
             .authorizeHttpRequests(r -> r.anyRequest().authenticated())
             .httpBasic(c -> c.authenticationEntryPoint((req, res, authEx) -> {
                 if (!req.getRequestURI().contains("login"))

@@ -36,16 +36,16 @@ public class LocationServiceTest {
     public void testGetLocationByIdReturnsLocation() {
         User creator = new User(1L, "login", "hash", "salt", UserType.ORGANIZER, "email", new ArrayList<>());
         Location location = new Location(
-                1L,
-                creator,
-                new Country(1L, "PL", "POLSKA"),
-                100,
-                "desc",
-                "Warszawa",
-                "Waryńskiego",
-                "12",
-                "1601",
-                "00-631"
+            1L,
+            creator,
+            new Country(1L, "PL", "POLSKA"),
+            100,
+            "desc",
+            "Warszawa",
+            "Waryńskiego",
+            "12",
+            "1601",
+            "00-631"
         );
         when(locationRepository.findById(1L)).thenReturn(Optional.of(location));
         assertEquals(locationService.getLocationById(1L), Optional.of(DTOMapper.toDTO(location)));
@@ -54,16 +54,16 @@ public class LocationServiceTest {
     @Test
     public void testCreateReturnsCreatedLocation() {
         LocationDTO locationDTO = new LocationDTO(
-                null,
-                1L,
-                100,
-                "desc",
-                "Warszawa",
-                "Waryńskiego",
-                "12",
-                "1601",
-                "00-631",
-                null
+            null,
+            1L,
+            100,
+            "desc",
+            "Warszawa",
+            "Waryńskiego",
+            "12",
+            "1601",
+            "00-631",
+            null
         );
         Location location = DTOMapper.toEntity(locationDTO);
         location.setId(1L);

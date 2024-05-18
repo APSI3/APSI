@@ -15,6 +15,11 @@ export interface EventDTO {
     endDate: Date;
     description: string;
     organizerId: number;
+    startTime?: string
+    endTime?: string
+    location?: LocationDTO
+    ticketTypes: TicketTypeDTO[]
+    imageIds: number[]
 }
 
 export interface TicketTypeDTO {
@@ -34,13 +39,13 @@ export interface CountryDTO {
 export interface LocationDTO {
     id: number,
     country_id: number,
-    capacity: number,
-    description: string,
+    capacity?: number,
+    description?: string,
     city: string,
-    street: string,
-    building_nr: string,
-    apartment_nr: string,
-    zip_code: string,
+    street?: string,
+    building_nr?: string,
+    apartment_nr?: string,
+    zip_code?: string,
     creator_id: number,
 }
 

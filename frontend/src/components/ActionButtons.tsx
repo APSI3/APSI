@@ -24,12 +24,11 @@ const ActionButtons: React.FC = () => {
 
     return (
         <Box sx={style}>
-            {actionButtons.map( (button, idx) => <
-                FormButton
-                    key={`form-button-${idx}`}
-                    title={button.title}
-                    icon={button.icon}
-                    Form={button.form}
+            {actionButtons.map((button, idx) => <FormButton
+                key={`form-button-${idx}`}
+                title={button.title}
+                icon={button.icon}
+                Form={button.form}
             />)}
         </Box>
     );

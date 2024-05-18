@@ -33,7 +33,7 @@ public class TicketTypeController {
 
     @GetMapping("/event/{id}")
     public ResponseEntity<List<TicketTypeDTO>> getTicketTypeByEventId(@PathVariable("id") Long eventId) {
-        var eventTicketTypes = ticketTypeService.getTicketTypeByEventId(eventId);
+        var eventTicketTypes = ticketTypeService.getTicketTypesByEventId(eventId);
         return ResponseEntity.ok(eventTicketTypes);
     }
 

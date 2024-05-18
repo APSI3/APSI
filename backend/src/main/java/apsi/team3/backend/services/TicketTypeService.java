@@ -30,7 +30,7 @@ public class TicketTypeService implements ITicketTypeService {
     }
 
     @Override
-    public List<TicketTypeDTO> getTicketTypeByEventId(Long eventId) {
+    public List<TicketTypeDTO> getTicketTypesByEventId(Long eventId) {
         return ticketTypeRepository
                 .findByEventId(eventId)
                 .stream().map(DTOMapper::toDTO)
@@ -39,14 +39,14 @@ public class TicketTypeService implements ITicketTypeService {
 
     @Override
     public TicketTypeDTO create(TicketTypeDTO ticketTypeDTO) throws ApsiValidationException {
-        var ticketType = DTOMapper.toEntity(ticketTypeDTO);
+        var ticketType = DTOMapper.toEntity(ticketTypeDTO, null);
         var saved = ticketTypeRepository.save(ticketType);
         return DTOMapper.toDTO(saved);
     }
 
     @Override
     public TicketTypeDTO replace(TicketTypeDTO ticketType) {
-        var entity = DTOMapper.toEntity(ticketType);
+        var entity = DTOMapper.toEntity(ticketType, null);
         var saved = ticketTypeRepository.save(entity);
 
         return DTOMapper.toDTO(saved);

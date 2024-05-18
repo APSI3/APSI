@@ -47,13 +47,13 @@ public class TicketTypeServiceTest {
             ticketTypeDTOList.add(DTOMapper.toDTO(ticketType));
         }
         when(ticketTypeRepository.findByEventId(eventId)).thenReturn(ticketTypeList);
-        assertEquals(ticketTypeService.getTicketTypeByEventId(eventId), ticketTypeDTOList);
+        assertEquals(ticketTypeService.getTicketTypesByEventId(eventId), ticketTypeDTOList);
     }
 
     @Test
     public void testCreateReturnsCreatedTicketTypeObject() throws Exception {
         TicketTypeDTO ticketTypeDTO = new TicketTypeDTO(1L, 1L, "name", BigDecimal.valueOf(100L), 10);
-        TicketType ticketType = DTOMapper.toEntity(ticketTypeDTO);
+        TicketType ticketType = DTOMapper.toEntity(ticketTypeDTO, null);
         when(ticketTypeRepository.save(any())).thenReturn(ticketType);
         assertEquals(ticketTypeService.create(ticketTypeDTO), ticketTypeDTO);
         verify(ticketTypeRepository).save(ArgumentMatchers.refEq(ticketType));
@@ -62,7 +62,7 @@ public class TicketTypeServiceTest {
     @Test
     public void testReplaceReturnsReplacedTicketTypeObject() {
         TicketTypeDTO ticketTypeDTO = new TicketTypeDTO(1L, 1L, "name", BigDecimal.valueOf(100L), 10);
-        TicketType ticketType = DTOMapper.toEntity(ticketTypeDTO);
+        TicketType ticketType = DTOMapper.toEntity(ticketTypeDTO, null);
         when(ticketTypeRepository.save(any())).thenReturn(ticketType);
         assertEquals(ticketTypeService.replace(ticketTypeDTO), ticketTypeDTO);
         verify(ticketTypeRepository).save(ArgumentMatchers.refEq(ticketType));
