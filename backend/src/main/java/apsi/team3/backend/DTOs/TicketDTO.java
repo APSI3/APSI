@@ -1,5 +1,6 @@
 package apsi.team3.backend.DTOs;
 
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.hateoas.RepresentationModel;
@@ -9,24 +10,16 @@ import java.time.LocalDate;
 
 @Relation(collectionRelation = "tickets", itemRelation = "tickets")
 @EqualsAndHashCode(callSuper = false)
+@Getter
+@AllArgsConstructor
 public class TicketDTO extends RepresentationModel<TicketDTO> {
-    @Getter
     Long id;
-    @Getter
     Long ticketTypeId;
-    @Getter
     Long holderId;
-    @Getter
     LocalDate purchaseDate;
-    @Getter
     String QRCode;
-
-    public TicketDTO(Long id, Long ticketTypeId, Long holderId, LocalDate purchaseDate) {
-        this.id = id;
-        this.ticketTypeId = ticketTypeId;
-        this.holderId = holderId;
-        this.purchaseDate = purchaseDate;
-    }
+    String holderFirstName;
+    String holderLastName;
 
     public void setQRCode(String qrCode) {
         this.QRCode = qrCode;

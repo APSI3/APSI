@@ -54,6 +54,8 @@ export interface TicketDTO {
     ticketTypeId: number,
     holderId: number,
     purchaseDate: Date,
+    holderFirstName: string,
+    holderLastName: string,
 }
 
 export interface PaginatedList<T>{

@@ -12,8 +12,6 @@ public interface ITicketTypeService {
     List<TicketTypeDTO> getTicketTypesByEventId(Long eventId);
     TicketTypeDTO create(TicketTypeDTO ticketType) throws ApsiValidationException;
     TicketTypeDTO replace(TicketTypeDTO ticketType) throws ApsiValidationException;
-
     void delete(Long id);
-
     boolean notExists(Long id);
 }

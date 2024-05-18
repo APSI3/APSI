@@ -3,6 +3,7 @@ import { TicketTypeDTO} from "../api/DTOs";
 import { Grid, Paper, Typography} from "@mui/material";
 import {Api} from "../api/Api";
 import BuyButton from "./EventCardButtons/BuyButton";
+import { AuthHelpers, UserTypes } from "../helpers/AuthHelpers";
 
 const TicketCard: React.FC<{ ticket: TicketTypeDTO, skipApiCheck?: boolean }> = ({ ticket, skipApiCheck }) => {
     const [soldCount, setSoldCount] = useState(0);
@@ -17,6 +18,8 @@ const TicketCard: React.FC<{ ticket: TicketTypeDTO, skipApiCheck?: boolean }> = 
         }
     }, [ticket.id, skipApiCheck]);
 
+    const canBuyTickets = AuthHelpers.HasAnyRole([ UserTypes.PERSON ]);
+
     return (
         <Paper style={{ alignItems: 'center', display: 'flex', justifyContent: 'space-evenly', margin: '0.5rem', background: '#dee2e6' }}  elevation={3} >
             <Grid item xs={6} >
@@ -25,7 +28,7 @@ const TicketCard: React.FC<{ ticket: TicketTypeDTO, skipApiCheck?: boolean }> = 
                 </Typography>
             </Grid>
             <Grid item container direction="row" justifyContent="flex-end" padding='1rem' style={{background: '#ffffff'}}>
-                {(ticket.quantityAvailable - soldCount) > 0 && <BuyButton ticketTypeId={ticket.id}/>}
+                {canBuyTickets && (ticket.quantityAvailable - soldCount) > 0 && <BuyButton ticketTypeId={ticket.id}/>}
                 <Grid item container direction="column" alignItems="flex-end">
                     <Typography variant="body1" color="textSecondary" style={{ marginTop: '1rem' }}>
                         <strong>{ticket.price.toFixed(2)} zł</strong>

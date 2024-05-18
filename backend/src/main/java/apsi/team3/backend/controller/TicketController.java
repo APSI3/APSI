@@ -54,14 +54,27 @@ public class TicketController {
     }
 
     @PostMapping
-    public ResponseEntity<TicketDTO> createTicket(@RequestBody TicketDTO ticketDTO) throws ApsiValidationException, IOException, WriterException, MessagingException {
+    public ResponseEntity<TicketDTO> createTicket(@RequestBody TicketDTO ticketDTO) throws ApsiValidationException {
+        var ticketType = ticketTypeService.getTicketTypeById(ticketDTO.getTicketTypeId());
+        if (!ticketType.isPresent())
+            throw new ApsiValidationException("Niepoprawny typ biletu", "ticketTypeId");
+        
+        var sold = ticketTypeService.getTicketCountByTypeId(ticketDTO.getTicketTypeId());
+        if (sold.get() >= ticketType.get().getQuantityAvailable())
+            throw new ApsiValidationException("Sprzedaż biletu niemożliwa. Bilety tego typu wyprzedane", "ticketTypeId");
+
         var resp = ticketService.create(ticketDTO);
         var user = userService.getUserById(ticketDTO.getHolderId());
-        var ticketType = ticketTypeService.getTicketTypeById(ticketDTO.getTicketTypeId());
         var event = eventService.getEventById(ticketType.get().getEventId());
 
-        var QRCode = QRCodeGenerator.generateQRCode(resp.toString());
-        resp.setQRCode(QRCode);
+        String QRCode;
+        try {
+            QRCode = QRCodeGenerator.generateQRCode(resp.toString());
+            resp.setQRCode(QRCode);
+        }
+        catch (WriterException|IOException e) {
+            throw new ApsiValidationException(e);
+        }
 
         String mailSubject = "Twój bilet jest tutaj!";
         Map<String, String> ticketData =  Map.of(
@@ -77,7 +90,11 @@ public class TicketController {
                 QRCode,
                 ticketData
         );
-        mailService.sendMail(user.get().getEmail(), mailStructure);
+        try {
+            mailService.sendMail(user.get().getEmail(), mailStructure);
+        } catch (MessagingException e) {
+            throw new ApsiValidationException("Nie udało się wysłać maila z zakupionym biletem", "mail");
+        }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(resp);
     }
