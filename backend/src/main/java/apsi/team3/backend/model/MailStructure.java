@@ -3,7 +3,6 @@ package apsi.team3.backend.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.core.io.ByteArrayResource;
 
 import java.util.Map;
 

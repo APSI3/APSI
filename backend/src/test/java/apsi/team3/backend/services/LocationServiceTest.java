@@ -1,7 +1,6 @@
 package apsi.team3.backend.services;
 
 import apsi.team3.backend.DTOs.DTOMapper;
-import apsi.team3.backend.DTOs.EventDTO;
 import apsi.team3.backend.DTOs.LocationDTO;
 import apsi.team3.backend.model.Country;
 import apsi.team3.backend.model.Location;
@@ -10,7 +9,6 @@ import apsi.team3.backend.model.UserType;
 import apsi.team3.backend.repository.LocationRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.security.core.Authentication;
