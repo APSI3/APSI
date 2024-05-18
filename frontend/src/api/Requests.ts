@@ -20,3 +20,9 @@ export type CreateLocationRequest = {
     apartment_nr: string,
     zip_code: string,
 }
+
+export type CreateTicketRequest = {
+    ticketTypeId: number,
+    holderId: string,
+    purchaseDate: Date,
+}

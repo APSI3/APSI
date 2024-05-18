@@ -14,7 +14,7 @@ function getActionButtonsBasedOnRole(id: number) {
         case UserTypes.ORGANIZER:
             return [<DetailsButton id={id}/>, <EditButton/>, <DeleteButton/>]
         default:
-            return [<DetailsButton id={id}/>, <BuyButton />]
+            return [<DetailsButton id={id}/>]
     }
 }
 

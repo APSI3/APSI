@@ -69,15 +69,16 @@ public class UserServiceTest {
     public void testLoginReturnsLoggedUser() throws Exception {
         String login = "apsi";
         String password = "apsi";
+        String email = "email";
         String salt = "1234";
         Long userId = 1234L;
         LoginRequest loginRequest = new LoginRequest(login, password);
         String hash = userService.hashPassword(password, salt);
-        User user = new User(userId, login, hash, salt, UserType.PERSON, new ArrayList<>());
+        User user = new User(userId, login, hash, salt, UserType.PERSON, email, new ArrayList<>());
         when(userRepository.findUserByLogin(login)).thenReturn(Optional.of(user));
         var encoded = Base64.getEncoder().encodeToString("apsi:apsi".getBytes());
         String expectedAuthHeader = "Basic " + encoded;
-        LoggedUserDTO loggedUserDTO = new LoggedUserDTO(userId, login, expectedAuthHeader, UserType.PERSON);
+        LoggedUserDTO loggedUserDTO = new LoggedUserDTO(userId, login, email, expectedAuthHeader, UserType.PERSON);
         assertEquals(userService.login(loginRequest), loggedUserDTO);
     }
 }

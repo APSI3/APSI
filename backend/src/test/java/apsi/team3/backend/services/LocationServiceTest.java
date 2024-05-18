@@ -1,7 +1,6 @@
 package apsi.team3.backend.services;
 
 import apsi.team3.backend.DTOs.DTOMapper;
-import apsi.team3.backend.DTOs.EventDTO;
 import apsi.team3.backend.DTOs.LocationDTO;
 import apsi.team3.backend.model.Country;
 import apsi.team3.backend.model.Location;
@@ -10,7 +9,6 @@ import apsi.team3.backend.model.UserType;
 import apsi.team3.backend.repository.LocationRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.security.core.Authentication;
@@ -36,7 +34,7 @@ public class LocationServiceTest {
 
     @Test
     public void testGetLocationByIdReturnsLocation() {
-        User creator = new User(1L, "login", "hash", "salt", UserType.ORGANIZER, new ArrayList<>());
+        User creator = new User(1L, "login", "hash", "salt", UserType.ORGANIZER, "email", new ArrayList<>());
         Location location = new Location(
                 1L,
                 creator,
@@ -70,7 +68,7 @@ public class LocationServiceTest {
         Location location = DTOMapper.toEntity(locationDTO);
         location.setId(1L);
         try (var securityContextHolderMockedStatic = mockStatic(SecurityContextHolder.class)) {
-            User creator = new User(1L, "login", "hash", "salt", UserType.ORGANIZER, new ArrayList<>());
+            User creator = new User(1L, "login", "hash", "salt", UserType.ORGANIZER, "email", new ArrayList<>());
             SecurityContext securityContextMock = mock(SecurityContext.class);
             securityContextHolderMockedStatic.when(SecurityContextHolder::getContext).thenReturn(securityContextMock);
             Authentication authenticationMock = mock(Authentication.class);

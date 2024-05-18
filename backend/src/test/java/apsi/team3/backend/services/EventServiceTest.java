@@ -79,7 +79,7 @@ public class EventServiceTest {
         Event event = TestHelper.getTestEvent(null);
         EventDTO eventDTO = DTOMapper.toDTO(event);
         try (var securityContextHolderMockedStatic = mockStatic(SecurityContextHolder.class)) {
-            User user = new User(420L, "login", "hash", "salt", UserType.ORGANIZER, null);
+            User user = new User(420L, "login", "hash", "salt", UserType.ORGANIZER, "email", null);
             SecurityContext securityContextMock = mock(SecurityContext.class);
             securityContextHolderMockedStatic.when(SecurityContextHolder::getContext).thenReturn(securityContextMock);
             Authentication authenticationMock = mock(Authentication.class);
