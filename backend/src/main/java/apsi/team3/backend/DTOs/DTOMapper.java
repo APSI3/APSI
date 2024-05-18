@@ -101,11 +101,11 @@ public class DTOMapper {
     }
 
     public static LoggedUserDTO toDTO(User user, String header) {
-        return new LoggedUserDTO(user.getId(), user.getLogin(), header, user.getType());
+        return new LoggedUserDTO(user.getId(), user.getLogin(), user.getEmail(), header, user.getType());
     }
 
     public static UserDTO toDTO(User user) {
-        return new UserDTO(user.getId(), user.getLogin());
+        return new UserDTO(user.getId(), user.getLogin(), user.getEmail());
     }
 
     public static LocationDTO toDTO(Location loc) {

@@ -32,6 +32,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserType type;
 
+    @Column(name = "email", nullable = true, length = 255)
+    private String email;
+
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @ToString.Exclude
     private List<Event> events;

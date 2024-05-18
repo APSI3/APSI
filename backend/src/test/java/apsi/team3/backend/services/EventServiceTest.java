@@ -34,6 +34,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 public class EventServiceTest {
+    private static User mockedUser = null;
 
     @InjectMocks
     private EventService eventService;
@@ -82,13 +83,17 @@ public class EventServiceTest {
     }
 
     private User mockAuthUser(){
+        if (mockedUser != null)
+            return mockedUser;
+
         var securityContextHolderMockedStatic = mockStatic(SecurityContextHolder.class);
-        var user = new User(420L, "login", "hash", "salt", UserType.ORGANIZER, null);
+        User user = new User(420L, "login", "hash", "salt", UserType.ORGANIZER, "email", null);
         var securityContextMock = mock(SecurityContext.class);
         securityContextHolderMockedStatic.when(SecurityContextHolder::getContext).thenReturn(securityContextMock);
         var authenticationMock = mock(Authentication.class);
         when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
         when(authenticationMock.getPrincipal()).thenReturn(user);
+        mockedUser = user;
         return user;
     }
 
