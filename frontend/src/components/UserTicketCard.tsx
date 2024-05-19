@@ -1,28 +1,9 @@
-import React, {useEffect, useState} from "react";
-import {EventDTO, TicketDTO, TicketTypeDTO} from "../api/DTOs";
+import React from "react";
+import { ExtendedTicketDTO } from "../api/DTOs";
 import {Grid, Link, Typography, Card, CardContent} from "@mui/material";
-import {Api} from "../api/Api";
 
 
-const UserTicketCard: React.FC<{ ticket: TicketDTO }> = ({ ticket }) => {
-    const [ ticketType, setTicketType ] = useState<TicketTypeDTO>();
-    const [ event, setEvent ] = useState<EventDTO>();
-
-    useEffect(() => {
-        Api.GetTicketTypeById(ticket?.ticketTypeId)
-            .then(res => {
-                let tt = res.data;
-                if (res.success && tt) {
-                    setTicketType(tt);
-                }
-                Api.GetEventById(tt?.eventId).then(res2 => {
-                    if (res2.success && res2.data) {
-                        setEvent(res2.data);
-                    }
-                })
-            })
-    }, [])
-
+const UserTicketCard: React.FC<{ ticket: ExtendedTicketDTO }> = ({ ticket }) => {
     return (
         <Card style={{ margin: '1rem' }} elevation={3}>
             <CardContent>
@@ -30,12 +11,13 @@ const UserTicketCard: React.FC<{ ticket: TicketDTO }> = ({ ticket }) => {
                     <Grid item xs={12} sm={4} alignItems="center" justifyContent="center" display='inline-flex' flexDirection='column'>
                         <>
                             <Typography variant="h6" component="h3">
-                                <Link href={`/event/${event?.id}`} target="_blank" rel="noopener">
-                                    {event?.name}
+                                <Link href={`/event/${ticket.eventId}`} target="_blank" rel="noopener">
+                                    {ticket.eventName}
                                 </Link>
                             </Typography>
                             <Typography color="textSecondary">
-                                <>{event?.startDate} - {event?.endDate}</>
+                                {/*TODO: time*/}
+                                <>{new Date(ticket.eventStartDate).toLocaleDateString()} {ticket.eventStartTime?.substring(0, 5)} - {new Date(ticket.eventEndDate).toLocaleDateString()} {ticket.eventEndTime?.substring(0, 5)}</>
                             </Typography>
                             {/*todo location*/}
                             {/*<Typography variant="body2" component="p">*/}
@@ -46,10 +28,10 @@ const UserTicketCard: React.FC<{ ticket: TicketDTO }> = ({ ticket }) => {
                     <Grid item xs={12} sm={4} alignItems="center" justifyContent="center" display='inline-flex' flexDirection='column' >
                         <>
                             <Typography variant="h6" component="h3">
-                                Typ: {ticketType?.name}
+                                Typ: {ticket.ticketTypeName}
                             </Typography>
                             <Typography variant="body2" color="textSecondary">
-                                Cena: {ticketType?.price}
+                                Cena: {ticket.price}
                             </Typography>
                         </>
                     </Grid>

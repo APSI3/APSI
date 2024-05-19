@@ -82,6 +82,24 @@ public class TicketControllerTest {
     }
 
     @Test
+    public void testGetTicketByUserIdReturnsTicket() throws Exception {
+        LoggedUserDTO loggedUser = login();
+        String expectedJson = """
+            [{
+                "id": 1,
+                "ticketTypeId": 2,
+                "holderId": 2,
+                "purchaseDate": "2024-05-17",
+                "qrcode": null
+            }]
+        """;
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/tickets/user/2").header("Authorization", loggedUser.getAuthHeader()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(content().json(expectedJson));
+    }
+
+    @Test
     public void testCreateTicketReturns401ForUnauthorizedUser() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/tickets/"))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError())

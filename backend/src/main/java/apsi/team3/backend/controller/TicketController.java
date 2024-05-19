@@ -1,5 +1,6 @@
 package apsi.team3.backend.controller;
 
+import apsi.team3.backend.DTOs.ExtendedTicketDTO;
 import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.DTOs.TicketDTO;
 import apsi.team3.backend.exceptions.ApsiValidationException;
@@ -13,11 +14,13 @@ import apsi.team3.backend.services.MailService;
 import com.google.zxing.WriterException;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -55,17 +58,15 @@ public class TicketController {
         return ticket.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/user/{id}")
-    public ResponseEntity<List<TicketDTO>> getTicketByUserId(@PathVariable("id") Long id) {
-        var tickets = ticketService.getTicketsByUserId(id);
-        tickets.forEach(ticket -> {
-            try {
-                ticket.setQRCode(QRCodeGenerator.generateQRCode(ticket.toString()));
-            } catch (WriterException | IOException e) {
-                ticket.setQRCode(null);
-            }
-        });
-        return ResponseEntity.ok(tickets);
+    @GetMapping("user/{id}/extended")
+    public ResponseEntity<PaginatedList<ExtendedTicketDTO>> getExtendedTicketsByUserId(
+            @PathVariable("id") Long id,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate to,
+            @RequestParam int pageIndex
+    ) throws ApsiValidationException {
+        var tickets = ticketService.getTicketsByUserId(id, from, to, pageIndex);
+        return new ResponseEntity<>(tickets, HttpStatus.OK);
     }
 
     @PostMapping

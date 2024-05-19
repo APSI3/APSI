@@ -30,6 +30,17 @@ export interface TicketTypeDTO {
     quantityAvailable: number,
 }
 
+export interface ExtendedTicketDTO extends TicketDTO {
+    eventId: number,
+    eventName: string,
+    eventStartDate: Date,
+    eventStartTime: string,
+    eventEndDate: Date,
+    eventEndTime: string,
+    ticketTypeName: string,
+    price: number,
+}
+
 export interface CountryDTO {
     id: number,
     code: string,
