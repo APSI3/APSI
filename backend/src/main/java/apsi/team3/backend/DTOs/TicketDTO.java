@@ -5,15 +5,13 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.springframework.hateoas.RepresentationModel;
-
 import java.time.LocalDate;
 
 @EqualsAndHashCode(callSuper = false)
 @Getter
 @AllArgsConstructor
 @Setter
-public class TicketDTO extends RepresentationModel<TicketDTO> {
+public class TicketDTO {
     Long id;
     Long ticketTypeId;
     Long holderId;
@@ -27,13 +25,23 @@ public class TicketDTO extends RepresentationModel<TicketDTO> {
         this.QRCode = qrCode;
     }
 
-    @SuppressWarnings("null")
-    @Override
-    public String toString() {
-        return "{\"id\": " + this.id + ",\n"
-                + "\"ticketTypeId\": " + this.ticketTypeId + ",\n"
-                + "\"holderId\": " + this.holderId + ",\n"
-                + "\"purchaseDate\": " + this.purchaseDate + ",\n"
-                + "\"QRCode\": " + this.QRCode + "}";
+    public String toJSON(EventDTO event) {
+        var eventPart = event != null ?
+            "\"eventName\": " + event.getName() + ",\n"
+            + "\"eventStartDate\": " + event.getStartDate().toString() + ",\n"
+            + "\"eventEndDate\": " + event.getEndDate().toString() :
+            "";
+
+        return "{"
+            + "\"id\": " + this.id + ",\n"
+            + "\"ticketTypeId\": " + this.ticketTypeId + ",\n"
+            + "\"holderId\": " + this.holderId + ",\n"
+            + "\"purchaseDate\": " + this.purchaseDate + ",\n"
+            + "\"QRCode\": " + this.QRCode + ",\n"
+            + "\"holderFirstName\": " + this.holderFirstName + ",\n"
+            + "\"holderLastName\": " + this.holderLastName + ",\n"
+            + "\"eventId\": " + this.eventId + ",\n"
+            + eventPart
+        + "}";
     }
 }

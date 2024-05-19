@@ -48,11 +48,11 @@ export function BuyTicketForm({ ticketType, event }: { ticketType: TicketTypeDTO
         {({ isSubmitting }) => <Form className="form">
             <header className="mb-2 text-center h2">Kup bilet</header>
             <div className="info">
-                <span>
-                    Czy na pewno chcesz kupić bilet na wydarzenie {"\"" + event.name + "\""}?
+                <div className="alert alert-primary">
+                    Czy na pewno chcesz kupić bilet na wydarzenie {"\"" + event.name + "\""}?<br/>
                     Kupując bilet zobowiązujesz się wpłacić {ticketType.price.toFixed(2)} zł na numer konta PL32109024025256332731736334
-                    do dnia {toDate.toLocaleDateString()}
-                </span>
+                    do dnia <strong>{toDate.toLocaleDateString()}</strong>.
+                </div>
             </div>
             <div className="form-group row justify-content-center mb-2">
                 <label className="col-sm-6 col-form-label">Imię posiadacza biletu</label>

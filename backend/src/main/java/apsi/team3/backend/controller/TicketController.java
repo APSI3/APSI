@@ -44,7 +44,7 @@ public class TicketController {
         Optional<TicketDTO> ticket = ticketService.getTicketById(id);
         ticket.ifPresent(t -> {
             try {
-                t.setQRCode(QRCodeGenerator.generateQRCode(t.toString()));
+                t.setQRCode(QRCodeGenerator.generateQRCode(t.toJSON(null)));
             } catch (WriterException | IOException e) {
                 t.setQRCode(null);
             }
@@ -75,7 +75,7 @@ public class TicketController {
 
         String QRCode;
         try {
-            QRCode = QRCodeGenerator.generateQRCode(resp.toString());
+            QRCode = QRCodeGenerator.generateQRCode(resp.toJSON(event.get()));
             resp.setQRCode(QRCode);
         }
         catch (WriterException|IOException e) {
@@ -84,21 +84,22 @@ public class TicketController {
 
         String mailSubject = "Twój bilet jest tutaj!";
         Map<String, String> ticketData =  Map.of(
-                "eventName", event.get().getName(),
-                "date", getDateString(event.get().getStartDate(), event.get().getEndDate()),
-                "ticketType", ticketType.get().getName(),
-                "price", ticketType.get().getPrice().toString(),
-                "holderName", user.getLogin()
+            "eventName", event.get().getName(),
+            "date", getDateString(event.get().getStartDate(), event.get().getEndDate()),
+            "ticketType", ticketType.get().getName(),
+            "price", ticketType.get().getPrice().toString(),
+            "userName", user.getLogin(),
+            "holderFirstName", resp.getHolderFirstName(),
+            "holderLastName", resp.getHolderLastName()
         );
         MailStructure mailStructure = new MailStructure(
-                mailSubject,
-                resp.getQRCode(),
-                QRCode,
-                ticketData
+            mailSubject,
+            resp.toJSON(event.get()),
+            ticketData
         );
         try {
             mailService.sendMail(user.getEmail(), mailStructure);
-        } catch (MessagingException e) {
+        } catch (MessagingException | IOException | WriterException e) {
             throw new ApsiValidationException("Nie udało się wysłać maila z zakupionym biletem", "mail");
         }
 
