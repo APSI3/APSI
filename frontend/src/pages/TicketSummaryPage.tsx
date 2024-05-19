@@ -50,13 +50,14 @@ export default function TicketSummaryPage() {
                     <label className="form-label">Czas trwania:</label>
                     <span className="form-control">
                         Od: {new Date(event.startDate).toLocaleDateString()} {event.startTime?.substring(0, 5)}
+                        <br/>
                         Do: {new Date(event.endDate).toLocaleDateString()} {event.endTime?.substring(0, 5)}
                     </span>
                 </Grid>}
-                <Grid item xs={12}>
+                {event?.description && <Grid item xs={12}>
                     <label className="form-label">Opis:</label>
                     <span className="form-control">{event?.description}</span>
-                </Grid>
+                </Grid>}
                 <Grid item xs={12}>
                     <label className="form-label">Rodzaj biletu:</label>
                     <span className="form-control">{ticketType?.name}</span>

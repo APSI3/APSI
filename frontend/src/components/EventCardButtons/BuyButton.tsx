@@ -23,7 +23,7 @@ const BuyButton: React.FC<{ ticketType: TicketTypeDTO, event: EventDTO }> = ({ t
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
-            <Box sx={ModalBoxStyle}>
+            <Box sx={{...ModalBoxStyle, '&::-webkit-scrollbar': {display: 'none'}}}>
                 <IconButton aria-label="close" onClick={closeModal} style={{ position: 'absolute', top: 10, right: 10 }}>
                     <CloseIcon />
                 </IconButton>

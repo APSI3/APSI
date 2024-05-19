@@ -73,15 +73,6 @@ public class TicketController {
         var resp = ticketService.create(ticketDTO);
         resp.setEventId(event.get().getId());
 
-        String QRCode;
-        try {
-            QRCode = QRCodeGenerator.generateQRCode(resp.toJSON(event.get()));
-            resp.setQRCode(QRCode);
-        }
-        catch (WriterException|IOException e) {
-            throw new ApsiValidationException(e);
-        }
-
         String mailSubject = "Twój bilet jest tutaj!";
         Map<String, String> ticketData =  Map.of(
             "eventName", event.get().getName(),
@@ -101,6 +92,15 @@ public class TicketController {
             mailService.sendMail(user.getEmail(), mailStructure);
         } catch (MessagingException | IOException | WriterException e) {
             throw new ApsiValidationException("Nie udało się wysłać maila z zakupionym biletem", "mail");
+        }
+
+        String QRCode;
+        try {
+            QRCode = QRCodeGenerator.generateQRCode(resp.toJSON(event.get()));
+            resp.setQRCode(QRCode);
+        }
+        catch (WriterException|IOException e) {
+            throw new ApsiValidationException(e);
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(resp);
