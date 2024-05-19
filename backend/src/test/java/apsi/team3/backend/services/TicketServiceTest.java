@@ -41,12 +41,4 @@ public class TicketServiceTest {
         when(ticketRepository.save(any())).thenReturn(ticket);
         assertEquals(ticketService.create(ticketDTO), ticketDTO);
     }
-
-    @Test
-    public void testGetTicketByUserIdReturnsTicketObject() {
-        Long holderId = 2L;
-        TicketDTO ticketDTO = new TicketDTO(1L, 1L, holderId, LocalDate.now());
-        when(ticketRepository.findByHolderId(holderId)).thenReturn(List.of(DTOMapper.toEntity(ticketDTO)));
-        assertEquals(ticketService.getTicketsByUserId(holderId), List.of(ticketDTO));
-    }
 }
