@@ -6,14 +6,15 @@ import apsi.team3.backend.helpers.QRCodeGenerator;
 import apsi.team3.backend.interfaces.IEventService;
 import apsi.team3.backend.interfaces.ITicketService;
 import apsi.team3.backend.interfaces.ITicketTypeService;
-import apsi.team3.backend.interfaces.IUserService;
 import apsi.team3.backend.model.MailStructure;
+import apsi.team3.backend.model.User;
 import apsi.team3.backend.services.MailService;
 import com.google.zxing.WriterException;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -29,14 +30,12 @@ public class TicketController {
     private final ITicketService ticketService;
     private final ITicketTypeService ticketTypeService;
     private final MailService mailService;
-    private final IUserService userService;
     private final IEventService eventService;
 
-    @Autowired TicketController(ITicketService ticketService, ITicketTypeService ticketTypeService, MailService mailService, IUserService userService, IEventService eventService) {
+    @Autowired TicketController(ITicketService ticketService, ITicketTypeService ticketTypeService, MailService mailService, IEventService eventService) {
         this.ticketService = ticketService;
         this.ticketTypeService = ticketTypeService;
         this.mailService = mailService;
-        this.userService = userService;
         this.eventService = eventService;
     }
 
@@ -63,9 +62,16 @@ public class TicketController {
         if (sold.get() >= ticketType.get().getQuantityAvailable())
             throw new ApsiValidationException("Sprzedaż biletu niemożliwa. Bilety tego typu wyprzedane", "ticketTypeId");
 
-        var resp = ticketService.create(ticketDTO);
-        var user = userService.getUserById(ticketDTO.getHolderId());
+        var user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (ticketDTO.getHolderId() == null)
+            ticketDTO.setHolderId(user.getId());
+
+        if (ticketDTO.getHolderId() != user.getId())
+            throw new ApsiValidationException("Nie można kupić biletu na konto innego użytkownika", "holderId");
+
         var event = eventService.getEventById(ticketType.get().getEventId());
+        var resp = ticketService.create(ticketDTO);
+        resp.setEventId(event.get().getId());
 
         String QRCode;
         try {
@@ -82,7 +88,7 @@ public class TicketController {
                 "date", getDateString(event.get().getStartDate(), event.get().getEndDate()),
                 "ticketType", ticketType.get().getName(),
                 "price", ticketType.get().getPrice().toString(),
-                "holderName", user.get().getLogin()
+                "holderName", user.getLogin()
         );
         MailStructure mailStructure = new MailStructure(
                 mailSubject,
@@ -91,7 +97,7 @@ public class TicketController {
                 ticketData
         );
         try {
-            mailService.sendMail(user.get().getEmail(), mailStructure);
+            mailService.sendMail(user.getEmail(), mailStructure);
         } catch (MessagingException e) {
             throw new ApsiValidationException("Nie udało się wysłać maila z zakupionym biletem", "mail");
         }

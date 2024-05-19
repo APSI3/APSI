@@ -3,19 +3,21 @@ package apsi.team3.backend.DTOs;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
+
 import org.springframework.hateoas.RepresentationModel;
-import org.springframework.hateoas.server.core.Relation;
 
 import java.time.LocalDate;
 
-@Relation(collectionRelation = "tickets", itemRelation = "tickets")
 @EqualsAndHashCode(callSuper = false)
 @Getter
 @AllArgsConstructor
+@Setter
 public class TicketDTO extends RepresentationModel<TicketDTO> {
     Long id;
     Long ticketTypeId;
     Long holderId;
+    Long eventId;
     LocalDate purchaseDate;
     String QRCode;
     String holderFirstName;

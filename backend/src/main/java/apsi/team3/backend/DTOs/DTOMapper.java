@@ -8,6 +8,7 @@ import apsi.team3.backend.model.TicketType;
 import apsi.team3.backend.model.User;
 
 import java.util.ArrayList;
+import java.time.LocalDate;
 
 import org.springframework.stereotype.Component;
 
@@ -54,7 +55,7 @@ public class DTOMapper {
         return Ticket.builder()
             .id(ticket.getId())
             .holder(user)
-            .purchaseDate(ticket.getPurchaseDate())
+            .purchaseDate(LocalDate.now())
             .ticketType(ticketType)
             .holderFirstName(ticket.getHolderFirstName())
             .holderLastName(ticket.getHolderLastName())
@@ -140,10 +141,12 @@ public class DTOMapper {
     }
 
     public static TicketDTO toDTO(Ticket ticket) {
+        var event = ticket.getTicketType().getEvent();
         return new TicketDTO(
             ticket.getId(),
             ticket.getTicketType().getId(),
             ticket.getHolder().getId(),
+            event != null ? event.getId() : null,
             ticket.getPurchaseDate(),
             null,
             ticket.getHolderFirstName(),
