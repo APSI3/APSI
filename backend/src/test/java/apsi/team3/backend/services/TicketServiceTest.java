@@ -28,14 +28,14 @@ public class TicketServiceTest {
     @Test
     public void testGetTicketByIdReturnsTicketObject() {
         Long ticketId = 1L;
-        TicketDTO ticketDTO = new TicketDTO(ticketId, null, null, null);
+        TicketDTO ticketDTO = new TicketDTO(ticketId, null, null, null, null, null, null, null);
         when(ticketRepository.findById(ticketId)).thenReturn(Optional.of(DTOMapper.toEntity(ticketDTO)));
         assertEquals(ticketService.getTicketById(ticketId), Optional.of(ticketDTO));
     }
 
     @Test
     public void testCreateReturnsCreatedObject() {
-        TicketDTO ticketDTO = new TicketDTO(1L, 1L, 1L, LocalDate.of(2024, 4, 27));
+        TicketDTO ticketDTO = new TicketDTO(1L, 1L, 1L, 1L, LocalDate.of(2024, 4, 27), "code", "janusz", "kowalski");
         Ticket ticket = DTOMapper.toEntity(ticketDTO);
         when(ticketRepository.save(any())).thenReturn(ticket);
         assertEquals(ticketService.create(ticketDTO), ticketDTO);

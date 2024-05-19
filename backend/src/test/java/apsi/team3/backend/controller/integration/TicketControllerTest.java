@@ -1,9 +1,11 @@
 package apsi.team3.backend.controller.integration;
 
+import apsi.team3.backend.DTOs.EventDTO;
 import apsi.team3.backend.DTOs.LoggedUserDTO;
 import apsi.team3.backend.DTOs.Requests.LoginRequest;
 import apsi.team3.backend.DTOs.TicketDTO;
 import apsi.team3.backend.helpers.QRCodeGenerator;
+import apsi.team3.backend.model.UserType;
 import apsi.team3.backend.services.MailService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
@@ -37,11 +39,12 @@ public class TicketControllerTest {
     private MailService mailService;
 
     static ObjectMapper objectMapper;
-    final static String LOGIN = "testuser1";
+    final static String ADMIN_LOGIN = "testuser1";
+    final static String PERSON_LOGIN = "person";
     final static String PASSWORD = "apsi";
 
-    private LoggedUserDTO login() throws Exception {
-        LoginRequest loginRequest = new LoginRequest(LOGIN, PASSWORD);
+    private LoggedUserDTO login(UserType type) throws Exception {
+        LoginRequest loginRequest = new LoginRequest(type == UserType.SUPERADMIN ? ADMIN_LOGIN : PERSON_LOGIN, PASSWORD);
         String stringLoginRequest = objectMapper.writeValueAsString(loginRequest);
         String responseContent = mockMvc.perform(MockMvcRequestBuilders.post("/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -65,16 +68,19 @@ public class TicketControllerTest {
 
     @Test
     public void testGetTicketByIdReturnsTicket() throws Exception {
-        LoggedUserDTO loggedUser = login();
-        String expectedJson = """
+        LoggedUserDTO loggedUser = login(UserType.PERSON);
+        var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        var todayDateStr = LocalDate.now().format(formatter);
+        String expectedJson = String.format("""
             {
                 "id": 1,
                 "ticketTypeId": 2,
                 "holderId": 2,
-                "purchaseDate": "2024-05-17",
-                "qrcode": null
+                "holderFirstName": "Jan",
+                "holderLastName": "Kowalski",
+                "purchaseDate": "%s"
             }
-        """;
+        """, todayDateStr);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/tickets/1").header("Authorization", loggedUser.getAuthHeader()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -91,35 +97,37 @@ public class TicketControllerTest {
     @Test
     @Transactional
     public void testCreateTicketReturnsCreatedObject() throws Exception {
-        LoggedUserDTO loggedUser = login();
-        final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        TicketDTO ticket = new TicketDTO(2L, 2L, 2L, LocalDate.parse("2024-05-17", dtf));
-        String qrCode = QRCodeGenerator.generateQRCode(ticket.toString());
+        LoggedUserDTO loggedUser = login(UserType.PERSON);
+        TicketDTO ticket = new TicketDTO(2L, 2L, 2L, 1L, LocalDate.now(), "", "jan", "kowalski");
+        String qrCode = QRCodeGenerator.generateQRCode(ticket.toJSON(new EventDTO(1L, "test", LocalDate.of(2024, 4, 18), null, LocalDate.of(2024, 4, 18), null, "", null, null, null, null)));
+        var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        var todayDateStr = LocalDate.now().format(formatter);
         String expectedJson = String.format("""
             {
                 "id": 2,
                 "ticketTypeId": 2,
                 "holderId": 2,
-                "purchaseDate": "2024-05-17",
-                "qrcode": "%s"
+                "holderFirstName": "jan",
+                "holderLastName": "kowalski",
+                "purchaseDate": "%s"
             }
-        """, qrCode);
-        String request = """
+        """, todayDateStr, qrCode);
+        String request = String.format("""
             {
                 "ticketTypeId": 2,
-                "holderId": 2,
-                "purchaseDate": "2024-05-17"
+                "holderFirstName": "jan",
+                "holderLastName": "kowalski"
             }
-        """;
+        """, todayDateStr);
         mockMvc.perform(MockMvcRequestBuilders.post("/tickets")
-                        .header("Authorization", loggedUser.getAuthHeader())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(request))
-                .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(content().json(expectedJson));
+                .header("Authorization", loggedUser.getAuthHeader())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(request))
+            .andExpect(MockMvcResultMatchers.status().isCreated())
+            .andExpect(content().json(expectedJson));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/tickets/2").header("Authorization", loggedUser.getAuthHeader()))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(content().json(expectedJson));
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(content().json(expectedJson));
     }
 }
