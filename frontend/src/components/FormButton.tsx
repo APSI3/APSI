@@ -5,7 +5,7 @@ import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import CloseIcon from '@mui/icons-material/Close';
 
-const style = {
+export const ModalBoxStyle = {
     position: 'absolute' as 'absolute',
     top: '50%',
     left: '50%',
@@ -37,7 +37,7 @@ const FormButton: React.FC<{title: string, icon: React.ReactNode, Form: React.FC
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box sx={style}>
+                <Box sx={ModalBoxStyle}>
                     <IconButton aria-label="close" onClick={handleClose} style={{ position: 'absolute', top: 10, right: 10 }}>
                         <CloseIcon />
                     </IconButton>

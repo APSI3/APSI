@@ -1,6 +1,5 @@
 import React from "react";
 import {EventDTO} from "../api/DTOs";
-
 import {AuthHelpers, UserTypes} from "../helpers/AuthHelpers";
 import DetailsButton from "./EventCardButtons/DetailsButton";
 import EditButton from "./EventCardButtons/EditButton";

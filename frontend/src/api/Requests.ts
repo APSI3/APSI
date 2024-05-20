@@ -36,6 +36,6 @@ export type CreateLocationRequest = {
 
 export type CreateTicketRequest = {
     ticketTypeId: number,
-    holderId: string,
-    purchaseDate: Date,
+    holderFirstName: string,
+    holderLastName: string
 }

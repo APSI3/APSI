@@ -11,7 +11,6 @@ import java.util.Map;
 @AllArgsConstructor
 public class MailStructure {
     private String subject;
-    private String message;
-    private String attachment;
-    private Map<String, String> ticketData;
+    private String QRCodeContent;
+    private Map<String, String> mailContentParameters;
 }

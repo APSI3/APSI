@@ -8,8 +8,8 @@ import apsi.team3.backend.helpers.QRCodeGenerator;
 import apsi.team3.backend.interfaces.IEventService;
 import apsi.team3.backend.interfaces.ITicketService;
 import apsi.team3.backend.interfaces.ITicketTypeService;
-import apsi.team3.backend.interfaces.IUserService;
 import apsi.team3.backend.model.MailStructure;
+import apsi.team3.backend.model.User;
 import apsi.team3.backend.services.MailService;
 import com.google.zxing.WriterException;
 import jakarta.mail.MessagingException;
@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -34,14 +35,12 @@ public class TicketController {
     private final ITicketService ticketService;
     private final ITicketTypeService ticketTypeService;
     private final MailService mailService;
-    private final IUserService userService;
     private final IEventService eventService;
 
-    @Autowired TicketController(ITicketService ticketService, ITicketTypeService ticketTypeService, MailService mailService, IUserService userService, IEventService eventService) {
+    @Autowired TicketController(ITicketService ticketService, ITicketTypeService ticketTypeService, MailService mailService, IEventService eventService) {
         this.ticketService = ticketService;
         this.ticketTypeService = ticketTypeService;
         this.mailService = mailService;
-        this.userService = userService;
         this.eventService = eventService;
     }
 
@@ -50,7 +49,7 @@ public class TicketController {
         Optional<TicketDTO> ticket = ticketService.getTicketById(id);
         ticket.ifPresent(t -> {
             try {
-                t.setQRCode(QRCodeGenerator.generateQRCode(t.toString()));
+                t.setQRCode(QRCodeGenerator.generateQRCode(t.toJSON(null)));
             } catch (WriterException | IOException e) {
                 t.setQRCode(null);
             }
@@ -70,30 +69,55 @@ public class TicketController {
     }
 
     @PostMapping
-    public ResponseEntity<TicketDTO> createTicket(@RequestBody TicketDTO ticketDTO) throws ApsiValidationException, IOException, WriterException, MessagingException {
-        var resp = ticketService.create(ticketDTO);
-        var user = userService.getUserById(ticketDTO.getHolderId());
+    public ResponseEntity<TicketDTO> createTicket(@RequestBody TicketDTO ticketDTO) throws ApsiValidationException {
         var ticketType = ticketTypeService.getTicketTypeById(ticketDTO.getTicketTypeId());
-        var event = eventService.getEventById(ticketType.get().getEventId());
+        if (!ticketType.isPresent())
+            throw new ApsiValidationException("Niepoprawny typ biletu", "ticketTypeId");
+        
+        var sold = ticketTypeService.getTicketCountByTypeId(ticketDTO.getTicketTypeId());
+        if (sold.get() >= ticketType.get().getQuantityAvailable())
+            throw new ApsiValidationException("Sprzedaż biletu niemożliwa. Bilety tego typu wyprzedane", "ticketTypeId");
 
-        var QRCode = QRCodeGenerator.generateQRCode(resp.toString());
-        resp.setQRCode(QRCode);
+        var user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (ticketDTO.getHolderId() == null)
+            ticketDTO.setHolderId(user.getId());
+
+        if (ticketDTO.getHolderId() != user.getId())
+            throw new ApsiValidationException("Nie można kupić biletu na konto innego użytkownika", "holderId");
+
+        var event = eventService.getEventById(ticketType.get().getEventId());
+        var resp = ticketService.create(ticketDTO);
+        resp.setEventId(event.get().getId());
 
         String mailSubject = "Twój bilet jest tutaj!";
         Map<String, String> ticketData =  Map.of(
-                "eventName", event.get().getName(),
-                "date", getDateString(event.get().getStartDate(), event.get().getEndDate()),
-                "ticketType", ticketType.get().getName(),
-                "price", ticketType.get().getPrice().toString(),
-                "holderName", user.get().getLogin()
+            "eventName", event.get().getName(),
+            "date", getDateString(event.get().getStartDate(), event.get().getEndDate()),
+            "ticketType", ticketType.get().getName(),
+            "price", ticketType.get().getPrice().toString(),
+            "userName", user.getLogin(),
+            "holderFirstName", resp.getHolderFirstName(),
+            "holderLastName", resp.getHolderLastName()
         );
         MailStructure mailStructure = new MailStructure(
-                mailSubject,
-                resp.getQRCode(),
-                QRCode,
-                ticketData
+            mailSubject,
+            resp.toJSON(event.get()),
+            ticketData
         );
-        mailService.sendMail(user.get().getEmail(), mailStructure);
+        try {
+            mailService.sendMail(user.getEmail(), mailStructure);
+        } catch (MessagingException | IOException | WriterException e) {
+            throw new ApsiValidationException("Nie udało się wysłać maila z zakupionym biletem", "mail");
+        }
+
+        String QRCode;
+        try {
+            QRCode = QRCodeGenerator.generateQRCode(resp.toJSON(event.get()));
+            resp.setQRCode(QRCode);
+        }
+        catch (WriterException|IOException e) {
+            throw new ApsiValidationException(e);
+        }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(resp);
     }

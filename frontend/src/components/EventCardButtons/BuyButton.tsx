@@ -1,44 +1,36 @@
-import React from "react";
-import {Fab} from "@mui/material";
+import React, { useState } from "react";
+import {Box, Fab, IconButton, Modal} from "@mui/material";
 import {ShoppingCart} from "@mui/icons-material";
-import {toastDefaultError, toastInfo} from "../../helpers/ToastHelpers";
-import {Api} from "../../api/Api";
-import {CreateTicketRequest} from "../../api/Requests";
-import {AuthHelpers} from "../../helpers/AuthHelpers";
-import {useNavigate} from "react-router-dom";
+import { ModalBoxStyle } from "../FormButton";
+import CloseIcon from '@mui/icons-material/Close';
+import { BuyTicketForm } from "../BuyTicketForm";
+import { EventDTO, TicketTypeDTO } from "../../api/DTOs";
 
+const BuyButton: React.FC<{ ticketType: TicketTypeDTO, event: EventDTO }> = ({ ticketType, event }) => {
+    const [open, setOpen] = useState(false);
+    const closeModal = () => setOpen(false);
 
-const BuyButton: React.FC<{ ticketTypeId: number }> = ({ ticketTypeId }) => {
-    const nav = useNavigate();
-    const handleOnClick = () => {
-        // TODO: check available ticket numbers
-        const userData = AuthHelpers.GetUserData();
-        if (!userData) {
-            throw Error("Error fetching user data");
-        }
-        const createTicketRequest: CreateTicketRequest = {
-            ticketTypeId,
-            holderId: userData.id,
-            purchaseDate: new Date(),
-        };
-
-        Api.CreateTicket(createTicketRequest).then(res => {
-            if (res.success && res.data) {
-                toastInfo("Zakupiono bilet");
-                nav(`/ticketSummary/${res.data.id}`, { state: res.data });
-            }
-            else {
-                toastDefaultError();
-            }
-        })
-    }
-
-    return <Fab
-        size="small"
-        onClick={handleOnClick}
-    >
-        <ShoppingCart />
-    </Fab>
+    return <>
+        <Fab
+            size="small"
+            onClick={() => setOpen(true)}
+        >
+            <ShoppingCart />
+        </Fab>
+        <Modal
+            open={open}
+            onClose={closeModal}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+        >
+            <Box sx={{...ModalBoxStyle, '&::-webkit-scrollbar': {display: 'none'}}}>
+                <IconButton aria-label="close" onClick={closeModal} style={{ position: 'absolute', top: 10, right: 10 }}>
+                    <CloseIcon />
+                </IconButton>
+                <BuyTicketForm ticketType={ticketType} event={event}/>
+            </Box>
+        </Modal>
+    </>
 }
 
 export default BuyButton;
