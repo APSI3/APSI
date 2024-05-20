@@ -1,6 +1,7 @@
 package apsi.team3.backend;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 import apsi.team3.backend.model.Event;
 import apsi.team3.backend.model.User;
@@ -16,9 +17,10 @@ public class TestHelper {
                 LocalDate.now().plusDays(7),
                 null,
                 "description",
-                new User(1L, "login", "hash", "salt", UserType.ORGANIZER, null),
+                new User(1L, "login", "hash", "salt", UserType.ORGANIZER, "email", null),
+                new ArrayList<>(),
                 null,
-                null
+                new ArrayList<>()
         );
     }
 
@@ -31,7 +33,7 @@ public class TestHelper {
     }
 
     public static User getTestUser(Long userId, String login) {
-        return new User(userId, login, "hash", "salt", UserType.ORGANIZER, null);
+        return new User(userId, login, "hash", "salt", UserType.ORGANIZER, "email", null);
     }
 
     public static User getTestUser() {

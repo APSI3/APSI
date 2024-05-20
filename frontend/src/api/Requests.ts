@@ -5,9 +5,22 @@ export type LoginRequest = {
 
 export type CreateEventRequest = {
     name: string,
-    description: string,
+    description?: string,
     startDate: Date,
     endDate: Date,
+    startTime?: string,
+    endTime?: string,
+    location?: {
+        id: number
+    },
+    ticketTypes: SimpleTicketTypeDTO[],
+    image?: File
+}
+
+export type SimpleTicketTypeDTO = {
+    name: string,
+    price: number,
+    quantityAvailable: number
 }
 
 export type CreateLocationRequest = {
@@ -19,4 +32,10 @@ export type CreateLocationRequest = {
     building_nr: string,
     apartment_nr: string,
     zip_code: string,
+}
+
+export type CreateTicketRequest = {
+    ticketTypeId: number,
+    holderFirstName: string,
+    holderLastName: string
 }

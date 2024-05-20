@@ -29,4 +29,10 @@ public class Ticket {
 
     @Column(name = "purchase_date", nullable = false)
     private LocalDate purchaseDate;
+
+    @Column(name = "holder_first_name", nullable = false)
+    private String holderFirstName;
+
+    @Column(name = "holder_last_name", nullable = false)
+    private String holderLastName;
 }

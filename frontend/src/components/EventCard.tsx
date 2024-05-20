@@ -1,11 +1,9 @@
 import React from "react";
 import {EventDTO} from "../api/DTOs";
-
 import {AuthHelpers, UserTypes} from "../helpers/AuthHelpers";
 import DetailsButton from "./EventCardButtons/DetailsButton";
 import EditButton from "./EventCardButtons/EditButton";
 import DeleteButton from "./EventCardButtons/DeleteButton";
-import BuyButton from "./EventCardButtons/BuyButton";
 
 function getActionButtonsBasedOnRole(id: number) {
     const role = AuthHelpers.getRole()
@@ -14,7 +12,7 @@ function getActionButtonsBasedOnRole(id: number) {
         case UserTypes.ORGANIZER:
             return [<DetailsButton id={id}/>, <EditButton/>, <DeleteButton/>]
         default:
-            return [<DetailsButton id={id}/>, <BuyButton />]
+            return [<DetailsButton id={id}/>]
     }
 }
 
