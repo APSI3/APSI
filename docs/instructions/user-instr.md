@@ -19,7 +19,7 @@ Głównym elementem strony głównej, który również obecny jest na pozostały
 ### Lista wydarzeń
 ![](../assets/user_instr_event_list.png "Strona listy wydarzeń")
 
-Na stronie listy wydarzeń wyświetlane są wszystkie wydarzenia organizowane w ramach systemu. Po wejściu na stronę automatycznie wyświetlane są wydarzenia zaplanowane na najbliższy tydzień. Elementy listy wyświetlane są jako niezależne karty zawierające informacje o wydarzeniu, takie jak jego nazwa, opis, lokalizacja oraz data. Użytkownik może użyć dedykowanego przycisku z ikoną oka, aby przejśc na stronę wydarzenia, zawierającą więcej infomacji na jego temat. W karcie wydarzenia znajduje się również przycisk z ikoną koszyka, przekierowujący na stronę zakupu biletu. Lista wydarzeń może być filtrowana poprzez użycie wyszukiwarki nazw eventów oraz zmianę zakresu dat wyświetlanych wydarzeń.
+Na stronie listy wydarzeń wyświetlane są wszystkie wydarzenia organizowane w ramach systemu. Po wejściu na stronę automatycznie wyświetlane są wydarzenia zaplanowane na najbliższy tydzień. Elementy listy wyświetlane są jako niezależne karty zawierające informacje o wydarzeniu, takie jak jego nazwa, opis, lokalizacja oraz data. Użytkownik może użyć dedykowanego przycisku z ikoną oka, aby przejśc na stronę wydarzenia, zawierającą więcej infomacji na jego temat. Lista wydarzeń może być filtrowana poprzez użycie wyszukiwarki nazw eventów oraz zmianę zakresu dat wyświetlanych wydarzeń.
 
 <span style="color:red">** TODO APSI-17**</span>
 
@@ -29,13 +29,16 @@ Na stronie listy wydarzeń wyświetlane są wszystkie wydarzenia organizowane w 
 Strona wydarzenia zawiera szczególowe informacje na temat samego wydarzenia oraz sprzedawanych na niego biletów. Użytkownik może zapoznać się tutaj z informacjami takimi jak nazwa wydarzenia, jego opis, lokalizacja, data początkowa i końcowa oraz rodzaje, dostępność oraz ceny biletów. Użytkownik może dokonać zakupu wybranego przez siebie rodzaju biletów przy użyciu specjalnego przycisku zakupu. 
 
 ### Zakup biletu
+![](../assets/user_instr_event_buy.png "Zakup biletu")
+![](../assets/user_instr_ticket_qr.png "Kod QR")
 
-<span style="color:red">** TODO APSI-19 APSI-25**</span>
+Użytkownik może dokonać zakupu na stronie danego wydarzenia (`/event/{id}`). W tym celu musi użyc specjalnego przycisku z ikoną koszyka, znajdującego się przy interesującym go rodzaju biletów. System wyświetli wtedy okienko kupna biletu z prostym formularzem, w którym użytkownik musi wpisać imię oraz nazwisko osoby, która będzie przyszłym posiadaczem biletu. Znajduje się tam również informacja o dacie i formie płatności. Po zakupie biletu zostaje wyświetlone podsumowanie zamówienia, na którym znajdują się podstawowe informacje o bilecie oraz wygenerowany kod QR. 
 
-### Moje bilety 
+
+### Twoje bilety 
 ![](../assets/user_instr_mytickets.png "Strona Twoje Bilety")
 
-<span style="color:red">** TODO APSI-37**</span>
+Użytkownik może sprawdzić listę posiadanych biletów na stronie `Twoje Bilety` (`/tickets`). Po wejściu na stronę automatycznie wyświetlane są bilety na wydarzenia zaplanowane na najbliższy tydzień. Elementy listy wyświetlane są jako niezależne karty zawierające informacje o bilecie, takie jak opis samego wydarzenia, rodzaj biletu oraz kod QR. Lista biletów może być filtrowana poprzez zmianę zakresu dat wydarzeń.
 
 ### Anulowanie biletu
 
