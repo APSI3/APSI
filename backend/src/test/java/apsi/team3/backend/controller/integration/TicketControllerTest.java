@@ -1,6 +1,7 @@
 package apsi.team3.backend.controller.integration;
 
 import apsi.team3.backend.DTOs.EventDTO;
+import apsi.team3.backend.DTOs.ExtendedTicketDTO;
 import apsi.team3.backend.DTOs.LoggedUserDTO;
 import apsi.team3.backend.DTOs.Requests.LoginRequest;
 import apsi.team3.backend.DTOs.TicketDTO;
@@ -21,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -88,20 +90,60 @@ public class TicketControllerTest {
     }
 
     @Test
-    public void testGetTicketByUserIdReturnsTicket() throws Exception {
+    public void testGetExtendedTicketsByUserId() throws Exception {
         LoggedUserDTO loggedUser = login(UserType.PERSON);
-        String expectedJson = """
-            [{
-                "id": 1,
-                "ticketTypeId": 2,
-                "holderId": 2,
-                "purchaseDate": "2024-05-17",
-                "qrcode": null
-            }]
-        """;
+        String from = "2024-04-10T00:00:00Z";
+        String to = "2024-05-10T00:00:00Z";
+        int pageIndex = 0;
+        var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        var todayDateStr = LocalDate.now().format(formatter);
+        TicketDTO ticket = new ExtendedTicketDTO(
+                1L,
+                2L,
+                2L,
+                1L,
+                LocalDate.now(), null,
+                "Janan",
+                "Kowalski",
+                "testowe wydarzenie1",
+                LocalDate.of(2024, 4, 18), null, LocalDate.of(2024, 4, 18), null, "drogie bilety", BigDecimal.valueOf(19.99)
+                );
+        String qrCode = QRCodeGenerator.generateQRCode(ticket.toString());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/tickets/user/2").header("Authorization", loggedUser.getAuthHeader()))
+        String expectedJson = String.format("""
+            {
+                "items":[
+                    {
+                        "id":1,
+                        "ticketTypeId":2,
+                        "holderId":2,
+                        "eventId":1,
+                        "purchaseDate":"%s",
+                        "holderFirstName":"Jan",
+                        "holderLastName":"Kowalski",
+                        "eventName":"testowe wydarzenie1",
+                        "eventStartDate":"2024-04-18",
+                        "eventStartTime":null,
+                        "eventEndDate":"2024-04-18",
+                        "eventEndTime":null,
+                        "ticketTypeName":"drogie bilety",
+                        "price":19.99,
+                        "qrcode":"%s"
+                    }
+                ],
+                "pageIndex":0,
+                "totalItems":1,
+                "totalPages":1
+            }
+        """, todayDateStr, qrCode);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/tickets/user/2/extended")
+                        .param("from", from)
+                        .param("to", to)
+                        .param("pageIndex", String.valueOf(pageIndex))
+                        .header("Authorization", loggedUser.getAuthHeader()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(expectedJson));
     }
 
