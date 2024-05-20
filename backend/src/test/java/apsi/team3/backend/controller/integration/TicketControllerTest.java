@@ -89,7 +89,7 @@ public class TicketControllerTest {
 
     @Test
     public void testGetTicketByUserIdReturnsTicket() throws Exception {
-        LoggedUserDTO loggedUser = login();
+        LoggedUserDTO loggedUser = login(UserType.PERSON);
         String expectedJson = """
             [{
                 "id": 1,

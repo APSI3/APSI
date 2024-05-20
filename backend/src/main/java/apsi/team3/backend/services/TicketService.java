@@ -70,7 +70,7 @@ public class TicketService implements ITicketService {
                             ticketType.getPrice()
                     );
                     try {
-                        ticketDTO.setQRCode(QRCodeGenerator.generateQRCode(ticket.toString()));
+                        ticketDTO.setQRCode(QRCodeGenerator.generateQRCode(ticketDTO.toString()));
                     } catch (WriterException | IOException e) {
                         ticketDTO.setQRCode(null);
                     }

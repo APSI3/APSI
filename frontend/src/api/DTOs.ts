@@ -71,10 +71,6 @@ export interface TicketDTO {
     eventId: number,
 }
 
-export interface TicketDTOWithQR extends TicketDTO {
-    qrcode: string
-}
-
 export interface PaginatedList<T>{
     items: T[],
     pageIndex: number,

@@ -1,6 +1,6 @@
 import {useLocation} from "react-router-dom";
 import {Grid, Paper, Typography} from "@mui/material";
-import { EventDTO, TicketDTOWithQR } from "../api/DTOs";
+import { EventDTO, TicketDTO } from "../api/DTOs";
 import { useEffect, useState } from "react";
 import { Api } from "../api/Api";
 import { toastError } from "../helpers/ToastHelpers";
@@ -8,7 +8,7 @@ import { toastError } from "../helpers/ToastHelpers";
 export default function TicketSummaryPage() {
     const [event, setEvent] = useState<EventDTO | null>(null);
     const location = useLocation();
-    const ticketInfo = location.state as TicketDTOWithQR;
+    const ticketInfo = location.state as TicketDTO;
 
     useEffect(() => {
         if (!!ticketInfo.eventId) {

@@ -13,7 +13,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ initialFrom, initialT
 
     useEffect(() => {
         onDateChange(from, to);
-    }, [from, to]);
+    }, [from, onDateChange, to]);
 
     return (
         <>

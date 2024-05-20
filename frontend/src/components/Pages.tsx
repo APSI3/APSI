@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { PaginationBar } from "./PaginationBar";
 
 interface PagesProps {
@@ -10,16 +10,18 @@ interface PagesProps {
 const Pages: React.FC<PagesProps> = ({ initialIndex, maxIndex, onPageChange }) => {
     const [currentIndex, setCurrentIndex] = useState<number>(initialIndex);
 
-    useEffect(() => {
-        onPageChange(currentIndex);
-    }, [currentIndex]);
-
     return <>
         {maxIndex >= 1 &&
             <PaginationBar
                 currentIndex={currentIndex}
-                onNext={index => setCurrentIndex(index)}
-                onPrev={index => setCurrentIndex(index)}
+                onNext={index => {
+                    setCurrentIndex(index)
+                    onPageChange(index)
+                }}
+                onPrev={index => {
+                    setCurrentIndex(index)
+                    onPageChange(index)
+                }}
                 maxIndex={maxIndex}
             />
     }
