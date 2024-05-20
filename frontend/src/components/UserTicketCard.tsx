@@ -4,7 +4,6 @@ import {Grid, Link, Typography, Card, CardContent} from "@mui/material";
 
 
 const UserTicketCard: React.FC<{ ticket: ExtendedTicketDTO }> = ({ ticket }) => {
-    console.log(ticket)
     return (
         <Card style={{ margin: '1rem' }} elevation={3}>
             <CardContent>
@@ -29,10 +28,6 @@ const UserTicketCard: React.FC<{ ticket: ExtendedTicketDTO }> = ({ ticket }) => 
                                     </Grid>
                                 </Grid>
                             </Typography>
-                            {/*todo location*/}
-                            {/*<Typography variant="body2" component="p">*/}
-                            {/*    Location: {location}*/}
-                            {/*</Typography>*/}
                         </>
                     </Grid>
                     <Grid item xs={12} sm={4} alignItems="center" justifyContent="center" display='inline-flex' flexDirection='column' >

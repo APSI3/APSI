@@ -13,7 +13,7 @@ import java.time.LocalDate;
 
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
-    @Query(value = "SELECT t.id as id, ticket_type_id, holder_id, purchase_date, e.id as eventId, e.name as eventName, e.start_date as eventStartDate, e.start_time as eventStartTime, e.end_date as eventEndDate, e.end_time as eventEndTime, tt.name as ticketTypeName, price " +
+    @Query(value = "SELECT t.id as id, ticket_type_id, holder_id, holder_first_name, holder_last_name, purchase_date, e.id as eventId, e.name as eventName, e.start_date as eventStartDate, e.start_time as eventStartTime, e.end_date as eventEndDate, e.end_time as eventEndTime, tt.name as ticketTypeName, price " +
             "FROM tickets t " +
             "LEFT JOIN ticket_types tt ON (t.ticket_type_id=tt.id) " +
             "LEFT JOIN events e ON (tt.event_id=e.id) " +

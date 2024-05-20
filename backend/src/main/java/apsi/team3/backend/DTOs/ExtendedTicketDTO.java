@@ -12,7 +12,6 @@ import java.time.LocalTime;
 @EqualsAndHashCode(callSuper = false)
 @Getter
 public class ExtendedTicketDTO extends TicketDTO {
-    Long eventId;
     String eventName;
     LocalDate eventStartDate;
     LocalTime eventStartTime;
@@ -25,8 +24,11 @@ public class ExtendedTicketDTO extends TicketDTO {
             Long id,
             Long ticketTypeId,
             Long holderId,
-            LocalDate purchaseDate,
             Long eventId,
+            LocalDate purchaseDate,
+            String QRCode,
+            String holderFirstName,
+            String holderLastName,
             String eventName,
             LocalDate eventStartDate,
             LocalTime eventStartTime,
@@ -35,8 +37,7 @@ public class ExtendedTicketDTO extends TicketDTO {
             String ticketTypeName,
             BigDecimal price
     ) {
-        super(id, ticketTypeId, holderId, purchaseDate);
-        this.eventId = eventId;
+        super(id, ticketTypeId, holderId, eventId, purchaseDate, QRCode, holderFirstName, holderLastName);
         this.eventName = eventName;
         this.eventStartDate = eventStartDate;
         this.eventStartTime = eventStartTime;
