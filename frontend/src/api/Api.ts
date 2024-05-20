@@ -1,9 +1,9 @@
 import axios from "axios";
 import { ApiResponse } from "./Responses";
-import { CreateEventRequest, CreateLocationRequest, CreateTicketRequest, LoginRequest} from "./Requests";
+import { CreateEventRequest, CreateLocationRequest, LoginRequest, CreateTicketRequest } from "./Requests";
 import { toastError } from "../helpers/ToastHelpers";
 import { AuthHelpers } from "../helpers/AuthHelpers";
-import {CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO, TicketDTO, PaginatedList, ExtendedTicketDTO} from "./DTOs";
+import { CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, ExtendedTicketDTO, TicketTypeDTO, PaginatedList } from "./DTOs";
 
 axios.defaults.withCredentials = true;
 
@@ -63,7 +63,7 @@ export class Api {
         const body = {
             event: JSON.stringify(eventPart),
             image: request.image
-        }  
+        }
         return await getApiResponse<object, EventDTO>("post", this.url + "/events", body, true);
     }
 
