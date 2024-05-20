@@ -30,6 +30,17 @@ export interface TicketTypeDTO {
     quantityAvailable: number,
 }
 
+export interface ExtendedTicketDTO extends TicketDTO {
+    eventId: number,
+    eventName: string,
+    eventStartDate: Date,
+    eventStartTime: string,
+    eventEndDate: Date,
+    eventEndTime: string,
+    ticketTypeName: string,
+    price: number,
+}
+
 export interface CountryDTO {
     id: number,
     code: string,
@@ -50,6 +61,7 @@ export interface LocationDTO {
 }
 
 export interface TicketDTO {
+    qrcode?: string;
     id: number,
     ticketTypeId: number,
     holderId: number,
@@ -57,10 +69,6 @@ export interface TicketDTO {
     holderFirstName: string,
     holderLastName: string,
     eventId: number,
-}
-
-export interface TicketDTOWithQR extends TicketDTO {
-    qrcode: string
 }
 
 export interface PaginatedList<T>{

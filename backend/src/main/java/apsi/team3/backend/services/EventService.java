@@ -3,6 +3,7 @@ package apsi.team3.backend.services;
 import apsi.team3.backend.DTOs.DTOMapper;
 import apsi.team3.backend.DTOs.EventDTO;
 import apsi.team3.backend.DTOs.PaginatedList;
+import apsi.team3.backend.DTOs.TicketTypeDTO;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IEventService;
 import apsi.team3.backend.model.EventImage;
@@ -21,8 +22,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static apsi.team3.backend.helpers.PaginationValidator.validatePaginationArgs;
 
 @Service
 public class EventService implements IEventService {
@@ -67,11 +71,11 @@ public class EventService implements IEventService {
 
             if (eventDTO.getTicketTypes().size() > 0 && 
                 location.get().getCapacity() != 0 && 
-                location.get().getCapacity() < eventDTO.getTicketTypes().stream().mapToInt(e -> e.getQuantityAvailable()).sum()
+                location.get().getCapacity() < eventDTO.getTicketTypes().stream().mapToInt(TicketTypeDTO::getQuantityAvailable).sum()
             )
                 throw new ApsiValidationException("Ilość biletów większa niż dopuszczalna w danej lokalizacji", "tickets");
 
-            if (location.get().getCreator().getId() != loggedUser.getId())
+            if (!Objects.equals(location.get().getCreator().getId(), loggedUser.getId()))
                 throw new ApsiValidationException("Lokalizacja niedostępna", "location");
         }
 
@@ -90,14 +94,7 @@ public class EventService implements IEventService {
 
     @Override
     public PaginatedList<EventDTO> getEvents(LocalDate from, LocalDate to, int pageIndex) throws ApsiValidationException {
-        if (from == null)
-            throw new ApsiValidationException("Należy podać datę początkową", "from");
-        if (to == null)
-            throw new ApsiValidationException("Należy podać datę końcową", "to");
-        if (from.isAfter(to))
-            throw new ApsiValidationException("Data końcowa nie może być mniejsza niż początkowa", "to");
-        if (pageIndex < 0)
-            throw new ApsiValidationException("Indeks strony nie może być ujemny", "pageIndex");
+        validatePaginationArgs(from, to, pageIndex);
 
         var page = eventRepository.getEventsWithDatesBetween(PageRequest.of(pageIndex, PAGE_SIZE), from, to);
 
@@ -106,7 +103,7 @@ public class EventService implements IEventService {
             .map(DTOMapper::toDTO)
             .collect(Collectors.toList());
 
-        return new PaginatedList<EventDTO>(items, pageIndex, page.getTotalElements(), page.getTotalPages());
+        return new PaginatedList<>(items, pageIndex, page.getTotalElements(), page.getTotalPages());
     }
 
     @Override
