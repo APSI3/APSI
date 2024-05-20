@@ -4,6 +4,7 @@ import {Grid, Link, Typography, Card, CardContent} from "@mui/material";
 
 
 const UserTicketCard: React.FC<{ ticket: ExtendedTicketDTO }> = ({ ticket }) => {
+    console.log(ticket)
     return (
         <Card style={{ margin: '1rem' }} elevation={3}>
             <CardContent>
@@ -11,13 +12,22 @@ const UserTicketCard: React.FC<{ ticket: ExtendedTicketDTO }> = ({ ticket }) => 
                     <Grid item xs={12} sm={4} alignItems="center" justifyContent="center" display='inline-flex' flexDirection='column'>
                         <>
                             <Typography variant="h6" component="h3">
-                                <Link href={`/event/${ticket.eventId}`} target="_blank" rel="noopener">
+                                <Link href={`/event/${ticket.eventId}`} target="_self" rel="noopener">
                                     {ticket.eventName}
                                 </Link>
                             </Typography>
                             <Typography color="textSecondary">
-                                {/*TODO: time*/}
-                                <>{new Date(ticket.eventStartDate).toLocaleDateString()} {ticket.eventStartTime?.substring(0, 5)} - {new Date(ticket.eventEndDate).toLocaleDateString()} {ticket.eventEndTime?.substring(0, 5)}</>
+                                <Grid sx={{display: 'flex', flexDirection:'row', gap: '1rem'}} alignItems="center" justifyContent="center">
+                                    <Grid container sx={{ display:'flex', flexDirection:'column'}}>
+                                        <span>{ticket.eventStartTime?.substring(0, 5)}</span>
+                                        <span>{new Date(ticket.eventStartDate).toLocaleDateString()}</span>
+                                    </Grid>
+                                    <Grid item>-</Grid>
+                                    <Grid container sx={{ display:'flex', flexDirection:'column'}}>
+                                        <span>{ticket.eventEndTime?.substring(0, 5)}</span>
+                                        <span>{new Date(ticket.eventEndDate).toLocaleDateString()}</span>
+                                    </Grid>
+                                </Grid>
                             </Typography>
                             {/*todo location*/}
                             {/*<Typography variant="body2" component="p">*/}

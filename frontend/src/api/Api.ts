@@ -3,7 +3,7 @@ import { ApiResponse } from "./Responses";
 import { CreateEventRequest, CreateLocationRequest, LoginRequest, CreateTicketRequest } from "./Requests";
 import { toastError } from "../helpers/ToastHelpers";
 import { AuthHelpers } from "../helpers/AuthHelpers";
-import { CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, ExtendedTicketDTO, TicketTypeDTO, PaginatedList } from "./DTOs";
+import {CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, ExtendedTicketDTO, TicketTypeDTO, PaginatedList, TicketDTO} from "./DTOs";
 
 axios.defaults.withCredentials = true;
 

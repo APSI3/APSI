@@ -1,6 +1,7 @@
 package apsi.team3.backend.DTOs;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.springframework.hateoas.server.core.Relation;
 
 import java.math.BigDecimal;
@@ -9,6 +10,7 @@ import java.time.LocalTime;
 
 @Relation(collectionRelation = "tickets", itemRelation = "tickets")
 @EqualsAndHashCode(callSuper = false)
+@Getter
 public class ExtendedTicketDTO extends TicketDTO {
     Long eventId;
     String eventName;
