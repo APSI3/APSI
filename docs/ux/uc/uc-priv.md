@@ -58,7 +58,7 @@ Przypisane przypadki użycia:
 | __War. końcowe__       | <ul><li> Użytkownik pomyślnie wyświetlił stronę wydarzenia  </li></ul>                                         
 | __W. funkcjonalne__    | <ul><li> System wyświetla szczegółowe dane o wydarzeniu </li></ul>    
 | __W. niefunkcjonalne__ | <ul><li> Widok wydarzenia powinien być estetyczny </li><li> Dane wydarzenia powinny być przedstawione w sposób czytelny </li></ul>                                       
-| __Scenariusz__         | 1. Użytkownik wchodzi na stronę `Znajdź wydarzenie` (UC1) <br> 2. Użytkownik znajduje interesujące go wydarzenie w liście wydarzeń <br> 3. Użytkownik używa przycisku przekierowywującego na stronę wydarzenia <br> 4. System wyświetla użytkownikowi stronę z danymi dotyczącymi wybranego wydarzenia
+| __Scenariusz__         | 1. Użytkownik wchodzi na stronę `Znajdź wydarzenie` (UC1) <br> 2. Użytkownik znajduje interesujące go wydarzenie w liście wydarzeń <br> 3. Użytkownik używa przycisku przekierowywującego na stronę wydarzenia <br> 4. System wyświetla użytkownikowi stronę z danymi dotyczącymi wybranego wydarzenia oraz biletów
   
        
 <br>
@@ -94,8 +94,8 @@ Przypisane przypadki użycia:
 | __War. końcowe__       | <ul><li> Użytkownik pomyślnie zakupił bilet </li></ul>                                         
 | __W. funkcjonalne__    | <ul><li> System generuje rezerwację biletu i udostępnia sposób płatności </li><li> System wyświetla informacje o opcjach biletu </li> </ul>    
 | __W. niefunkcjonalne__ | <ul><li> Interfejs kupna biletu powinien być przejrzysty </li><li> Transakcja kupna biletu musi być bezpieczna </li> </ul>                                       
-| __Scenariusz__         | 1. Użytkownik wchodzi na stronę wydarzenia (UC3) <br> 2. Użytkownik wybiera opcję zakupu biletu <br> 3. System wyświetla widok zamówienia biletu, w tym jego warianty (jeśli istnieją) <br> 4. Użytkownik wybiera bilet i potwierdza zakup <br> 5. Użytkownik realizuje płatność <span style="color:red"> [E1: Błąd w realizacji] </span> <br> 6. System potwierdza dokonanie zakupu  <br> 7. System wysyła użytkownikowi jego kopię biletu
-| __Scenariusz wyjątku__ | E1: Błąd w realizacji <br> &nbsp;&nbsp;&nbsp;a. Użytkownikowi nie udało się sfinalizować transakcji  <br> &nbsp;&nbsp;&nbsp;b. System informuje o błędzie transakcji i pozwala na powrót do strony wydarzenia  
+| __Scenariusz__         | 1. Użytkownik wchodzi na stronę wydarzenia (UC3) <br> 2. Użytkownik wybiera interesujący go rodzaj biletu <br> 3. Użytkownik używa przycisku zakupu dla danego rodzaju biletu <br> 4. System wyświetla okno zamówienia biletu <br> 5. Użytkownik zaznajamia się z informacjami dot. zakupu i wypełnia formularz osobowy <br> 6. System potwierdza dokonanie zakupu  <br> 7. System wysyła użytkownikowi jego kopię biletu <br> 8. System wyświetla użytkownikowi panel podsumowujący zakup, zawierający kod QR biletu <br> 9. Użytkownik realizuje płatność <span style="color:red"> [E1: Błąd w realizacji] </span> 
+| __Scenariusz wyjątku__ | E1: Błąd w realizacji <br> &nbsp;&nbsp;&nbsp;a. Użytkownikowi nie udało się sfinalizować transakcji w ustalonym czasie  <br> &nbsp;&nbsp;&nbsp;b. System dokonuje zwrotu biletu do puli
 
 <br>
 
