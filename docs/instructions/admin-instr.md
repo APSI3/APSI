@@ -6,7 +6,7 @@ W celu zalogowania się na konto administrator musi on wejść na stronę logowa
 ### Nawigacja i Strona główna
 ![](../assets/adm_instr_main.png "Strona główna aplikacji")
 
-Głównym elementem strony głównej, który również obecny jest na pozostałych stronach aplikacji jest pasek nawigacyjny. Przy jego użyciu administrator może przejść do strony zawierającej listę wniosków o stworzenie konta organizatorów (przycisk `Wnioski`), do strony z listą wszystkich kont użytkowników (przycisk `Użytkownicy`), do strony zawierającej listę wydarzeń organizowanych w ramach aplikacji (przycisk `Wydarzenia`) lub do strony z listą wszystkich lokalizacji (przycisk `Lokalizacje`). Ponadto pasek nawigacyjny zawiera przycisk `Wyloguj` odpowiadający za wylogowywanie użytkownika z aplikacji oraz przekierowywujący do strony logowania. Dla administratorów dodatkowo w prawym dolnym rogu wyświetlane są przyciski odpowiadające kolejno za dodanie wydarzenia (ikona ze znakiem plus) oraz dodanie lokalizacji (ikona pinezki).
+Głównym elementem strony głównej, który również obecny jest na pozostałych stronach aplikacji, jest pasek nawigacyjny. Przy jego użyciu administrator może przejść do strony zawierającej listę wniosków o stworzenie konta organizatorów (przycisk `Wnioski`), do strony z listą wszystkich kont użytkowników (przycisk `Użytkownicy`), do strony zawierającej listę wydarzeń organizowanych w ramach aplikacji (przycisk `Wydarzenia`) lub do strony z listą wszystkich lokalizacji (przycisk `Lokalizacje`). Ponadto pasek nawigacyjny zawiera przycisk `Wyloguj` odpowiadający za wylogowywanie użytkownika z aplikacji oraz przekierowujący do strony logowania. Dla administratorów dodatkowo w prawym dolnym rogu wyświetlane są przyciski odpowiadające kolejno za dodanie wydarzenia (ikona ze znakiem plus) oraz dodanie lokalizacji (ikona pinezki).
 
 <!-- ### Lista wniosków
 ![](../assets/adm_instr_appl_list.png "Strona listy wniosków")
@@ -26,12 +26,12 @@ Głównym elementem strony głównej, który również obecny jest na pozostały
 ### Lista wydarzeń
 ![](../assets/adm_instr_event_list.png "Strona listy wydarzeń")
 
-Na stronie listy wydarzeń wyświetlane są wszystkie eventy organizowane w ramach systemu. Po wejściu na stronę automatycznie wyświetlane są wydarzenia zaplanowane na najbliższy tydzień. Elementy listy wyświetlane są jako niezależne karty zawierające informacje o wydarzeniu, takie jak jego nazwa, opis, lokalizacja oraz data. Administrator może użyć dedykowanego przycisku z ikoną oka, aby przejśc na stronę wydarzenia, zawierającą więcej infomacji na jego temat. W karcie wydarzenia znajduje się również przycisk z ikoną ołówka, przekierowujący na stronę edycji wydarzenia oraz przycisk z ikoną kosza umożliwiający usunięcie wydarzenia. Lista wydarzeń może być filtrowana poprzez użycie wyszukiwarki nazw eventów oraz zmianę zakresu dat wyświetlanych wydarzeń.
+Na stronie listy wydarzeń wyświetlane są wszystkie eventy organizowane w ramach systemu. Po wejściu na stronę automatycznie wyświetlane są wydarzenia zaplanowane na najbliższy tydzień. Elementy listy wyświetlane są jako niezależne karty zawierające informacje o wydarzeniu, takie jak jego nazwa, opis, lokalizacja oraz data. Administrator może użyć dedykowanego przycisku z ikoną oka, aby przejść na stronę wydarzenia, zawierającą więcej informacji na jego temat. W karcie wydarzenia znajduje się również przycisk z ikoną ołówka, przekierowujący na stronę edycji wydarzenia oraz przycisk z ikoną kosza umożliwiający usunięcie wydarzenia. Lista wydarzeń może być filtrowana poprzez użycie wyszukiwarki nazw eventów oraz zmianę zakresu dat wyświetlanych wydarzeń.
 
 ### Strona wydarzenia
 ![](../assets/adm_instr_event.png "Strona wydarzenia")
 
-Strona wydarzenia zawiera szczególowe informacje na temat samego wydarzenia oraz sprzedawanych na niego biletów. Administrator może zapoznać się tutaj z informacjami takimi jak nazwa wydarzenia, jego opis, lokalizacja, data początkowa i końcowa oraz rodzaje, dostępność oraz ceny biletów.
+Strona wydarzenia zawiera szczegółowe informacje na temat samego wydarzenia oraz sprzedawanych na niego biletów. Administrator może zapoznać się tutaj z informacjami takimi jak nazwa wydarzenia, jego opis, lokalizacja, data początkowa i końcowa oraz rodzaje, dostępność oraz ceny biletów.
 
 <!-- ### Edycja wydarzenia
 

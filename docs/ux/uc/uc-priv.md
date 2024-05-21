@@ -58,7 +58,7 @@ Przypisane przypadki użycia:
 | __War. końcowe__       | <ul><li> Użytkownik pomyślnie wyświetlił stronę wydarzenia  </li></ul>                                         
 | __W. funkcjonalne__    | <ul><li> System wyświetla szczegółowe dane o wydarzeniu </li></ul>    
 | __W. niefunkcjonalne__ | <ul><li> Widok wydarzenia powinien być estetyczny </li><li> Dane wydarzenia powinny być przedstawione w sposób czytelny </li></ul>                                       
-| __Scenariusz__         | 1. Użytkownik wchodzi na stronę `Znajdź wydarzenie` (UC1) <br> 2. Użytkownik znajduje interesujące go wydarzenie w liście wydarzeń <br> 3. Użytkownik używa przycisku przekierowywującego na stronę wydarzenia <br> 4. System wyświetla użytkownikowi stronę z danymi dotyczącymi wybranego wydarzenia oraz biletów
+| __Scenariusz__         | 1. Użytkownik wchodzi na stronę `Znajdź wydarzenie` (UC1) <br> 2. Użytkownik znajduje interesujące go wydarzenie w liście wydarzeń <br> 3. Użytkownik używa przycisku przekierowującego na stronę wydarzenia <br> 4. System wyświetla użytkownikowi stronę z danymi dotyczącymi wybranego wydarzenia oraz biletów
   
        
 <br>

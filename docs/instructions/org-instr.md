@@ -1,7 +1,7 @@
 <!-- ### Tworzenie konta
 ![](../assets/org_instr_reg.png "Strona rejestracji")
 
-Aby korzystać z aplikacji organizator musi posiadać specjalne konto. W tym celu musi on wejść na stronę rejestracji (`/register`). Znajduje się na niej link prowadzący do dedykowanego formularza dla organizatorów. Formularz składa się z pól danych konta (`Login`,`Adres e-mail`, `Hasło`, `Powtórz hasło`) oraz pól przeznaczonych dla danych organizatora/organizacji (`Nazwa organizatora`). Aby formularz został zaakceptowany użytkownik musi uzupełnić wszystkie wymagane pola oraz podać nieużyty wcześniej w systemie login oraz e-mail, a wybrane przez niego hasła muszą być identyczne, spełniające wymagania dot. długości. Formularz wysyłany jest przy użyciu przycisku `Wyślij wniosek`. Złożony wniosek musi być następnie zaakceptowany przez administratora. Decyzja dot. wniosku zostaje przesłana w wiadomości na podany wcześniej adres e-mail. Pod formularzem rejestracyjnym znajduje się także link prowadzący do strony logowania.
+Aby korzystać z aplikacji organizator musi posiadać specjalne konto. W tym celu musi on wejść na stronę rejestracji (`/register`). Znajduje się na niej link prowadzący do dedykowanego formularza dla organizatorów. Formularz składa się z pól danych konta (`Login`,`Adres e-mail`, `Hasło`, `Powtórz hasło`) oraz pól przeznaczonych dla danych organizatora/organizacji (`Nazwa organizatora`). Aby formularz został zaakceptowany, użytkownik musi uzupełnić wszystkie wymagane pola oraz podać nieużyty wcześniej w systemie login oraz e-mail, a wybrane przez niego hasła muszą być identyczne, spełniające wymagania dot. długości. Formularz wysyłany jest przy użyciu przycisku `Wyślij wniosek`. Złożony wniosek musi być następnie zaakceptowany przez administratora. Decyzja dot. wniosku zostaje przesłana w wiadomości na podany wcześniej adres e-mail. Pod formularzem rejestracyjnym znajduje się także link prowadzący do strony logowania.
 
 <span style="color:red">** TODO APSI-34**</span> -->
 
@@ -13,19 +13,19 @@ W celu zalogowania się na konto organizator musi on wejść na stronę logowani
 ### Nawigacja i Strona główna
 ![](../assets/org_instr_main.png "Strona główna aplikacji")
 
-Głównym elementem strony głównej, który również obecny jest na pozostałych stronach aplikacji jest pasek nawigacyjny. Przy jego użyciu organizator może przejść do strony zawierającej listę wydarzeń organizowanych przez niego w ramach aplikacji (przycisk `Twoje wydarzenia`) lub do listy posiadanych lokalizacji (przycisk `Twoje Lokalizacje`). Ponadto pasek nawigacyjny zawiera przycisk `Wyloguj` odpowiadający za wylogowywanie użytkownika z aplikacji oraz przekierowywujący do strony logowania. Dla organizatorów dodatkowo w prawym dolnym rogu wyświetlane są przyciski odpowiadające kolejno za dodanie wydarzenia (ikona ze znakiem plus) oraz dodanie lokalizacji (ikona pinezki).
+Głównym elementem strony głównej, który również obecny jest na pozostałych stronach aplikacji, jest pasek nawigacyjny. Przy jego użyciu organizator może przejść do strony zawierającej listę wydarzeń organizowanych przez niego w ramach aplikacji (przycisk `Twoje wydarzenia`) lub do listy posiadanych lokalizacji (przycisk `Twoje Lokalizacje`). Ponadto pasek nawigacyjny zawiera przycisk `Wyloguj` odpowiadający za wylogowywanie użytkownika z aplikacji oraz przekierowujący do strony logowania. Dla organizatorów dodatkowo w prawym dolnym rogu wyświetlane są przyciski odpowiadające kolejno za dodanie wydarzenia (ikona ze znakiem plus) oraz dodanie lokalizacji (ikona pinezki).
 
 ### Lista wydarzeń organizatora
 ![](../assets/org_instr_event_list.png "Strona listy wydarzeń")
 
-Na stronie listy wydarzeń organizatora wyświetlane są wszystkie jego eventy organizowane w ramach systemu. Po wejściu na stronę automatycznie wyświetlane są wydarzenia zaplanowane na najbliższy tydzień. Elementy listy wyświetlane są jako niezależne karty zawierające informacje o wydarzeniu, takie jak jego nazwa, opis, lokalizacja oraz data. Organizator może użyć dedykowanego przycisku z ikoną oka, aby przejśc na stronę wydarzenia, zawierającą więcej infomacji na jego temat. W karcie wydarzenia znajduje się również przycisk z ikoną ołówka, przekierowujący na stronę edycji wydarzenia oraz przycisk z ikoną kosza umożliwiający usunięcie wydarzenia. Lista wydarzeń może być filtrowana poprzez użycie wyszukiwarki nazw eventów oraz zmianę zakresu dat wyświetlanych wydarzeń.
+Na stronie listy wydarzeń organizatora wyświetlane są wszystkie jego eventy organizowane w ramach systemu. Po wejściu na stronę automatycznie wyświetlane są wydarzenia zaplanowane na najbliższy tydzień. Elementy listy wyświetlane są jako niezależne karty zawierające informacje o wydarzeniu, takie jak jego nazwa, opis, lokalizacja oraz data. Organizator może użyć dedykowanego przycisku z ikoną oka, aby przejść na stronę wydarzenia, zawierającą więcej informacji na jego temat. W karcie wydarzenia znajduje się również przycisk z ikoną ołówka, przekierowujący na stronę edycji wydarzenia oraz przycisk z ikoną kosza umożliwiający usunięcie wydarzenia. Lista wydarzeń może być filtrowana poprzez użycie wyszukiwarki nazw eventów oraz zmianę zakresu dat wyświetlanych wydarzeń.
 
 <!-- <span style="color:red">** TODO APSI-17**</span> -->
 
 ### Strona wydarzenia
 ![](../assets/org_instr_event.png "Strona wydarzenia")
 
-Strona wydarzenia zawiera szczególowe informacje na temat samego wydarzenia oraz sprzedawanych na niego biletów. Organizator może zapoznać się tutaj z informacjami takimi jak nazwa wydarzenia, jego opis, lokalizacja, data początkowa i końcowa oraz rodzaje, dostępność oraz ceny biletów.
+Strona wydarzenia zawiera szczegółowe informacje na temat samego wydarzenia oraz sprzedawanych na niego biletów. Organizator może zapoznać się tutaj z informacjami takimi jak nazwa wydarzenia, jego opis, lokalizacja, data początkowa i końcowa oraz rodzaje, dostępność oraz ceny biletów.
 
 <!-- ### Edycja wydarzenia
 
