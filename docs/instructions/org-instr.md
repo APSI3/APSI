@@ -49,9 +49,8 @@ Na stronie listy lokalizacji organizatora wyświetlane są wszystkie jego lokali
 <span style="color:red">** TODO APSI-30**</span>
 
 ### Tworzenie wydarzenia
-|||
-|:-:|:-:|
-|![](../assets/org_instr_add_event.png "Tworzenie wydarzenia")|![](../assets/org_instr_add_event2.png "Tworzenie wydarzenia")|
+![](../assets/org_instr_add_event.png "Tworzenie wydarzenia")
+![](../assets/org_instr_add_event2.png "Tworzenie wydarzenia")
 
 
 W celu dodania nowego wydarzenia organizator musi użyć dedykowanego przycisku z ikoną znaku plus zlokalizowanego w prawym dolnym rogu aplikacji. Wyświetlone zostanie okno z formularzem tworzenia wydarzenia. Organizator musi wypełnić danymi wyświetlane pola, po czym przesłać formularz. Pola `Nazwa`, `Od`, `Do` są obowiązkowe. Należy podać przynajmniej jeden typ biletów. Możliwe jest oddanie grafiki do wydarzenia. Po pomyślnym przesłaniu formularza wyświetlone zostanie potwierdzenie sukcesu operacji.

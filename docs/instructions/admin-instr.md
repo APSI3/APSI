@@ -47,9 +47,8 @@ Strona wydarzenia zawiera szczególowe informacje na temat samego wydarzenia ora
 Na stronie listy lokalizacji wyświetlane są wszystkie lokalizacje dodane do systemu.
 
 ### Tworzenie wydarzenia
-|||
-|:-:|:-:|
-|![](../assets/org_instr_add_event.png "Tworzenie wydarzenia")|![](../assets/org_instr_add_event2.png "Tworzenie wydarzenia")|
+![](../assets/adm_instr_add_event.png "Tworzenie wydarzenia")
+![](../assets/adm_instr_add_event2.png "Tworzenie wydarzenia")
 
 W celu dodania nowego wydarzenia administrator musi użyć dedykowanego przycisku z ikoną znaku plus zlokalizowanego w prawym dolnym rogu aplikacji. Wyświetlone zostanie okno z formularzem tworzenia wydarzenia. Należy wypełnić danymi wyświetlane pola, po czym przesłać formularz. Pola `Nazwa`, `Od`, `Do` są obowiązkowe. Należy podać przynajmniej jeden typ biletów. Możliwe jest oddanie grafiki do wydarzenia. Po pomyślnym przesłaniu formularza wyświetlone zostanie potwierdzenie sukcesu operacji.
 
