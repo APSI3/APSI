@@ -6,7 +6,7 @@ repo_url: https://github.com/APSI3/APSI
 edit_uri: ""
 
 nav:
-  - Eventix: index.md
+  - APSI: index.md
   - Analiza UX:
       - Aktorzy: ux/ux-actors.md
       - Przypadki użycia:

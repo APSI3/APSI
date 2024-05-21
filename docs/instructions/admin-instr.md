@@ -8,7 +8,7 @@ W celu zalogowania się na konto administrator musi on wejść na stronę logowa
 
 Głównym elementem strony głównej, który również obecny jest na pozostałych stronach aplikacji jest pasek nawigacyjny. Przy jego użyciu administrator może przejść do strony zawierającej listę wniosków o stworzenie konta organizatorów (przycisk `Wnioski`), do strony z listą wszystkich kont użytkowników (przycisk `Użytkownicy`), do strony zawierającej listę wydarzeń organizowanych w ramach aplikacji (przycisk `Wydarzenia`) lub do strony z listą wszystkich lokalizacji (przycisk `Lokalizacje`). Ponadto pasek nawigacyjny zawiera przycisk `Wyloguj` odpowiadający za wylogowywanie użytkownika z aplikacji oraz przekierowywujący do strony logowania. Dla administratorów dodatkowo w prawym dolnym rogu wyświetlane są przyciski odpowiadające kolejno za dodanie wydarzenia (ikona ze znakiem plus) oraz dodanie lokalizacji (ikona pinezki).
 
-### Lista wniosków
+<!-- ### Lista wniosków
 ![](../assets/adm_instr_appl_list.png "Strona listy wniosków")
 
 <span style="color:red">** TODO APSI-50 **</span>
@@ -21,7 +21,7 @@ Głównym elementem strony głównej, który również obecny jest na pozostały
 ![](../assets/adm_instr_user_list.png "Strona listy użytkowników")
 
 
-<span style="color:red">** TODO APSI-49 **</span>
+<span style="color:red">** TODO APSI-49 **</span> -->
 
 ### Lista wydarzeń
 ![](../assets/adm_instr_event_list.png "Strona listy wydarzeń")
@@ -33,13 +33,13 @@ Na stronie listy wydarzeń wyświetlane są wszystkie eventy organizowane w rama
 
 Strona wydarzenia zawiera szczególowe informacje na temat samego wydarzenia oraz sprzedawanych na niego biletów. Administrator może zapoznać się tutaj z informacjami takimi jak nazwa wydarzenia, jego opis, lokalizacja, data początkowa i końcowa oraz rodzaje, dostępność oraz ceny biletów.
 
-### Edycja wydarzenia
+<!-- ### Edycja wydarzenia
 
 <span style="color:red">** TODO APSI-26 **</span>
 
 ### Usunięcie wydarzenia
 
-<span style="color:red">** TODO APSI-27**</span>
+<span style="color:red">** TODO APSI-27**</span> -->
 
 ### Lista lokalizacji
 ![](../assets/adm_instr_loc_list.png "Strona listy lokalizacji")
