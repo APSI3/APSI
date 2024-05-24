@@ -8,7 +8,7 @@ export default function PersonHeader() {
                 <a className="nav-link" href={Paths.events}>Twoje wydarzenia</a>
             </li>
             <li className="nav-item">
-                <a className="nav-link" href={Paths.tickets}>Twoje lokalizacje</a>
+                <a className="nav-link" href={Paths.locations}>Twoje lokalizacje</a>
             </li>
         </ul>
     </div>

@@ -23,7 +23,7 @@ Przypisane przypadki użycia:
 | __War. końcowe__       | <ul><li>Użytkownik przejrzał listę wydarzeń</li></ul>                                          
 | __W. funkcjonalne__    | <ul><li>System wyświetla wszystkie aktualne wydarzenia zarejestrowane w systemie</li></ul>     
 | __W. niefunkcjonalne__ | <ul><li>Widok wydarzeń powinien być estetyczny</li></ul>                                       
-| __Scenariusz__         | 1. Użytkownik otwiera widok listy wydarzeń <br> 2. System wyświetla ofertę wydarzeń            
+| __Scenariusz__         | 1. Użytkownik otwiera stronę `Znajdź wydarzenie` <br> 2. System wyświetla stronę z listą wydarzeń         
 
 <br>
 
@@ -40,8 +40,8 @@ Przypisane przypadki użycia:
 | __War. końcowe__       | <ul><li> Użytkownik pomyślnie wyszukał wydarzenie </li></ul>                                         
 | __W. funkcjonalne__    | <ul><li> System posiada wyszukiwarkę umożliwiającą wyszukanie wydarzenia </li></ul>    
 | __W. niefunkcjonalne__ | <ul><li> Wyszukiwarka powinna być umiejscowiona w widocznym i intuicyjnym miejscu na stronie listy wydarzeń </li></ul>                                       
-| __Scenariusz__         | 1. Użytkownik wprowadza nazwę konkretnego wydarzenia <br> 2. System aktualizuje prezentowaną listę wydarzeń <span style="color:red"> [E1: Wyszukanie nie zwraca żadnych wyników] </span>.
-| __Scenariusz wyjątku__ | E1. Wyszukanie nie zwraca żadnych wyników <br> &nbsp;&nbsp;&nbsp;a. Nie zostało odnalezione wydarzenie zawierające podaną frazę. System informuje użytkownika o braku wyników wyszukiwania           
+| __Scenariusz__         | 1. Użytkownik wchodzi na stronę `Znajdź wydarzenie` (UC1) <br> 2. Użytkownik wprowadza nazwę konkretnego wydarzenia w wyszukiwarkę <br> 3. System aktualizuje prezentowaną listę wydarzeń <span style="color:red"> [E1: Wyszukanie nie zwraca żadnych wyników] </span>.
+| __Scenariusz wyjątku__ | E1. Wyszukanie nie zwraca żadnych wyników <br> &nbsp;&nbsp;&nbsp;a. Nie zostało odnalezione wydarzenie zawierające podaną frazę.<br> &nbsp;&nbsp;&nbsp;b. System informuje użytkownika o braku wyników wyszukiwania przy użyciu powiadomienia             
 
 <br>
 
@@ -58,7 +58,7 @@ Przypisane przypadki użycia:
 | __War. końcowe__       | <ul><li> Użytkownik pomyślnie wyświetlił stronę wydarzenia  </li></ul>                                         
 | __W. funkcjonalne__    | <ul><li> System wyświetla szczegółowe dane o wydarzeniu </li></ul>    
 | __W. niefunkcjonalne__ | <ul><li> Widok wydarzenia powinien być estetyczny </li><li> Dane wydarzenia powinny być przedstawione w sposób czytelny </li></ul>                                       
-| __Scenariusz__         | 1. Użytkownik znajduje interesujące go wydarzenie w liście wydarzeń i wybiera je  <br> 2. System wyświetla użytkownikowi dane dotyczące wybranego wydarzenia
+| __Scenariusz__         | 1. Użytkownik wchodzi na stronę `Znajdź wydarzenie` (UC1) <br> 2. Użytkownik znajduje interesujące go wydarzenie w liście wydarzeń <br> 3. Użytkownik używa przycisku przekierowującego na stronę wydarzenia <br> 4. System wyświetla użytkownikowi stronę z danymi dotyczącymi wybranego wydarzenia oraz biletów
   
        
 <br>
@@ -76,8 +76,8 @@ Przypisane przypadki użycia:
 | __War. końcowe__       | <ul><li> Użytkownik pomyślnie założył konto </li><li> Użytkownik może zalogować się na konto </li> </ul>                                         
 | __W. funkcjonalne__    | <ul><li> System pozwala na założenie konta </li><li> System dokonuje walidacji </li><li> System informuje o błędach lub sukcesach </li> </ul>     
 | __W. niefunkcjonalne__ | <ul><li> Formularz musi być prosty i przejrzysty </li></ul>                                       
-| __Scenariusz__         | 1. Użytkownik wchodzi na dowolną stronę aplikacji <br> 2. Użytkownik wchodzi w widok rejestracji <br> 3. System wyświetla widok formularza rejestracji <br> 4. Użytkownik wypełnia formularz <br> 5. Użytkownik przesyła formularz <br> 6. System dokonuje walidacji danych <span style="color:red"> [E1: Dane nie przechodzą walidacji] </span> <br> 7. System tworzy konto użytkownika <br> 8. System potwierdza rejestrację <br> 9. System przekierowuje użytkownika do widoku logowania  
-| __Scenariusz wyjątku__ | E1: Dane nie przechodzą walidacji <br> &nbsp;&nbsp;&nbsp;a. Użytkownik podaje dane, które nie przechodzą walidacji lub są niepełne <br> &nbsp;&nbsp;&nbsp;b. System wyświetla użytkownikowi informację o błędzie   
+| __Scenariusz__         | 1. Użytkownik wchodzi na stronę rejestracji <br> 2. System wyświetla stronę z formularzem rejestracji dla kont prywatnych <br> 3. Użytkownik wypełnia formularz <br> 4. Użytkownik przesyła formularz <br> 5. System dokonuje walidacji danych <span style="color:red"> [E1: Dane nie przechodzą walidacji] </span> <br> 6. System tworzy konto użytkownika w bazie danych <br> 7. System wyświetla powiadomienie o sukcesie rejestracji <br> 9. System przekierowuje użytkownika do widoku logowania  
+| __Scenariusz wyjątku__ | E1: Dane nie przechodzą walidacji <br> &nbsp;&nbsp;&nbsp;a. Użytkownik podaje dane, które nie przechodzą walidacji lub są niepełne <br> &nbsp;&nbsp;&nbsp;b. System wyświetla użytkownikowi w powiadomieniu informację o błędzie   
 
 <br>
 
@@ -94,8 +94,8 @@ Przypisane przypadki użycia:
 | __War. końcowe__       | <ul><li> Użytkownik pomyślnie zakupił bilet </li></ul>                                         
 | __W. funkcjonalne__    | <ul><li> System generuje rezerwację biletu i udostępnia sposób płatności </li><li> System wyświetla informacje o opcjach biletu </li> </ul>    
 | __W. niefunkcjonalne__ | <ul><li> Interfejs kupna biletu powinien być przejrzysty </li><li> Transakcja kupna biletu musi być bezpieczna </li> </ul>                                       
-| __Scenariusz__         | 1. Użytkownik wchodzi na stronę wydarzenia (UC3) <br> 2. Użytkownik wybiera opcję zakupu biletu <br> 3. System wyświetla widok zamówienia biletu, w tym jego warianty (jeśli istnieją) <br> 4. Użytkownik wybiera bilet i potwierdza zakup <br> 5. Użytkownik realizuje płatność <span style="color:red"> [E1: Błąd w realizacji] </span> <br> 6. System potwierdza dokonanie zakupu  <br> 7. System wysyła użytkownikowi jego kopię biletu
-| __Scenariusz wyjątku__ | E1: Błąd w realizacji <br> &nbsp;&nbsp;&nbsp;a. Użytkownikowi nie udało się sfinalizować transakcji  <br> &nbsp;&nbsp;&nbsp;b. System informuje o błędzie transakcji i pozwala na powrót do strony wydarzenia  
+| __Scenariusz__         | 1. Użytkownik wchodzi na stronę wydarzenia (UC3) <br> 2. Użytkownik wybiera interesujący go rodzaj biletu <br> 3. Użytkownik używa przycisku zakupu dla danego rodzaju biletu <br> 4. System wyświetla okno zamówienia biletu <br> 5. Użytkownik zaznajamia się z informacjami dot. zakupu i wypełnia formularz osobowy <br> 6. System potwierdza dokonanie zakupu  <br> 7. System wysyła użytkownikowi jego kopię biletu <br> 8. System wyświetla użytkownikowi panel podsumowujący zakup, zawierający kod QR biletu <br> 9. Użytkownik realizuje płatność <span style="color:red"> [E1: Błąd w realizacji] </span> 
+| __Scenariusz wyjątku__ | E1: Błąd w realizacji <br> &nbsp;&nbsp;&nbsp;a. Użytkownikowi nie udało się sfinalizować transakcji w ustalonym czasie  <br> &nbsp;&nbsp;&nbsp;b. System dokonuje zwrotu biletu do puli
 
 <br>
 
@@ -130,5 +130,5 @@ Przypisane przypadki użycia:
 | __War. końcowe__       | <ul><li> Użytkownik przejrzał historię zakupionych biletów </li></ul>                                         
 | __W. funkcjonalne__    | <ul><li> System zachowuje historię zakupu biletów dla użytkowników </li><li> Użytkownicy mogą zapoznać się ze swoją historią zakupów </li></ul>    
 | __W. niefunkcjonalne__ | -                                       
-| __Scenariusz__         | 1.  Użytkownik otwiera widok historii zakupionych biletów <br> 2. System wyświetla listę zakupionych biletów posortowaną w kolejności zakupu, wyświetlającą podstawowe dane dot. biletów <br> <span style="color:blue">  [O1: Wyświetlenie szczegółów] </span>
+| __Scenariusz__         | 1.  Użytkownik otwiera stronę `Twoje bilety` zawierającą historię zakupionych przez niego biletów <br> 2. System wyświetla listę zakupionych biletów posortowaną w kolejności zakupu, zawierającą podstawowe dane dot. biletów <br> <span style="color:blue">  [O1: Wyświetlenie szczegółów] </span>
 | __Scenariusz opcjonalny__ |  O1: Wyświetlenie szczegółów  <br> &nbsp;&nbsp;&nbsp;a. Użytkownik wybiera bilet na interesujące go wydarzenie <br> &nbsp;&nbsp;&nbsp;b. System wyświetla użytkownikowi szczegółowe informacje o wybranym wydarzeniu

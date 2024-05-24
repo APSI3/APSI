@@ -1,4 +1,4 @@
-![architecture](../assets/arch_general.png "Ogólny model architektury![alt text](image.png)")
+![architecture](../assets/arch_general.png "Ogólny model architektury")
 
 Architektura systemu oparta jest na prosty modelu trójwarstwowym, składającym się z aplikacji klienckiej, serwera API oraz bazy danych, co zapewnia prosty podział obowiązków każdego z komponentów i modularność systemu. 
 
