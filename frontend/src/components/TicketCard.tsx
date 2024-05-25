@@ -27,7 +27,7 @@ const TicketCard: React.FC<{ ticket: TicketTypeDTO, skipApiCheck?: boolean, even
                     {ticket.name}
                 </Typography>
             </Grid>
-            <Grid item container direction="row" justifyContent="flex-end" padding='1rem' style={{background: '#ffffff'}}>
+            <Grid item container direction="row" justifyContent="flex-end" padding='1rem' style={{background: '#ffffff', height: '100%'}}>
                 {canBuyTickets && (ticket.quantityAvailable - soldCount) > 0 && <BuyButton ticketType={ticket} event={event}/>}
                 <Grid item container direction="column" alignItems="flex-end">
                     <Typography variant="body1" color="textSecondary" style={{ marginTop: '1rem' }}>

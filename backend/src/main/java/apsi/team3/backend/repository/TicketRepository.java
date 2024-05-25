@@ -17,8 +17,8 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "FROM tickets t " +
             "LEFT JOIN ticket_types tt ON (t.ticket_type_id=tt.id) " +
             "LEFT JOIN events e ON (tt.event_id=e.id) " +
-            "WHERE e.end_date <= :_to AND e.start_date >= :_from AND holder_id = :_holder_id ORDER BY e.start_date",
-            countQuery = "SELECT COUNT(*) FROM tickets t LEFT JOIN ticket_types tt ON (t.ticket_type_id=tt.id) LEFT JOIN events e ON (tt.event_id=e.id) WHERE e.end_date <= :_to AND e.start_date >= :_from AND holder_id = :_holder_id ",
+            "WHERE e.start_date <= :_to AND e.start_date >= :_from AND holder_id = :_holder_id ORDER BY e.start_date",
+            countQuery = "SELECT COUNT(*) FROM tickets t LEFT JOIN ticket_types tt ON (t.ticket_type_id=tt.id) LEFT JOIN events e ON (tt.event_id=e.id) WHERE e.start_date <= :_to AND e.start_date >= :_from AND holder_id = :_holder_id ",
             nativeQuery = true)
     Page<Ticket> getUsersTicketsWithDatesBetween(Pageable pageable, @Param("_holder_id") Long holderId, @Param("_from") LocalDate from, @Param("_to") LocalDate to);
 }
