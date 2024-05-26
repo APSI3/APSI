@@ -125,7 +125,7 @@ const EventForm: React.FC<{ onClose: () => void, initialValues?: CreateEventRequ
             validationSchema={createEventValidationSchema}
             onSubmit={async (values, fh) => {
                 let newValues = values;
-                if (values.location?.id === 0)
+                if (values.location?.id == 0) // location id can come to us as string - soft compare
                     newValues = { ...newValues, location: undefined}
 
                 isUpdate ? handleUpdateEvent(newValues, fh) : handleCreateEvent(newValues, fh)
@@ -210,29 +210,31 @@ const EventForm: React.FC<{ onClose: () => void, initialValues?: CreateEventRequ
                         render={helpers => <div className="p-1">
                             {values.ticketTypes.map((tt, idx) => {
                                 const name = `ticketTypes.${idx}`;
-                                return <Paper key={idx} className="m-1"> 
-                                    <Grid item xs={3} style={{ justifyContent:'center', display: 'flex'}}>
-                                        <div className="m-1">
+                                return <Paper key={idx} className="m-1" style={{ padding: 20 }}>
+                                    <Grid container spacing={1} alignItems="center">
+                                        <Grid item xs={12} sm={6} md={4} lg={3}>
                                             <label htmlFor={name + ".name"} className="form-label">Nazwa</label>
-                                            <Field type="string" name={name + ".name"}
-                                                id={name + ".name"} className="form-control"
-                                            />
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={8} lg={9}>
+                                            <Field type="string" name={name + ".name"} id={name + ".name"} className="form-control" />
                                             <ValidationMessage fieldName={name + ".name"} />
-                                        </div>
-                                        <div className="m-1">
+                                        </Grid>
+
+                                        <Grid item xs={12} sm={6} md={4} lg={3}>
                                             <label htmlFor={name + ".price"} className="form-label">Cena</label>
-                                            <Field type="number" name={name + ".price"}
-                                                id={name + ".price"} className="form-control"
-                                            />
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={8} lg={9}>
+                                            <Field type="number" name={name + ".price"} id={name + ".price"} className="form-control" />
                                             <ValidationMessage fieldName={name + ".price"} />
-                                        </div>
-                                        <div className="m-1">
+                                        </Grid>
+
+                                        <Grid item xs={12} sm={6} md={4} lg={3}>
                                             <label htmlFor={name + ".quantityAvailable"} className="form-label">Dostępna ilość</label>
-                                            <Field type="number" name={name + ".quantityAvailable"}
-                                                id={name + ".quantityAvailable"} className="form-control"
-                                            />
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={8} lg={9}>
+                                            <Field type="number" name={name + ".quantityAvailable"} id={name + ".quantityAvailable"} className="form-control" />
                                             <ValidationMessage fieldName={name + ".quantityAvailable"} />
-                                        </div>
+                                        </Grid>
                                     </Grid>
                                     <button className="btn btn-danger" type="button" onClick={() => helpers.remove(idx)}>
                                         Usuń
