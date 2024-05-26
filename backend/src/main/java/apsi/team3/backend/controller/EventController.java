@@ -47,9 +47,7 @@ public class EventController {
     public ResponseEntity<EventDTO> getEventById(@PathVariable("id") Long id) {
         Optional<EventDTO> event = eventService.getEventById(id);
 
-        if (!event.isPresent())
-            return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(event.get());
+        return event.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/images/{id}")
@@ -76,14 +74,26 @@ public class EventController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<EventDTO> replaceEvent(@PathVariable("id") Long id, @RequestBody EventDTO eventDTO) throws ApsiValidationException {
-        validateSameId(id, eventDTO);
-        if (eventService.notExists(id)) {
-            return ResponseEntity.notFound().build();
+    @PutMapping(value="/{id}", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<EventDTO> replaceEvent(
+            @PathVariable("id") Long id,
+            @RequestPart("event") String event,
+            @RequestPart(name = "image", required = false) MultipartFile image
+    ) throws ApsiValidationException {
+        try {
+            var mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            var eventDTO = mapper.readValue(event, EventDTO.class);
+
+            validateSameId(id, eventDTO);
+            if (eventService.notExists(id)) {
+                return ResponseEntity.notFound().build();
+            }
+            var resp = eventService.replace(eventDTO, image);
+            return ResponseEntity.ok(resp);
+        } catch (JsonProcessingException e){
+            throw new ApsiValidationException("Niepoprawne żądanie", "id");
         }
-        var resp = eventService.replace(eventDTO);
-        return ResponseEntity.ok(resp);
     }
 
     @DeleteMapping("/{id}")

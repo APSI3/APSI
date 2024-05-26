@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ApiResponse } from "./Responses";
-import { CreateEventRequest, CreateLocationRequest, LoginRequest, CreateTicketRequest } from "./Requests";
+import { CreateEventRequest, CreateLocationRequest, LoginRequest, CreateTicketRequest, UpdateEventRequest } from "./Requests";
 import { toastError } from "../helpers/ToastHelpers";
 import { AuthHelpers } from "../helpers/AuthHelpers";
 import {CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, ExtendedTicketDTO, TicketTypeDTO, PaginatedList, TicketDTO} from "./DTOs";
@@ -65,6 +65,15 @@ export class Api {
             image: request.image
         }
         return await getApiResponse<object, EventDTO>("post", this.url + "/events", body, true);
+    }
+
+    static async UpdateEvent(request: UpdateEventRequest) {
+        const eventPart = { ...request, image: undefined }
+        const body = {
+            event: JSON.stringify(eventPart),
+            image: request.image
+        }
+        return await getApiResponse<object, EventDTO>("put", this.url + `/events/${request.id}`, body, true);
     }
 
     static async GetEvents(from: Date, to: Date, pageIndex: number) {

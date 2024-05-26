@@ -126,7 +126,7 @@ public class EventServiceTest {
         event.getTicketTypes().add(new TicketType(null, event, "type", BigDecimal.valueOf(50), 50));
         EventDTO eventDTO = DTOMapper.toDTO(event);
         when(eventRepository.save(any())).thenReturn(event);
-        assertEquals(eventService.replace(eventDTO), eventDTO);
+        assertEquals(eventService.replace(eventDTO, null), eventDTO);
     }
 
     @Test

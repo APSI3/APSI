@@ -16,7 +16,7 @@ public interface IEventService {
 
     EventDTO create(EventDTO event, MultipartFile image) throws ApsiValidationException;
 
-    EventDTO replace(EventDTO event) throws ApsiValidationException;
+    EventDTO replace(EventDTO event, MultipartFile image) throws ApsiValidationException;
 
     void delete(Long id);
 

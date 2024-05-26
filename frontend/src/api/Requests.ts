@@ -17,6 +17,10 @@ export type CreateEventRequest = {
     image?: File
 }
 
+export type UpdateEventRequest = CreateEventRequest & {
+    id: number
+}
+
 export type SimpleTicketTypeDTO = {
     name: string,
     price: number,

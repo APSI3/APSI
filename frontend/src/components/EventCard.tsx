@@ -5,14 +5,14 @@ import DetailsButton from "./EventCardButtons/DetailsButton";
 import EditButton from "./EventCardButtons/EditButton";
 import DeleteButton from "./EventCardButtons/DeleteButton";
 
-function getActionButtonsBasedOnRole(id: number) {
+function getActionButtonsBasedOnRole(event: EventDTO) {
     const role = AuthHelpers.getRole()
     switch (role) {
         case UserTypes.SUPERADMIN:
         case UserTypes.ORGANIZER:
-            return [<DetailsButton id={id}/>, <EditButton/>, <DeleteButton/>]
+            return [<DetailsButton id={event.id}/>, <EditButton event={event}/>, <DeleteButton/>]
         default:
-            return [<DetailsButton id={id}/>]
+            return [<DetailsButton id={event.id}/>]
     }
 }
 
@@ -27,7 +27,7 @@ const EventCard: React.FC<{ event: EventDTO }> = ({ event }) => {
                     <li className="list-group-item"><strong>Data końcowa:</strong> {new Date(event.endDate).toLocaleDateString()}</li>
                 </ul>
                 <div className="d-flex justify-content-end gap-1">
-                    {getActionButtonsBasedOnRole(event.id).map((button, index) =>
+                    {getActionButtonsBasedOnRole(event).map((button, index) =>
                         <React.Fragment key={index}>
                             {button}
                         </React.Fragment>)}

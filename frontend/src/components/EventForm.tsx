@@ -1,4 +1,4 @@
-import { Field, FieldArray, Form, Formik } from "formik";
+import {Field, FieldArray, Form, Formik, FormikHelpers, FormikValues} from "formik";
 import { Helmet } from "react-helmet";
 import { Api } from "../api/Api";
 import { toastDefaultError, toastError, toastInfo } from "../helpers/ToastHelpers";
@@ -6,11 +6,11 @@ import { ValidationMessage, getLocationString } from "../helpers/FormHelpers";
 import { array, date, number, object, string } from "yup";
 import DatePicker from "react-datepicker";
 import { Grid, Paper } from "@mui/material";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LocationDTO } from "../api/DTOs";
-import { CreateEventRequest } from "../api/Requests";
+import {CreateEventRequest, UpdateEventRequest} from "../api/Requests";
 
-const initialValues: CreateEventRequest = {
+const createInitialValues: CreateEventRequest = {
     name: "",
     description: "",
     startDate: new Date(),
@@ -61,8 +61,14 @@ const createEventValidationSchema = object<CreateEventRequest>().shape({
     })
 })
 
-const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+const isUpdateRequest = (values: CreateEventRequest | UpdateEventRequest): values is UpdateEventRequest => {
+    return (values as UpdateEventRequest).id !== undefined;
+};
+
+const EventForm: React.FC<{ onClose: () => void, initialValues?: CreateEventRequest | UpdateEventRequest }> = ({ onClose, initialValues = createInitialValues }) => {
     const [locations, setLocations] = useState<LocationDTO[]>([])
+    const isUpdate = isUpdateRequest(initialValues);
+    console.log(initialValues);
 
     useEffect(() => {
         Api.GetLocations().then(res => {
@@ -78,6 +84,38 @@ const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         ...locations.map(l => ({ label: getLocationString(l), value: l.id }))
     ]
 
+    const handleCreateEvent = async (newValues: CreateEventRequest, fh: FormikHelpers<CreateEventRequest>) => {
+        await Api.CreateEvent(newValues).then(res => {
+            if (res.success && res.data) {
+                toastInfo("Udało się stworzyć wydarzenie " + res.data.name);
+                onClose();
+            } else {
+                if (res.errors)
+                    fh.setErrors(res.errors);
+                else
+                    toastDefaultError()
+            }
+        })
+    }
+
+    const handleUpdateEvent = async (newValues: CreateEventRequest | UpdateEventRequest, fh: FormikHelpers<CreateEventRequest | UpdateEventRequest>) => {
+        if (isUpdateRequest(initialValues)) {
+            await Api.UpdateEvent({...newValues, id : initialValues.id }).then(res => {
+                if (res.success && res.data) {
+                    toastInfo("Udało się zaktualizować wydarzenie" + initialValues.name);
+                    onClose();
+                } else {
+                    if (res.errors)
+                        fh.setErrors(res.errors);
+                    else
+                        toastDefaultError()
+                }
+            })
+        } else {
+            toastInfo("Nie udało się zaktualizować wydarzenia" + initialValues.name);
+        }
+    }
+
     return <>
         <Helmet>
             <title>APSI - Dodawanie wydarzenia</title>
@@ -90,22 +128,11 @@ const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 if (values.location?.id === 0)
                     newValues = { ...newValues, location: undefined}
 
-                await Api.CreateEvent(newValues).then(res => {
-                    if (res.success && res.data) {
-                        toastInfo("Udało się stworzyć wydarzenie " + res.data.name);
-                        onClose();
-                    }
-                    else {
-                        if (res.errors)
-                            fh.setErrors(res.errors);
-                        else
-                            toastDefaultError()
-                    }
-                })
+                isUpdate ? handleUpdateEvent(newValues, fh) : handleCreateEvent(newValues, fh)
             }}
         >
             {({ isSubmitting, values, setFieldValue, setFieldError }) => <Form className="form">
-                <header className="mb-4 mt-3 text-center h2">Nowe wydarzenie</header>
+                <header className="mb-4 mt-3 text-center h2">{isUpdate ? 'Edytuj wydarzenie' : 'Nowe wydarzenie'}</header>
                 <div className="mb-3">
                     <label htmlFor="name" className="form-label">Nazwa</label>
                     <Field type="text" name="name" id="name" className="form-control" />
@@ -223,7 +250,7 @@ const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     <ValidationMessage fieldName="ticketTypes" />
                 </div>
                 <div className="mb-3 text-center">
-                    <button className="btn btn-primary" type="submit" disabled={isSubmitting}>Dodaj</button>
+                    <button className="btn btn-primary" type="submit" disabled={isSubmitting}>{isUpdate ? 'Aktualizuj' : 'Dodaj'}</button>
                 </div>
             </Form>}
         </Formik>
