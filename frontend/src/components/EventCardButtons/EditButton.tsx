@@ -11,7 +11,10 @@ import EventForm from "../EventForm";
 const EditButton: React.FC<{ event: EventDTO }> = ({ event }) => {
     const [ open, setOpen ] = useState<boolean>(false);
     const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    const handleClose = () => {
+        setOpen(false)
+        window.location.reload()
+    };
 
     const initialValues = {
         id: event.id,
@@ -23,7 +26,8 @@ const EditButton: React.FC<{ event: EventDTO }> = ({ event }) => {
         startTime: event.startTime?.substring(0, 5),
         endTime: event.endTime?.substring(0, 5),
         location: event.location,
-    // todo: image
+        // todo: images
+        // todo: przy zmianie lokalizacji i czasu nalezy wyslac maila
     }
 
     return <>

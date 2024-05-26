@@ -22,6 +22,7 @@ export type UpdateEventRequest = CreateEventRequest & {
 }
 
 export type SimpleTicketTypeDTO = {
+    id?: number, 
     name: string,
     price: number,
     quantityAvailable: number

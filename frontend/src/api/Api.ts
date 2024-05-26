@@ -98,7 +98,7 @@ export class Api {
         return await getApiResponse<undefined, TicketTypeDTO>("get", this.url + `/ticket_types/${id}`);
     }
 
-    static async GetSoldTicketsCount(id: number) {
+    static async GetSoldTicketsCount(id: number | undefined) {
         return await getApiResponse<undefined, number>("get", this.url + `/ticket_types/${id}/count`);
     }
 

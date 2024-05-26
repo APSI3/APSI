@@ -1,4 +1,4 @@
-import {Field, FieldArray, Form, Formik, FormikHelpers, FormikValues} from "formik";
+import {Field, FieldArray, Form, Formik, FormikHelpers} from "formik";
 import { Helmet } from "react-helmet";
 import { Api } from "../api/Api";
 import { toastDefaultError, toastError, toastInfo } from "../helpers/ToastHelpers";
@@ -58,7 +58,7 @@ const createEventValidationSchema = object<CreateEventRequest>().shape({
     ).min(1, "Należy dodać przynajmniej jeden typ biletów"),
     location: object().shape({
         id: number()
-    })
+    }).nullable()
 })
 
 const isUpdateRequest = (values: CreateEventRequest | UpdateEventRequest): values is UpdateEventRequest => {
@@ -68,7 +68,6 @@ const isUpdateRequest = (values: CreateEventRequest | UpdateEventRequest): value
 const EventForm: React.FC<{ onClose: () => void, initialValues?: CreateEventRequest | UpdateEventRequest }> = ({ onClose, initialValues = createInitialValues }) => {
     const [locations, setLocations] = useState<LocationDTO[]>([])
     const isUpdate = isUpdateRequest(initialValues);
-    console.log(initialValues);
 
     useEffect(() => {
         Api.GetLocations().then(res => {
@@ -100,6 +99,25 @@ const EventForm: React.FC<{ onClose: () => void, initialValues?: CreateEventRequ
 
     const handleUpdateEvent = async (newValues: CreateEventRequest | UpdateEventRequest, fh: FormikHelpers<CreateEventRequest | UpdateEventRequest>) => {
         if (isUpdateRequest(initialValues)) {
+            let hasErrors = false;
+
+            for (let idx = 0; idx < newValues.ticketTypes.length; idx++) {
+                const ticket = newValues.ticketTypes[idx];
+                const oldTicket = initialValues.ticketTypes[idx];
+
+                if (oldTicket.quantityAvailable !== ticket.quantityAvailable) {
+                    await Api.GetSoldTicketsCount(ticket.id).then(res => {
+                        if (res.data && ticket.quantityAvailable - res.data < 0) {
+                            fh.setFieldError(`ticketTypes.${idx}.quantityAvailable`, 'Nie można zmienić liczby biletów poniżej dostępnej wartości');
+                            hasErrors = true;
+                        }
+                    });
+                }
+            }
+
+            if (hasErrors) {
+                return;
+            }
             await Api.UpdateEvent({...newValues, id : initialValues.id }).then(res => {
                 if (res.success && res.data) {
                     toastInfo("Udało się zaktualizować wydarzenie" + initialValues.name);
