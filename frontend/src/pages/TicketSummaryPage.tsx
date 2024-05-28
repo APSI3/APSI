@@ -11,15 +11,15 @@ export default function TicketSummaryPage() {
     const ticketInfo = location.state as TicketDTO;
 
     useEffect(() => {
-        if (!!ticketInfo.eventId) {
-            Api.GetEventById(ticketInfo.eventId.toString()).then(res => {
+        if (!!ticketInfo?.event.id) {
+            Api.GetEventById(ticketInfo.event.id.toString()).then(res => {
                 if (res.success && res.data)
                     setEvent(res.data);
                 else
                     toastError("Nie udało się pobrać danych wydarzenia")
             })
         }
-    }, [ticketInfo.eventId])
+    }, [ticketInfo.event.id])
 
     if (!ticketInfo) {
         toastError("Brak danych o bilecie")
@@ -27,7 +27,7 @@ export default function TicketSummaryPage() {
         </>
     }
 
-    const ticketType = event?.ticketTypes.find(tt => tt.id === ticketInfo.ticketTypeId);
+    const ticketType = event?.ticketTypes.find(tt => tt.id === ticketInfo.ticketType.id);
 
     return <div className="d-flex justify-content-center">
         <Paper elevation={3} style={{ padding: '20px', margin: '20px', maxWidth: '500px' }}>

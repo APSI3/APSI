@@ -14,6 +14,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DTOMapper {
+    public static User toEntity(UserDTO user) {
+        return User.builder()
+                .id(user.getId())
+                .login(user.getLogin())
+                .email(user.getEmail())
+                .build();
+    }
 
     public static Event toEntity(EventDTO event) {
         var organizer = User.builder().id(event.getOrganizerId()).build();
@@ -50,8 +57,8 @@ public class DTOMapper {
     }
 
     public static Ticket toEntity(TicketDTO ticket) {
-        User user = User.builder().id(ticket.getHolderId()).build();
-        TicketType ticketType = TicketType.builder().id(ticket.getTicketTypeId()).build();
+        User user = User.builder().id(ticket.getHolder().getId()).build();
+        TicketType ticketType = DTOMapper.toEntity(ticket.getTicketType(), null);
         return Ticket.builder()
             .id(ticket.getId())
             .holder(user)
@@ -144,9 +151,9 @@ public class DTOMapper {
         var event = ticket.getTicketType().getEvent();
         return new TicketDTO(
             ticket.getId(),
-            ticket.getTicketType().getId(),
-            ticket.getHolder().getId(),
-            event != null ? event.getId() : null,
+            DTOMapper.toDTO(ticket.getTicketType()),
+            DTOMapper.toDTO(ticket.getHolder()),
+            DTOMapper.toDTO(event),
             ticket.getPurchaseDate(),
             null,
             ticket.getHolderFirstName(),
