@@ -104,10 +104,6 @@ public class EventController {
             }
             var resp = eventService.replace(eventDTO, image);
 
-//            boolean timeChanged = eventDTO.getStartTime().compareTo(resp.getStartTime()) != 0
-//                    || eventDTO.getEndTime().compareTo(resp.getEndTime()) != 0
-//                    || eventDTO.getStartDate().compareTo(resp.getStartDate()) != 0
-//                    || eventDTO.getEndDate().compareTo(resp.getEndDate()) != 0;
             boolean timeChanged = eventDTO.getStartTime() != oldEvent.get().getStartTime()
                     || eventDTO.getEndTime() != oldEvent.get().getEndTime()
                     || eventDTO.getStartDate() != oldEvent.get().getStartDate()

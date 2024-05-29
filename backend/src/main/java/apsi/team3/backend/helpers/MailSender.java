@@ -1,11 +1,8 @@
 package apsi.team3.backend.helpers;
 
-import apsi.team3.backend.DTOs.EventDTO;
 import apsi.team3.backend.DTOs.TicketDTO;
-import apsi.team3.backend.DTOs.TicketTypeDTO;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.model.MailStructure;
-import apsi.team3.backend.model.User;
 import apsi.team3.backend.services.MailService;
 import com.google.zxing.WriterException;
 import jakarta.mail.MessagingException;
@@ -16,6 +13,7 @@ import java.util.Map;
 import static apsi.team3.backend.helpers.MailGenerator.getDateString;
 
 public class MailSender {
+
     public static void sendTicketByEmail(
             MailService mailService,
             String mailSubject,
