@@ -57,8 +57,14 @@ public class DTOMapper {
     }
 
     public static Ticket toEntity(TicketDTO ticket) {
-        User user = User.builder().id(ticket.getHolder().getId()).build();
-        TicketType ticketType = DTOMapper.toEntity(ticket.getTicketType(), null);
+        var ticketHolder = ticket.getHolder();
+        var event = toEntity(ticket.getEvent());
+        User user = User.builder()
+                .id(ticketHolder.getId())
+                .login(ticketHolder.getLogin())
+                .email(ticketHolder.getEmail())
+                .build();
+        TicketType ticketType = DTOMapper.toEntity(ticket.getTicketType(), event);
         return Ticket.builder()
             .id(ticket.getId())
             .holder(user)

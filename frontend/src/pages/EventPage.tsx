@@ -8,6 +8,7 @@ import TicketCard from "../components/TicketCard";
 import { toastError } from "../helpers/ToastHelpers";
 import { getExtendedLocationString } from "../helpers/FormHelpers";
 import EditButton from "../components/EventCardButtons/EditButton";
+import {AuthHelpers, UserTypes} from "../helpers/AuthHelpers";
 
 export default function EventPage() {
     const { eventId } = useParams();
@@ -92,9 +93,9 @@ export default function EventPage() {
                     {event.ticketTypes.map(ticket => <TicketCard event={event} key={event.id} ticket={ticket}/>)}
                 </Grid>
                 {/*Edit button*/}
-                <Grid container xs={12} style={{ justifyContent: 'right' }}>
+                {AuthHelpers.getRole() !== UserTypes.PERSON && <Grid container xs={12} style={{ justifyContent: 'right' }}>
                     <EditButton event={event} />
-                </Grid>
+                </Grid>}
             </Grid>
         </Paper>
     </>

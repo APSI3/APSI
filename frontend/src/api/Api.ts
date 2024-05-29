@@ -58,7 +58,6 @@ export class Api {
         return await getApiResponse<LoginRequest, LoggedUserDTO>("post", this.url + "/user/login", request);
     }
 
-    // todo: CreateTicket needs similar CreateTicketRequest
     static async CreateEvent(request: CreateEventRequest) {
         const eventPart = { ...request, image: undefined }
         const body = {

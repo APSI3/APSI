@@ -40,7 +40,12 @@ export type CreateLocationRequest = {
 }
 
 export type CreateTicketRequest = {
-    ticketTypeId: number,
+    ticketType: {
+        id: number,
+    },
+    event: {
+        id: number,
+    }
     holderFirstName: string,
     holderLastName: string
 }

@@ -74,7 +74,7 @@ public class TicketController {
             throw new ApsiValidationException("Niepoprawny typ biletu", "ticketTypeId");
         
         var sold = ticketTypeService.getTicketCountByTypeId(ticketDTO.getTicketType().getId());
-        if (sold.get() >= ticketDTO.getTicketType().getQuantityAvailable())
+        if (sold.get() > ticketDTO.getTicketType().getQuantityAvailable())
             throw new ApsiValidationException("Sprzedaż biletu niemożliwa. Bilety tego typu wyprzedane", "ticketTypeId");
 
         var user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
