@@ -119,6 +119,7 @@ public class EventServiceTest {
         }
     }
 
+    // todo fix
     @Test
     public void testReplaceReturnsReplacedEvent() throws Exception {
         mockAuthUser();

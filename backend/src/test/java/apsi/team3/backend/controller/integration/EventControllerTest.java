@@ -202,6 +202,7 @@ public class EventControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
+    // todo: fix
     @Test
     @Transactional
     public void testReplaceEventReplacesEvent() throws Exception {

@@ -18,11 +18,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import static apsi.team3.backend.helpers.MailGenerator.getDateString;
 import static apsi.team3.backend.helpers.MailSender.sendTicketByEmail;
 
 @RestController
@@ -46,7 +44,7 @@ public class TicketController {
         Optional<TicketDTO> ticket = ticketService.getTicketById(id);
         ticket.ifPresent(t -> {
             try {
-                t.setQRCode(QRCodeGenerator.generateQRCode(t.toJSON(null)));
+                t.setQRCode(QRCodeGenerator.generateQRCode(t.toJSON()));
             } catch (WriterException | IOException e) {
                 t.setQRCode(null);
             }
@@ -54,7 +52,7 @@ public class TicketController {
         return ticket.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("user/{id}/extended")
+    @GetMapping("user/{id}")
     public ResponseEntity<PaginatedList<TicketDTO>> getExtendedTicketsByUserId(
             @PathVariable("id") Long id,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate from,

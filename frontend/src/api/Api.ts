@@ -87,7 +87,7 @@ export class Api {
 
     static async GetTicketsByHolderId(id: string | undefined, from: Date, to: Date, pageIndex: number) {
         return await getApiResponse<undefined, PaginatedList<TicketDTO>>("get",
-            this.url + `/tickets/user/${id}/extended?from=${from.toISOString()}&to=${to.toISOString()}&pageIndex=${pageIndex}`);
+            this.url + `/tickets/user/${id}?from=${from.toISOString()}&to=${to.toISOString()}&pageIndex=${pageIndex}`);
     }
 
     static async GetTicketTypesByEvent(id: string | undefined) {

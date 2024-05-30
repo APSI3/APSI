@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 @EqualsAndHashCode(callSuper = false)
 @Getter
@@ -25,7 +26,8 @@ public class TicketDTO {
         this.QRCode = qrCode;
     }
 
-    public String toJSON(EventDTO event) {
+    public String toJSON() {
+        var event = this.event;
         var eventPart = event != null ?
             "\"eventName\": " + event.getName() + ",\n"
             + "\"eventStartDate\": " + event.getStartDate().toString() + ",\n"
@@ -37,7 +39,6 @@ public class TicketDTO {
             + "\"ticketTypeId\": " + this.ticketType.getId() + ",\n"
             + "\"holderId\": " + this.getHolder().getId() + ",\n"
             + "\"purchaseDate\": " + this.purchaseDate + ",\n"
-            + "\"QRCode\": " + this.QRCode + ",\n"
             + "\"holderFirstName\": " + this.holderFirstName + ",\n"
             + "\"holderLastName\": " + this.holderLastName + ",\n"
             + "\"eventId\": " + this.getEvent().getId() + ",\n"
