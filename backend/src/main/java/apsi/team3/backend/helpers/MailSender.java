@@ -33,7 +33,7 @@ public class MailSender {
         );
         MailStructure mailStructure = new MailStructure(
                 mailSubject,
-                ticket.toJSON(event),
+                ticket.toJSON(),
                 ticketData
         );
         try {
@@ -44,7 +44,7 @@ public class MailSender {
 
         String QRCode;
         try {
-            QRCode = QRCodeGenerator.generateQRCode(ticket.toJSON(event));
+            QRCode = QRCodeGenerator.generateQRCode(ticket.toJSON());
             ticket.setQRCode(QRCode);
         }
         catch (WriterException|IOException e) {

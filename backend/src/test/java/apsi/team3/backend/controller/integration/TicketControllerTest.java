@@ -1,16 +1,13 @@
 package apsi.team3.backend.controller.integration;
 
 import apsi.team3.backend.DTOs.DTOMapper;
-import apsi.team3.backend.DTOs.EventDTO;
 import apsi.team3.backend.DTOs.LoggedUserDTO;
 import apsi.team3.backend.DTOs.Requests.LoginRequest;
 import apsi.team3.backend.DTOs.TicketDTO;
 import apsi.team3.backend.TestHelper;
 import apsi.team3.backend.helpers.MailSender;
 import apsi.team3.backend.helpers.QRCodeGenerator;
-import apsi.team3.backend.model.Ticket;
 import apsi.team3.backend.model.UserType;
-import apsi.team3.backend.services.MailService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeAll;
@@ -31,7 +28,6 @@ import java.time.format.DateTimeFormatter;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
-// todo: fix
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application-test.properties")
@@ -79,8 +75,8 @@ public class TicketControllerTest {
         String expectedJson = String.format("""
             {
                 "id": 1,
-                "ticketTypeId": 2,
-                "holderId": 2,
+                "ticketType": {"id": 2},
+                "holder": {"id": 2},
                 "holderFirstName": "Jan",
                 "holderLastName": "Kowalski",
                 "purchaseDate": "%s"
@@ -170,7 +166,7 @@ public class TicketControllerTest {
             {
                 "ticketType": { "id": 1 },
                 "holder" : { "id": 2 },
-                "event" : { "id": 1 },
+                "event" : { "id": 1, "startDate": "2024-04-18", "endDate": "2024-04-18" },
                 "holderFirstName": "jan",
                 "holderLastName": "kowalski"
             }

@@ -119,14 +119,14 @@ public class EventServiceTest {
         }
     }
 
-    // todo fix
     @Test
     public void testReplaceReturnsReplacedEvent() throws Exception {
         mockAuthUser();
-        Event event = TestHelper.getTestEvent(null, "changed name");
+        Event event = TestHelper.getTestEvent(1l, "changed name");
         event.getTicketTypes().add(new TicketType(null, event, "type", BigDecimal.valueOf(50), 50));
         EventDTO eventDTO = DTOMapper.toDTO(event);
         when(eventRepository.save(any())).thenReturn(event);
+        when(eventRepository.findById(any())).thenReturn(Optional.of(event));
         assertEquals(eventService.replace(eventDTO, null), eventDTO);
     }
 

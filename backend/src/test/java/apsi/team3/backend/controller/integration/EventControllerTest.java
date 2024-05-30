@@ -10,11 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.nio.charset.StandardCharsets;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
@@ -202,11 +205,11 @@ public class EventControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
-    // todo: fix
     @Test
     @Transactional
     public void testReplaceEventReplacesEvent() throws Exception {
         LoggedUserDTO loggedUser = login();
+
         String expectedJson = """
             {
                 "id": 2,
@@ -214,17 +217,7 @@ public class EventControllerTest {
                 "startDate": "2026-11-01",
                 "endDate": "2027-01-01",
                 "description": "test description",
-                "organizerId": 3
-            }
-        """;
-        String request = """
-            {
-                "id": 2,
-                "name": "changed name",
-                "startDate": "2026-11-01",
-                "endDate": "2027-01-01",
-                "description": "test description",
-                "organizerId": 3,
+                "organizerId": 1,
                 "ticketTypes": [
                     {
                         "name": "type 1",
@@ -234,12 +227,34 @@ public class EventControllerTest {
                 ]
             }
         """;
-        mockMvc.perform(MockMvcRequestBuilders.put("/events/2")
+
+        String request = """
+            {
+                "id": 2,
+                "name": "changed name",
+                "startDate": "2026-11-01",
+                "endDate": "2027-01-01",
+                "description": "test description",
+                "ticketTypes": [
+                    {
+                        "name": "type 1",
+                        "quantityAvailable": 1,
+                        "price": 2
+                    }
+                ]
+            }
+        """;
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/events/2")
+                        .file(new MockMultipartFile("event", "", "application/json", request.getBytes(StandardCharsets.UTF_8)))
                         .header("Authorization", loggedUser.getAuthHeader())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(request))
-                //.andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(content().json(expectedJson));
+                        .with(requestBuilder -> {
+                            requestBuilder.setMethod("PUT");
+                            return requestBuilder;
+                        })
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(expectedJson));
     }
 
     @Test

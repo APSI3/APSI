@@ -51,7 +51,7 @@ public class TicketService implements ITicketService {
                 .map(ticket -> {
                     TicketDTO ticketDTO = DTOMapper.toDTO(ticket);
                     try {
-                        ticketDTO.setQRCode(QRCodeGenerator.generateQRCode(ticketDTO.toString()));
+                        ticketDTO.setQRCode(QRCodeGenerator.generateQRCode(ticketDTO.toJSON()));
                     } catch (WriterException | IOException e) {
                         ticketDTO.setQRCode(null);
                     }

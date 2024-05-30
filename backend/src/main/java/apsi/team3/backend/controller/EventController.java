@@ -24,6 +24,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDate;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static apsi.team3.backend.helpers.MailSender.sendTicketByEmail;
@@ -106,10 +107,10 @@ public class EventController {
 
             var resp = eventService.replace(eventDTO, image);
 
-            boolean timeChanged = !eventDTO.getStartTime().equals(oldEvent.get().getStartTime())
-                    || !eventDTO.getEndTime().equals(oldEvent.get().getEndTime())
-                    || !eventDTO.getStartDate().equals(oldEvent.get().getStartDate())
-                    || !eventDTO.getEndDate().equals(oldEvent.get().getEndDate());
+            boolean timeChanged = Objects.equals(eventDTO.getStartTime(), oldEvent.get().getStartTime())
+                    || Objects.equals(eventDTO.getEndTime(), oldEvent.get().getEndTime())
+                    || Objects.equals(eventDTO.getStartDate(), oldEvent.get().getStartDate())
+                    || Objects.equals(eventDTO.getEndDate(), oldEvent.get().getEndDate());
 
             boolean locationChanged = eventDTO.getLocation() != oldEvent.get().getLocation();
 
