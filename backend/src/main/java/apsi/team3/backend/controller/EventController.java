@@ -1,13 +1,11 @@
 package apsi.team3.backend.controller;
 
-import apsi.team3.backend.DTOs.DTOMapper;
 import apsi.team3.backend.DTOs.EventDTO;
 import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.DTOs.TicketDTO;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IEventService;
 
-import apsi.team3.backend.model.User;
 import apsi.team3.backend.services.MailService;
 import apsi.team3.backend.services.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
