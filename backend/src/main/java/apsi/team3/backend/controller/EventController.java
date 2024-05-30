@@ -92,6 +92,9 @@ public class EventController {
             @RequestPart("event") String event,
             @RequestPart(name = "image", required = false) MultipartFile image
     ) throws ApsiValidationException {
+        if (image != null && image.getSize() > 500_000)
+            throw new ApsiValidationException("Zbyt duży obraz. Maksymalna wielkość to 500 KB", "image");
+
         try {
             var mapper = new ObjectMapper();
             mapper.registerModule(new JavaTimeModule());
@@ -102,12 +105,13 @@ public class EventController {
             if (oldEvent.isEmpty()) {
                 return ResponseEntity.notFound().build();
             }
+
             var resp = eventService.replace(eventDTO, image);
 
-            boolean timeChanged = eventDTO.getStartTime() != oldEvent.get().getStartTime()
-                    || eventDTO.getEndTime() != oldEvent.get().getEndTime()
-                    || eventDTO.getStartDate() != oldEvent.get().getStartDate()
-                    || eventDTO.getEndDate() != oldEvent.get().getEndDate();
+            boolean timeChanged = !eventDTO.getStartTime().equals(oldEvent.get().getStartTime())
+                    || !eventDTO.getEndTime().equals(oldEvent.get().getEndTime())
+                    || !eventDTO.getStartDate().equals(oldEvent.get().getStartDate())
+                    || !eventDTO.getEndDate().equals(oldEvent.get().getEndDate());
 
             boolean locationChanged = eventDTO.getLocation() != oldEvent.get().getLocation();
 

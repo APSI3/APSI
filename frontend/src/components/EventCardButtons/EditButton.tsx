@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Fab, IconButton } from "@mui/material";
 import {Edit} from "@mui/icons-material";
 import {EventDTO} from "../../api/DTOs";
@@ -7,14 +7,20 @@ import Box from "@mui/material/Box";
 import CloseIcon from "@mui/icons-material/Close";
 import {ModalBoxStyle} from "../FormButton";
 import EventForm from "../EventForm";
+import {Api} from "../../api/Api";
 
 const EditButton: React.FC<{ event: EventDTO }> = ({ event }) => {
     const [ open, setOpen ] = useState<boolean>(false);
+    const [ image, setImage ] = useState<any>();
     const handleOpen = () => setOpen(true);
     const handleClose = () => {
         setOpen(false)
         window.location.reload()
     };
+
+    useEffect(() => {
+        Api.GetEventImageByEventId(String(event.id)).then(res => setImage(res)).catch(err => console.log(err))
+    }, [])
 
     const initialValues = {
         id: event.id,
@@ -26,8 +32,7 @@ const EditButton: React.FC<{ event: EventDTO }> = ({ event }) => {
         startTime: event.startTime?.substring(0, 5),
         endTime: event.endTime?.substring(0, 5),
         location: event.location,
-        // todo: images
-        // todo: przy zmianie lokalizacji i czasu nalezy wyslac maila
+        image,
     }
 
     return <>

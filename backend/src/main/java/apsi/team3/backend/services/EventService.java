@@ -132,27 +132,24 @@ public class EventService implements IEventService {
     }
 
     private void processEventImage(MultipartFile image, Event updatedEvent) throws ApsiValidationException {
-        if (image != null) {
-            byte[] bytes;
-            try {
-                bytes = image.getBytes();
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new ApsiValidationException("Uszkodzony plik obrazu", "image");
-            }
-
-            // Clear existing images if any
-            updatedEvent.getImages().clear();
-
-            // Save new image
-            var eventImage = EventImage.builder()
-                    .image(bytes)
-                    .event(updatedEvent)
-                    .build();
-            eventImageRepository.save(eventImage);
-
-            updatedEvent.getImages().add(eventImage);
+        if (image == null) { return; }
+        byte[] bytes;
+        try {
+            bytes = image.getBytes();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ApsiValidationException("Uszkodzony plik obrazu", "image");
         }
+
+        updatedEvent.getImages().clear();
+
+        var eventImage = EventImage.builder()
+                .image(bytes)
+                .event(updatedEvent)
+                .build();
+        eventImageRepository.save(eventImage);
+
+        updatedEvent.getImages().add(eventImage);
     }
 
     @Override
