@@ -1,6 +1,8 @@
 import {useCallback, useEffect, useState} from "react";
 import {LocationDTO} from "../api/DTOs";
 import {Api} from "../api/Api";
+import LocationCard from "../components/LocationCard";
+import Pages from "../components/Pages";
 
 export default function LocationsPage() {
     const [locations, setLocations] = useState<LocationDTO[]>([]);
@@ -26,6 +28,10 @@ export default function LocationsPage() {
         getLocations(index);
     }
     return <>
-        Work in progress
+        {locations.map(location => (
+            <LocationCard location={location} key={`location-${location.id}`} />
+        ))}
+        <br />
+        <Pages initialIndex={currentIdx} maxIndex={maxIdx} onPageChange={handlePageChange} />
     </>
 }
