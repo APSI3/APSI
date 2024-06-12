@@ -2,9 +2,13 @@ package apsi.team3.backend.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import apsi.team3.backend.DTOs.PaginatedList;
+import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +19,7 @@ import apsi.team3.backend.repository.LocationRepository;
 
 @Service
 public class LocationService implements ILocationService {
+    private final int PAGE_SIZE = 10;
     private final LocationRepository locationRepository;
 
     @Autowired
@@ -38,6 +43,21 @@ public class LocationService implements ILocationService {
     public List<LocationDTO> getLocations() {
         var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return locationRepository.geLocationsForCreatorId(loggedUser.getId())
-            .stream().map(DTOMapper::toDTO).toList();
+                .stream().map(DTOMapper::toDTO).toList();
+    }
+
+    @Override
+    public PaginatedList<LocationDTO> getLocationsPageable(int pageIndex) throws ApsiValidationException {
+        if (pageIndex < 0)
+            throw new ApsiValidationException("Indeks strony nie może być ujemny", "pageIndex");
+        var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var page = locationRepository.geLocationsForCreatorIdPageable(PageRequest.of(pageIndex, PAGE_SIZE), loggedUser.getId());
+
+        var items = page
+                .stream()
+                .map(DTOMapper::toDTO)
+                .collect(Collectors.toList());
+
+        return new PaginatedList<>(items, pageIndex, page.getTotalElements(), page.getTotalPages());
     }
 }
