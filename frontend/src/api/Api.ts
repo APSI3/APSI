@@ -105,6 +105,11 @@ export class Api {
         return await getApiResponse<CreateLocationRequest, LocationDTO>("post", this.url + "/locations", request);
     }
 
+    static async GetLocationsPageable(pageIndex: number) {
+        return await getApiResponse<undefined, PaginatedList<LocationDTO>>("get",
+            this.url + `/locations/pageable?pageIndex=${pageIndex}`);
+    }
+
     static async GetLocations() {
         return await getApiResponse<undefined, LocationDTO[]>("get", this.url + "/locations");
     }
