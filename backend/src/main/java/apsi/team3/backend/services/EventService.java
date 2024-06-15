@@ -6,6 +6,7 @@ import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.DTOs.TicketTypeDTO;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IEventService;
+import apsi.team3.backend.model.Event;
 import apsi.team3.backend.model.EventImage;
 import apsi.team3.backend.model.User;
 import apsi.team3.backend.repository.EventImageRepository;
@@ -107,61 +108,95 @@ public class EventService implements IEventService {
     }
 
     @Override
-    public EventDTO create(EventDTO eventDTO, MultipartFile image) throws ApsiValidationException {
-        if (eventDTO.getId() != null)
-            throw new ApsiValidationException("Podano niedozwolony identyfikator wydarzenia", "id");
+    public EventDTO replace(EventDTO eventDTO, MultipartFile image) throws ApsiValidationException {
+        if (eventDTO.getId() == null) {
+            throw new ApsiValidationException("Identyfikator wydarzenia jest wymagany", "id");
+        }
+
+        var existingEvent = eventRepository.findById(eventDTO.getId())
+                .orElseThrow(() -> new ApsiValidationException("Wydarzenie nie zostało znalezione", "id"));
 
         var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         validateEvent(eventDTO, loggedUser);
-        
+
+        var entity = prepareEventEntity(eventDTO, loggedUser);
+        entity.setId(existingEvent.getId());  // Ensure the ID is retained
+        entity.setImages(existingEvent.getImages()); // Retain existing images list
+
+        processTicketTypes(eventDTO, entity);
+        processEventImage(image, entity);
+
+        var updatedEvent = eventRepository.save(entity);
+
+        return DTOMapper.toDTO(updatedEvent);
+    }
+
+    private void processEventImage(MultipartFile image, Event updatedEvent) throws ApsiValidationException {
+        if (image == null) { return; }
+        byte[] bytes;
+        try {
+            bytes = image.getBytes();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ApsiValidationException("Uszkodzony plik obrazu", "image");
+        }
+
+        updatedEvent.getImages().clear();
+
+        var eventImage = EventImage.builder()
+                .image(bytes)
+                .event(updatedEvent)
+                .build();
+        eventImageRepository.save(eventImage);
+
+        updatedEvent.getImages().add(eventImage);
+    }
+
+    @Override
+    public EventDTO create(EventDTO eventDTO, MultipartFile image) throws ApsiValidationException {
+        if (eventDTO.getId() != null) {
+            throw new ApsiValidationException("Podano niedozwolony identyfikator wydarzenia", "id");
+        }
+
+        var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        validateEvent(eventDTO, loggedUser);
+
+        var entity = prepareEventEntity(eventDTO, loggedUser);
+
+        var savedEvent = eventRepository.save(entity);
+
+        processTicketTypes(eventDTO, savedEvent);
+        processEventImage(image, savedEvent);
+
+        return DTOMapper.toDTO(savedEvent);
+    }
+
+    private void validateImage(MultipartFile image) throws ApsiValidationException {
+        if (image != null && image.getSize() > 500_000) {
+            throw new ApsiValidationException("Zbyt duży obraz. Maksymalna wielkość to 500 KB", "image");
+        }
+    }
+
+    private Event prepareEventEntity(EventDTO eventDTO, User loggedUser) {
         var entity = DTOMapper.toEntity(eventDTO);
         entity.setOrganizer(loggedUser);
 
-        if (entity.getLocation() != null){
+        if (entity.getLocation() != null) {
             var loc = locationRepository.findById(entity.getLocation().getId()).get();
             entity.setLocation(loc);
         }
 
-        byte[] bytes = null;
-        if (image != null) {
-            try{
-                bytes = image.getBytes();
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-                throw new ApsiValidationException("Uszkodzony plik obrazu", "image");
-            }
-        }
-
-        var saved = eventRepository.save(entity);
-        
-        if (!eventDTO.getTicketTypes().isEmpty()){
-            var entities = eventDTO.getTicketTypes().stream().map(e -> DTOMapper.toEntity(e, saved)).toList();
-            var savedTickets = ticketTypeRepository.saveAll(entities);
-            saved.setTicketTypes(savedTickets);
-        }
-
-        if (bytes != null){
-            var eventImage = EventImage.builder()
-                .image(bytes)
-                .event(saved)
-                .build();
-            eventImageRepository.save(eventImage);
-            saved.setImages(new ArrayList<>() {{ add(eventImage); }});
-        }
-
-        return DTOMapper.toDTO(saved);
+        return entity;
     }
 
-    @Override
-    public EventDTO replace(EventDTO eventDTO) throws ApsiValidationException {
-        var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        validateEvent(eventDTO, loggedUser);
-
-        var entity = DTOMapper.toEntity(eventDTO);
-        var saved = eventRepository.save(entity);
-
-        return DTOMapper.toDTO(saved);
+    private void processTicketTypes(EventDTO eventDTO, Event updatedEvent) {
+        if (!eventDTO.getTicketTypes().isEmpty()) {
+            var entities = eventDTO.getTicketTypes().stream()
+                    .map(e -> DTOMapper.toEntity(e, updatedEvent))
+                    .toList();
+            var savedTickets = ticketTypeRepository.saveAll(entities);
+            updatedEvent.setTicketTypes(savedTickets);
+        }
     }
 
     @Override

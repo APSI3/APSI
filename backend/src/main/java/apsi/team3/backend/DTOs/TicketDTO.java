@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 @EqualsAndHashCode(callSuper = false)
 @Getter
@@ -13,9 +14,9 @@ import java.time.LocalDate;
 @Setter
 public class TicketDTO {
     Long id;
-    Long ticketTypeId;
-    Long holderId;
-    Long eventId;
+    TicketTypeDTO ticketType;
+    UserDTO holder;
+    EventDTO event;
     LocalDate purchaseDate;
     String QRCode;
     String holderFirstName;
@@ -25,7 +26,8 @@ public class TicketDTO {
         this.QRCode = qrCode;
     }
 
-    public String toJSON(EventDTO event) {
+    public String toJSON() {
+        var event = this.event;
         var eventPart = event != null ?
             "\"eventName\": " + event.getName() + ",\n"
             + "\"eventStartDate\": " + event.getStartDate().toString() + ",\n"
@@ -34,13 +36,12 @@ public class TicketDTO {
 
         return "{"
             + "\"id\": " + this.id + ",\n"
-            + "\"ticketTypeId\": " + this.ticketTypeId + ",\n"
-            + "\"holderId\": " + this.holderId + ",\n"
+            + "\"ticketTypeId\": " + this.ticketType.getId() + ",\n"
+            + "\"holderId\": " + this.getHolder().getId() + ",\n"
             + "\"purchaseDate\": " + this.purchaseDate + ",\n"
-            + "\"QRCode\": " + this.QRCode + ",\n"
             + "\"holderFirstName\": " + this.holderFirstName + ",\n"
             + "\"holderLastName\": " + this.holderLastName + ",\n"
-            + "\"eventId\": " + this.eventId + ",\n"
+            + "\"eventId\": " + this.getEvent().getId() + ",\n"
             + eventPart
         + "}";
     }

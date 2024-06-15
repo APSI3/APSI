@@ -7,6 +7,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
@@ -27,6 +28,7 @@ public class MailService {
     @Value("$(spring.mail.username)")
     private String fromMail;
 
+    @Async
     public void sendMail(String mail, MailStructure mailStructure) throws MessagingException, IOException, WriterException {
         var message = mailSender.createMimeMessage();
         var helper = new MimeMessageHelper(message, true, "UTF-8");

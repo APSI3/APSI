@@ -1,13 +1,13 @@
 import {Api} from "../api/Api";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import {AuthHelpers} from "../helpers/AuthHelpers";
-import {ExtendedTicketDTO} from "../api/DTOs";
 import UserTicketCard from "../components/UserTicketCard";
 import DateRangePicker from "../components/DateRangePicker";
 import Pages from "../components/Pages";
+import {TicketDTO} from "../api/DTOs";
 
 export default function TicketsPage() {
-    const [tickets, setTickets] = useState<ExtendedTicketDTO[]>([]);
+    const [tickets, setTickets] = useState<TicketDTO[]>([]);
 
     const fromDate = useMemo(() => {
         return new Date()

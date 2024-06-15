@@ -1,14 +1,11 @@
 package apsi.team3.backend.services;
 
 import apsi.team3.backend.DTOs.DTOMapper;
-import apsi.team3.backend.DTOs.ExtendedTicketDTO;
 import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.DTOs.TicketDTO;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.helpers.QRCodeGenerator;
 import apsi.team3.backend.interfaces.ITicketService;
-import apsi.team3.backend.model.Event;
-import apsi.team3.backend.model.TicketType;
 import apsi.team3.backend.repository.TicketRepository;
 import com.google.zxing.WriterException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -43,34 +42,16 @@ public class TicketService implements ITicketService {
     }
 
     @Override
-    public PaginatedList<ExtendedTicketDTO> getTicketsByUserId(Long id, LocalDate from, LocalDate to, int pageIndex) throws ApsiValidationException {
+    public PaginatedList<TicketDTO> getTicketsByUserId(Long id, LocalDate from, LocalDate to, int pageIndex) throws ApsiValidationException {
         validatePaginationArgs(from, to, pageIndex);
 
         var page = ticketRepository.getUsersTicketsWithDatesBetween(PageRequest.of(pageIndex, PAGE_SIZE), id, from, to);
         var items = page
                 .stream()
                 .map(ticket -> {
-                    TicketType ticketType = ticket.getTicketType();
-                    Event event = ticketType.getEvent();
-                    ExtendedTicketDTO ticketDTO = new ExtendedTicketDTO(
-                            ticket.getId(),
-                            ticketType.getId(),
-                            ticket.getHolder().getId(),
-                            event.getId(),
-                            ticket.getPurchaseDate(),
-                            null,
-                            ticket.getHolderFirstName(),
-                            ticket.getHolderLastName(),
-                            event.getName(),
-                            event.getStartDate(),
-                            event.getStartTime(),
-                            event.getEndDate(),
-                            event.getEndTime(),
-                            ticketType.getName(),
-                            ticketType.getPrice()
-                    );
+                    TicketDTO ticketDTO = DTOMapper.toDTO(ticket);
                     try {
-                        ticketDTO.setQRCode(QRCodeGenerator.generateQRCode(ticketDTO.toString()));
+                        ticketDTO.setQRCode(QRCodeGenerator.generateQRCode(ticketDTO.toJSON()));
                     } catch (WriterException | IOException e) {
                         ticketDTO.setQRCode(null);
                     }
@@ -78,5 +59,10 @@ public class TicketService implements ITicketService {
                 }).collect(Collectors.toList());
 
         return new PaginatedList<>(items, pageIndex, page.getTotalElements(), page.getTotalPages());
+    }
+
+    @Override
+    public List<TicketDTO> getTicketsByEventId(Long id) throws ApsiValidationException {
+        return Arrays.stream(ticketRepository.getTicketsByEventId(id)).map(DTOMapper::toDTO).toList();
     }
 }

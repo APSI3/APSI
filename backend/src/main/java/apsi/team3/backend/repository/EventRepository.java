@@ -13,8 +13,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
-    @Query(value = "SELECT * FROM events e WHERE e.end_date <= :_to AND e.start_date >= :_from ORDER BY e.start_date", 
-        countQuery = "SELECT COUNT(*) FROM events e WHERE e.end_date <= :_to AND e.start_date >= :_from",
+    @Query(value = "SELECT * FROM events e WHERE e.start_date <= :_to AND e.start_date >= :_from ORDER BY e.start_date",
+        countQuery = "SELECT COUNT(*) FROM events e WHERE e.start_date <= :_to AND e.start_date >= :_from",
         nativeQuery = true)
     Page<Event> getEventsWithDatesBetween(Pageable pageable, @Param("_from") LocalDate from, @Param("_to") LocalDate to);
 }

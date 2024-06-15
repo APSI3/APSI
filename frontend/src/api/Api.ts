@@ -1,9 +1,9 @@
 import axios from "axios";
 import { ApiResponse } from "./Responses";
-import { CreateEventRequest, CreateLocationRequest, LoginRequest, CreateTicketRequest } from "./Requests";
+import { CreateEventRequest, CreateLocationRequest, LoginRequest, CreateTicketRequest, UpdateEventRequest } from "./Requests";
 import { toastError } from "../helpers/ToastHelpers";
 import { AuthHelpers } from "../helpers/AuthHelpers";
-import {CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, ExtendedTicketDTO, TicketTypeDTO, PaginatedList, TicketDTO} from "./DTOs";
+import {CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO, PaginatedList, TicketDTO} from "./DTOs";
 
 axios.defaults.withCredentials = true;
 
@@ -67,6 +67,15 @@ export class Api {
         return await getApiResponse<object, EventDTO>("post", this.url + "/events", body, true);
     }
 
+    static async UpdateEvent(request: UpdateEventRequest) {
+        const eventPart = { ...request, image: undefined }
+        const body = {
+            event: JSON.stringify(eventPart),
+            image: request.image
+        }
+        return await getApiResponse<object, EventDTO>("put", this.url + `/events/${request.id}`, body, true);
+    }
+
     static async GetEvents(from: Date, to: Date, pageIndex: number) {
         return await getApiResponse<undefined, PaginatedList<EventDTO>>("get", 
             this.url + `/events?from=${from.toISOString()}&to=${to.toISOString()}&pageIndex=${pageIndex}`);
@@ -77,8 +86,8 @@ export class Api {
     }
 
     static async GetTicketsByHolderId(id: string | undefined, from: Date, to: Date, pageIndex: number) {
-        return await getApiResponse<undefined, PaginatedList<ExtendedTicketDTO>>("get",
-            this.url + `/tickets/user/${id}/extended?from=${from.toISOString()}&to=${to.toISOString()}&pageIndex=${pageIndex}`);
+        return await getApiResponse<undefined, PaginatedList<TicketDTO>>("get",
+            this.url + `/tickets/user/${id}?from=${from.toISOString()}&to=${to.toISOString()}&pageIndex=${pageIndex}`);
     }
 
     static async GetTicketTypesByEvent(id: string | undefined) {
@@ -89,7 +98,7 @@ export class Api {
         return await getApiResponse<undefined, TicketTypeDTO>("get", this.url + `/ticket_types/${id}`);
     }
 
-    static async GetSoldTicketsCount(id: number) {
+    static async GetSoldTicketsCount(id: number | undefined) {
         return await getApiResponse<undefined, number>("get", this.url + `/ticket_types/${id}/count`);
     }
 

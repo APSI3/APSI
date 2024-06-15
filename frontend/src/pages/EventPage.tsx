@@ -7,6 +7,8 @@ import { ArrowBack } from '@mui/icons-material';
 import TicketCard from "../components/TicketCard";
 import { toastError } from "../helpers/ToastHelpers";
 import { getExtendedLocationString } from "../helpers/FormHelpers";
+import EditButton from "../components/EventCardButtons/EditButton";
+import {AuthHelpers, UserTypes} from "../helpers/AuthHelpers";
 
 export default function EventPage() {
     const { eventId } = useParams();
@@ -90,6 +92,10 @@ export default function EventPage() {
                 <Grid container direction="column" alignItems="flex-center" gap={1}>
                     {event.ticketTypes.map(ticket => <TicketCard event={event} key={event.id} ticket={ticket}/>)}
                 </Grid>
+                {/*Edit button*/}
+                {AuthHelpers.getRole() !== UserTypes.PERSON && <Grid container xs={12} style={{ justifyContent: 'right' }}>
+                    <EditButton event={event} />
+                </Grid>}
             </Grid>
         </Paper>
     </>

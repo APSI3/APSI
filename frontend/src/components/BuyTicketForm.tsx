@@ -22,7 +22,8 @@ export function BuyTicketForm({ ticketType, event }: { ticketType: TicketTypeDTO
     const initialValues: CreateTicketRequest = {
         holderFirstName: "",
         holderLastName: "",
-        ticketTypeId: ticketType.id,
+        ticketType,
+        event,
     }
 
     const toDate = new Date();

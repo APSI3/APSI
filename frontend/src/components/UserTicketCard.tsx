@@ -1,9 +1,9 @@
 import React from "react";
-import { ExtendedTicketDTO } from "../api/DTOs";
+import { TicketDTO } from "../api/DTOs";
 import {Grid, Link, Typography, Card, CardContent} from "@mui/material";
 
 
-const UserTicketCard: React.FC<{ ticket: ExtendedTicketDTO }> = ({ ticket }) => {
+const UserTicketCard: React.FC<{ ticket: TicketDTO }> = ({ ticket }) => {
     return (
         <Card style={{ margin: '1rem' }} elevation={3}>
             <CardContent>
@@ -11,20 +11,20 @@ const UserTicketCard: React.FC<{ ticket: ExtendedTicketDTO }> = ({ ticket }) => 
                     <Grid item xs={12} sm={4} alignItems="center" justifyContent="center" display='inline-flex' flexDirection='column'>
                         <>
                             <Typography variant="h6" component="h3">
-                                <Link href={`/event/${ticket.eventId}`} target="_self" rel="noopener">
-                                    {ticket.eventName}
+                                <Link href={`/event/${ticket.event.id}`} target="_self" rel="noopener">
+                                    {ticket.event.name}
                                 </Link>
                             </Typography>
                             <Typography color="textSecondary">
                                 <Grid sx={{display: 'flex', flexDirection:'row', gap: '1rem'}} alignItems="center" justifyContent="center">
                                     <Grid container sx={{ display:'flex', flexDirection:'column'}}>
-                                        <span>{ticket.eventStartTime?.substring(0, 5)}</span>
-                                        <span>{new Date(ticket.eventStartDate).toLocaleDateString()}</span>
+                                        <span>{ticket.event.startTime?.substring(0, 5)}</span>
+                                        <span>{new Date(ticket.event.startDate).toLocaleDateString()}</span>
                                     </Grid>
                                     <Grid item>-</Grid>
                                     <Grid container sx={{ display:'flex', flexDirection:'column'}}>
-                                        <span>{ticket.eventEndTime?.substring(0, 5)}</span>
-                                        <span>{new Date(ticket.eventEndDate).toLocaleDateString()}</span>
+                                        <span>{ticket.event.endTime?.substring(0, 5)}</span>
+                                        <span>{new Date(ticket.event.endDate).toLocaleDateString()}</span>
                                     </Grid>
                                 </Grid>
                             </Typography>
@@ -33,10 +33,10 @@ const UserTicketCard: React.FC<{ ticket: ExtendedTicketDTO }> = ({ ticket }) => 
                     <Grid item xs={12} sm={4} alignItems="center" justifyContent="center" display='inline-flex' flexDirection='column' >
                         <>
                             <Typography variant="h6" component="h3">
-                                Typ: {ticket.ticketTypeName}
+                                Typ: {ticket.ticketType.name}
                             </Typography>
                             <Typography variant="body2" color="textSecondary">
-                                Cena: {ticket.price}
+                                Cena: {ticket.ticketType.price}
                             </Typography>
                         </>
                     </Grid>
