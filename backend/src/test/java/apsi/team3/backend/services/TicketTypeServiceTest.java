@@ -2,6 +2,7 @@ package apsi.team3.backend.services;
 
 import apsi.team3.backend.DTOs.DTOMapper;
 import apsi.team3.backend.DTOs.TicketTypeDTO;
+import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.model.*;
 import apsi.team3.backend.repository.TicketTypeRepository;
 import org.junit.jupiter.api.Test;
@@ -69,7 +70,7 @@ public class TicketTypeServiceTest {
     }
 
     @Test
-    public void testDeleteCallsDeleteByIdRepositoryMethod() {
+    public void testDeleteCallsDeleteByIdRepositoryMethod() throws ApsiException {
         Long ticketTypeId = 2L;
         ticketTypeService.delete(ticketTypeId);
         verify(ticketTypeRepository).deleteById(ticketTypeId);

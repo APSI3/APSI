@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {CountryDTO, EventDTO} from "../api/DTOs";
+import {CountryDTO, EventDTO, TicketTypeDTO} from "../api/DTOs";
 import {Api} from "../api/Api";
 import {useParams} from "react-router-dom";
 import {Typography, Paper, Grid, IconButton, CardMedia} from '@mui/material';
@@ -15,6 +15,7 @@ export default function EventPage() {
     const [ countries, setCountries ] = useState<CountryDTO[]>([]);
     const [ event, setEvent ] = useState<EventDTO | null>(null);
     const [ image, setImage ] = useState<string | null>(null);
+    const [ ticketTypes, setTicketTypes ] = useState<TicketTypeDTO[]>([]);
 
     useEffect(() => {
         Api.GetCountries().then(res => {
@@ -29,6 +30,7 @@ export default function EventPage() {
         Api.GetEventById(eventId).then(res => {
             if (res.success && res.data) {
                 setEvent(res.data ?? null);
+                setTicketTypes(res.data.ticketTypes ?? null);
             }
             else toastError("Nie udało się pobrać danych wydarzenia")
         })
@@ -44,6 +46,14 @@ export default function EventPage() {
     }, [event, eventId, image])
 
     const country = countries.find(c => c.id === event?.location?.country_id);
+
+    const handleDelete = (id: number) => {
+        const newTicketList = ticketTypes.filter(ticketType => ticketType.id !== id);
+        setTicketTypes(newTicketList);
+        if (event) {
+            setEvent({...event, ticketTypes: newTicketList});
+        }
+    }
 
     return event && <>
         <Paper style={{ padding: 20 }}>
@@ -90,7 +100,7 @@ export default function EventPage() {
                     <Typography variant="body1">{event.description}</Typography>
                 </Grid>
                 <Grid container direction="column" alignItems="flex-center" gap={1}>
-                    {event.ticketTypes.map(ticket => <TicketCard event={event} key={event.id} ticket={ticket}/>)}
+                    {ticketTypes.map(ticket => <TicketCard event={event} key={event.id} ticket={ticket} onDelete={handleDelete}/>)}
                 </Grid>
                 {/*Edit button*/}
                 {AuthHelpers.getRole() !== UserTypes.PERSON && <Grid container xs={12} style={{ justifyContent: 'right' }}>

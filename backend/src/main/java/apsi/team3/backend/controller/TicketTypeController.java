@@ -1,6 +1,7 @@
 package apsi.team3.backend.controller;
 
 import apsi.team3.backend.DTOs.TicketTypeDTO;
+import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.ITicketTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,5 +51,14 @@ public class TicketTypeController {
         }
         var resp = ticketTypeService.replace(ticketTypeDTO);
         return ResponseEntity.ok(resp);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTicketType(@PathVariable("id") Long id) throws ApsiException {
+        if (ticketTypeService.notExists(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        ticketTypeService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

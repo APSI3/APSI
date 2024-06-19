@@ -2,8 +2,10 @@ package apsi.team3.backend.services;
 
 import apsi.team3.backend.DTOs.DTOMapper;
 import apsi.team3.backend.DTOs.TicketTypeDTO;
+import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.ITicketTypeService;
+import apsi.team3.backend.repository.EventRepository;
 import apsi.team3.backend.repository.TicketTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,9 +17,13 @@ import java.util.stream.Collectors;
 @Service
 public class TicketTypeService implements ITicketTypeService {
     private final TicketTypeRepository ticketTypeRepository;
+    private final EventRepository eventRepository;
 
     @Autowired
-    public TicketTypeService(TicketTypeRepository ticketTypeRepository) { this.ticketTypeRepository = ticketTypeRepository; }
+    public TicketTypeService(TicketTypeRepository ticketTypeRepository, EventRepository eventRepository) {
+        this.ticketTypeRepository = ticketTypeRepository;
+        this.eventRepository = eventRepository;
+    }
 
     @Override
     public Optional<TicketTypeDTO> getTicketTypeById(Long id) {
@@ -53,12 +59,21 @@ public class TicketTypeService implements ITicketTypeService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(Long id) throws ApsiException {
+        // we check in controller if ticketType exists
+        var ticketType = ticketTypeRepository.findById(id);
+        var event = ticketType.get().getEvent();
+        var eventTicketTypeCount = (long) event.getTicketTypes().size();
+
+        if (eventTicketTypeCount <= 1) {
+            throw new ApsiException("Nie można usunąć typu biletu, jeśli wydarzenie ma mniej niż dwa typy biletów");
+        }
         ticketTypeRepository.deleteById(id);
     }
 
     @Override
     public boolean notExists(Long id) {
+        var t = ticketTypeRepository.findById(id);
         return !ticketTypeRepository.existsById(id);
     }
 }
