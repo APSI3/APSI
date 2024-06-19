@@ -28,4 +28,5 @@ public class EventDTO implements Serializable {
     LocationDTO location;
     List<TicketTypeDTO> ticketTypes;
     List<Long> imageIds;
+    List<SectionDTO> sections;
 }

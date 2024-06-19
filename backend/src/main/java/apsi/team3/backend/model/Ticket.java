@@ -24,6 +24,10 @@ public class Ticket {
     private User holder;
 
     @ManyToOne(optional = false)
+    @JoinColumn(name = "section_id", nullable = false)
+    private EventSection section;
+
+    @ManyToOne(optional = false)
     @JoinColumn(name = "ticket_type_id", nullable = false)
     private TicketType ticketType;
 

@@ -2,6 +2,7 @@ package apsi.team3.backend.DTOs;
 
 import apsi.team3.backend.model.Country;
 import apsi.team3.backend.model.Event;
+import apsi.team3.backend.model.EventSection;
 import apsi.team3.backend.model.Location;
 import apsi.team3.backend.model.Ticket;
 import apsi.team3.backend.model.TicketType;
@@ -31,6 +32,7 @@ public class DTOMapper {
             .organizer(organizer)
             .location(loc)
             .ticketTypes(null)
+            .sections(null)
             .build();
     }
 
@@ -46,6 +48,17 @@ public class DTOMapper {
                 .price(ticketType.getPrice())
                 .quantityAvailable(ticketType.getQuantityAvailable())
                 .build();
+    }
+
+    public static EventSection toEntity(SectionDTO sectionDTO, Event existingEvent) {
+        var event = existingEvent == null ? Event.builder().id(sectionDTO.getEventId()).build() : existingEvent;
+
+        return EventSection.builder()
+            .id(sectionDTO.getId())
+            .event(event)
+            .name(sectionDTO.getName())
+            .capacity(sectionDTO.getCapacity())
+            .build();
     }
 
     public static Ticket toEntity(TicketDTO ticket) {
@@ -85,6 +98,10 @@ public class DTOMapper {
         if (ticketTypes == null)
             ticketTypes = new ArrayList<>();
 
+        var sections = event.getSections();
+        if (sections == null)
+            sections = new ArrayList<>();
+
         return new EventDTO(
             event.getId(),
             event.getName(),
@@ -96,7 +113,8 @@ public class DTOMapper {
             event.getOrganizer().getId(),
             event.getLocation() != null ? DTOMapper.toDTO(event.getLocation()) : null,
             ticketTypes.stream().map(DTOMapper::toDTO).toList(),
-            images.stream().map(i -> i.getId()).toList()
+            images.stream().map(i -> i.getId()).toList(),
+            sections.stream().map(DTOMapper::toDTO).toList()
         );
     }
 
@@ -137,12 +155,23 @@ public class DTOMapper {
         );
     }
 
+    public static SectionDTO toDTO(EventSection section) {
+        return new SectionDTO(
+            section.getId(),
+            section.getEvent().getId(),
+            section.getName(),
+            section.getCapacity()
+        );
+    }
+
     public static TicketDTO toDTO(Ticket ticket) {
         return new TicketDTO(
-                ticket.getId(),
-                ticket.getTicketType().getId(),
-                ticket.getHolder().getId(),
-                ticket.getPurchaseDate()
+            ticket.getId(),
+            ticket.getTicketType().getId(),
+            ticket.getHolder().getId(),
+            ticket.getSection().getId(),
+            ticket.getPurchaseDate(),
+            ""
         );
     }
 }

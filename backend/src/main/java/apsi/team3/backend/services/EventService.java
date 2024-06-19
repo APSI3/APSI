@@ -9,6 +9,7 @@ import apsi.team3.backend.model.EventImage;
 import apsi.team3.backend.model.User;
 import apsi.team3.backend.repository.EventImageRepository;
 import apsi.team3.backend.repository.EventRepository;
+import apsi.team3.backend.repository.EventSectionRepository;
 import apsi.team3.backend.repository.LocationRepository;
 import apsi.team3.backend.repository.TicketTypeRepository;
 
@@ -31,18 +32,21 @@ public class EventService implements IEventService {
     private final EventRepository eventRepository;
     private final TicketTypeRepository ticketTypeRepository;
     private final EventImageRepository eventImageRepository;
+    private final EventSectionRepository eventSectionRepository;
 
     @Autowired
     public EventService(
         EventRepository eventRepository,
         LocationRepository locationRepository,
         TicketTypeRepository ticketTypeRepository,
-        EventImageRepository eventImageRepository
+        EventImageRepository eventImageRepository,
+        EventSectionRepository eventSectionRepository
     ) {
         this.eventRepository = eventRepository;
         this.locationRepository = locationRepository;
         this.ticketTypeRepository = ticketTypeRepository;
         this.eventImageRepository = eventImageRepository;
+        this.eventSectionRepository = eventSectionRepository;
     }
 
     private void validateEvent(EventDTO eventDTO, User loggedUser) throws ApsiValidationException {
@@ -81,6 +85,17 @@ public class EventService implements IEventService {
             throw new ApsiValidationException("Można stworzyć maksymalnie 16 typów biletów", "tickets");
         if (!eventDTO.getTicketTypes().stream().allMatch(x -> x.getName() != null && !x.getName().isEmpty() && x.getName().length() < 100))
             throw new ApsiValidationException("Dla każdego typu biletów należy podać maksymalnie 100-znakową nazwę", "tickets");
+        if (eventDTO.getSections().size() < 1)
+            throw new ApsiValidationException("Należy stworzyć przynajmniej jedną sekcję z miejscami", "sections");
+        if (!eventDTO.getSections().stream().allMatch(x -> x.getName() != null && !x.getName().isEmpty() && x.getName().length() < 32))
+            throw new ApsiValidationException("Nazwa sekcji nie może być dłuższa niż 32 znaki", "sections");
+        if (!eventDTO.getSections().stream().allMatch(x -> x.getCapacity() < 1))
+            throw new ApsiValidationException("Sekcja musi mieć przynajmniej jedno dostępne miejsce", "sections");
+
+        var ttSum = eventDTO.getTicketTypes().stream().mapToInt(tt -> tt.getQuantityAvailable()).sum();
+        var sectionSum = eventDTO.getSections().stream().mapToInt(tt -> tt.getCapacity()).sum();
+        if (ttSum > sectionSum)
+            throw new ApsiValidationException("Nie można sprzedać więcej biletów niż dostępnych miejsc", "id");
     }
 
     @Override
@@ -142,6 +157,12 @@ public class EventService implements IEventService {
             var entities = eventDTO.getTicketTypes().stream().map(e -> DTOMapper.toEntity(e, saved)).toList();
             var savedTickets = ticketTypeRepository.saveAll(entities);
             saved.setTicketTypes(savedTickets);
+        }
+
+        if (!eventDTO.getSections().isEmpty()) {
+            var entities = eventDTO.getSections().stream().map(e -> DTOMapper.toEntity(e, saved)).toList();
+            var sections = eventSectionRepository.saveAll(entities);
+            saved.setSections(sections);
         }
 
         if (bytes != null){
