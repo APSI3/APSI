@@ -16,25 +16,26 @@ Poniższy rozdział ma na celu przedstawienie informacji wymaganych do efektywne
 System docelowo instalowany oraz uruchamiany jest w ramach jednej fizycznej maszyny, na której konteneryzowane są poszczególne moduły systemu.
 
 ## Komunikacja i dostępność
-Aplikacja kliencka domyślnie dostępna jest domyślnie pod portem `:3000` oraz osiągalna przy pomocy przeglądarki internetowej z dowolnej maszyny z dostępem do internetu. Komunikacja z serwerem API (domyślnie port `:8080`) odbywa się protokołem HTTP. Serwer bazy danych znajduje się domyślnie pod portem `:5432`.
+Aplikacja kliencka domyślnie dostępna jest pod portem `:3000` oraz osiągalna przy pomocy przeglądarki internetowej z dowolnej maszyny z dostępem do internetu. Komunikacja z serwerem API (domyślnie port `:8080`) odbywa się protokołem HTTP. Serwer bazy danych znajduje się domyślnie pod portem `:5432`.
 
 ## Instalacja systemu
 Istalacja systemu sprowadza się do umieszczenia plików źródłowych systemu w docelowym katalogu na maszynie fizycznej.
 
+W celu uruchomienia systemu należy zainstalować odpowiednie oprogramowanie. Wymagana jest instalacja narzędza [*Docker*](https://www.docker.com/) w wersji na system operacyjny maszyny fizycznej. Dokumentacja serwowana jest użytkownikom przy pomocy narzędzi [*MkDocs*](https://pypi.org/project/mkdocs/), [*MkDocs Material*](https://pypi.org/project/mkdocs-material/) oraz [*MkDocs with PDF*](https://pypi.org/project/mkdocs-with-pdf/), które muszą zostać zainstalowane na docelowej maszynie.
+
 ## Uruchomienie systemu
-W celu uruchomienia systemu należy zainstalować odpowiednie oprogramowanie. Wymagana jest instalacja narzędza [*Docker*](https://www.docker.com/) w wersji na system operacyjny maszyny fizycznej. 
-
-W ramach pierwszego uruchomienia systemu lub po dokonanu zmian w kodzie źródłowym należy użyć komendy w terminalu:  
+W ramach pierwszego uruchomienia systemu lub po dokonanu zmian w kodzie źródłowym należy użyć [komendy](https://docs.docker.com/reference/cli/docker/compose/up/) w terminalu:  
 ` docker compose up --build `  
-, budującej obrazy poszczególnych modułów systemu oraz uruchamiającej skonteneryzowane oprogramowanie. Przy pierwszym uruchomieniu baza danych wypełniana jest danymi inicjalizującymi, m.in. tworzone jest konto administratora.
+, budującej obrazy poszczególnych modułów systemu oraz uruchamiającej skonteneryzowane oprogramowanie.   
+Przy pierwszym uruchomieniu baza danych wypełniana jest danymi inicjalizującymi, m.in. tworzone jest konto administratora.
 
-Każde kolejne uruchomienie systemu w wersji niezmodyfikowanej odbywać się będzie poprzez użycie komendy:  
+Każde kolejne uruchomienie systemu w wersji niezmodyfikowanej odbywać się będzie poprzez użycie [komendy](https://docs.docker.com/reference/cli/docker/compose/up/):  
 ` docker compose up `
 
 W wyniku powyższych komend uruchamiane są trzy kontenery zawierające odpowiednio: front-end, back-end oraz bazę danych.
 
 ## Zatrzymanie systemu
-W celu zatrzymania działania instancji systemu należy użyć komendy:   
+W celu zatrzymania działania instancji systemu należy użyć [komendy](https://docs.docker.com/reference/cli/docker/compose/stop/):   
 ` docker compose stop`
 
 W wyniku powyższej komendy wstrzymane zostaną uruchomione kontenery, bez utraty danych.
@@ -44,14 +45,12 @@ W ramach każdego z kontenerów dokonywane jest logowanie użytecznych danych op
 ` docker logs {backend / frontend / database} `
 
 ## Użytkowanie dokumentacji
-Dokumentacja serwowana jest użytkownikom przy pomocy narzędzi [*MkDocs*](https://pypi.org/project/mkdocs/), [*MkDocs Material*](https://pypi.org/project/mkdocs-material/) oraz [*MkDocs with PDF*](https://pypi.org/project/mkdocs-with-pdf/), które muszą zostać zainstalowane na docelowej maszynie.
-
-W celu uruchomienia serwera dokumentacji należy użyć komendy:   
+W celu uruchomienia serwera dokumentacji należy użyć [komendy](https://www.mkdocs.org/user-guide/cli/#mkdocs-serve):   
 ` mkdocs serve `
 
 Dokumentacja zostanie wtedy udostępniona (domyślnie pod portem `:8000`) w postaci strony internetowej.
 
-Aby wygenerować plik PDF zawierający dokumentację systemu należy użyć komendy:   
+Aby wygenerować plik PDF zawierający dokumentację systemu należy użyć [komendy](https://www.mkdocs.org/user-guide/cli/#mkdocs-build):   
 ` mkdocs build `
 
 Wynikowy plik zapisany zostanie pod ścieżką `./docs/dokumentacja.pdf`.
