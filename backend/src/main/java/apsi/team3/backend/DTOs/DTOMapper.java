@@ -1,11 +1,6 @@
 package apsi.team3.backend.DTOs;
 
-import apsi.team3.backend.model.Country;
-import apsi.team3.backend.model.Event;
-import apsi.team3.backend.model.Location;
-import apsi.team3.backend.model.Ticket;
-import apsi.team3.backend.model.TicketType;
-import apsi.team3.backend.model.User;
+import apsi.team3.backend.model.*;
 
 import java.util.ArrayList;
 import java.time.LocalDate;
@@ -25,7 +20,7 @@ public class DTOMapper {
     public static Event toEntity(EventDTO event) {
         var organizer = User.builder().id(event.getOrganizerId()).build();
         var loc = event.getLocation() != null ? 
-            Location.builder().id(event.getLocation().getId()).build() :
+            toEntity(event.getLocation()) :
             null;
     
         return Event.builder()
@@ -115,7 +110,7 @@ public class DTOMapper {
             event.getOrganizer().getId(),
             event.getLocation() != null ? DTOMapper.toDTO(event.getLocation()) : null,
             ticketTypes.stream().map(DTOMapper::toDTO).toList(),
-            images.stream().map(i -> i.getId()).toList()
+            images.stream().map(EventImage::getId).toList()
         );
     }
 

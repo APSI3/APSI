@@ -71,9 +71,25 @@ public class TicketTypeServiceTest {
 
     @Test
     public void testDeleteCallsDeleteByIdRepositoryMethod() throws ApsiException {
-        Long ticketTypeId = 2L;
-        ticketTypeService.delete(ticketTypeId);
-        verify(ticketTypeRepository).deleteById(ticketTypeId);
+        Event event = new Event();
+        TicketType ticketType = new TicketType();
+        ticketType.setId(1L);
+        ticketType.setEvent(event);
+        event.setTicketTypes(List.of(ticketType, new TicketType()));
+        when(ticketTypeRepository.findById(anyLong())).thenReturn(Optional.of(ticketType));
+        ticketTypeService.delete(1L);
+        verify(ticketTypeRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    public void testDeleteDoesNotCallDeleteByIdRepositoryMethodIfEventHasOnlyOneTicketType() throws ApsiException {
+        Event event = new Event();
+        TicketType ticketType = new TicketType();
+        ticketType.setId(1L);
+        ticketType.setEvent(event);
+        event.setTicketTypes(List.of(ticketType));
+        when(ticketTypeRepository.findById(anyLong())).thenReturn(Optional.of(ticketType));
+        assertThrows(ApsiException.class, () -> ticketTypeService.delete(1L));
     }
 
     @Test

@@ -65,4 +65,14 @@ public class TicketService implements ITicketService {
     public List<TicketDTO> getTicketsByEventId(Long id) throws ApsiValidationException {
         return Arrays.stream(ticketRepository.getTicketsByEventId(id)).map(DTOMapper::toDTO).toList();
     }
+
+    @Override
+    public List<TicketDTO> getTicketsByTicketTypeId(Long id) throws ApsiValidationException {
+        return Arrays.stream(ticketRepository.getByTicketTypeId(id)).map(DTOMapper::toDTO).toList();
+    }
+
+    @Override
+    public void deleteByTicketTypeId(Long id) {
+        ticketRepository.deleteByTicketTypeId(id);
+    }
 }

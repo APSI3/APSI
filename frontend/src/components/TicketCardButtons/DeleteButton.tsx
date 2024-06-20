@@ -7,7 +7,14 @@ import {toastDefaultError, toastInfo} from "../../helpers/ToastHelpers";
 
 const DeleteButton: React.FC<{ ticketType: TicketTypeDTO, event: EventDTO, onDelete: (id: number) => void }> = ({ ticketType, event, onDelete })  => {
     const shouldBeDisabled = (ev: EventDTO) => {
-        return new Date(ev.endDate).getTime() < Date.now() || ev.ticketTypes.length <= 1
+        // we don't allow to delete ticket types for the events that have already started (on the date of the start of the event) and if this is the only type of ticket
+        const currentDate = new Date();
+        const eventStartDate = new Date(ev.startDate);
+
+        currentDate.setHours(0, 0, 0, 0);
+        eventStartDate.setHours(0, 0, 0, 0);
+
+        return eventStartDate <= currentDate || ev.ticketTypes.length <= 1
     }
     const [disabled, setDisabled] = useState(shouldBeDisabled(event));
 
