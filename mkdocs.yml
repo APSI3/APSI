@@ -19,10 +19,11 @@ nav:
   - Projekt systemu:
       - Ogólny model architektury: proj/arch-general.md
       - Technologie: proj/tech.md
-  - Instrukcja:
+  - Instrukcja użytkowania:
       - Instrukcja użytkownika: instructions/user-instr.md
       - Instrukcja organizatora: instructions/org-instr.md
       - Instrukcja administratora: instructions/admin-instr.md
+  - Dokumentacja administratorska: admin_docs/adm_docs.md
 
 theme:
   name: material
