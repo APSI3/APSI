@@ -192,9 +192,9 @@ const EventForm: React.FC<{ onClose: () => void, initialValues?: Object }> = ({ 
                     <ValidationMessage fieldName="endTime" />
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="location.id" className="form-label">Lokacja</label>
+                    <label htmlFor="location.id" className="form-label">Lokalizacja</label>
                     <Field as="select" name="location.id" id="location.id" className="form-control">
-                        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)} 
+                        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
                     </Field>
                     <ValidationMessage fieldName="location.id" />
                     <ValidationMessage fieldName="location" />
@@ -206,9 +206,9 @@ const EventForm: React.FC<{ onClose: () => void, initialValues?: Object }> = ({ 
                     <input className="form-control" type="file" accept="image/*" id="image" name="image" onChange={e => {
                         const reader = new FileReader();
                         reader.onload = () => {
-                            if (reader.readyState === 2) 
+                            if (reader.readyState === 2)
                                 setFieldValue("image", reader.result)
-                            else 
+                            else
                                 setFieldError("image", "Nie udało się wczytać obrazu")
                         }
 
@@ -223,7 +223,7 @@ const EventForm: React.FC<{ onClose: () => void, initialValues?: Object }> = ({ 
                 </div>
                 <div className="mb-3">
                     <label htmlFor="ticketTypes" className="form-label">Typy biletów</label>
-                    <FieldArray name="ticketTypes" 
+                    <FieldArray name="ticketTypes"
                         render={helpers => <div className="p-1">
                             {(values as CreateEventRequest).ticketTypes.map((tt, idx) => {
                                 const name = `ticketTypes.${idx}`;
