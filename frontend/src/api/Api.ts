@@ -3,7 +3,7 @@ import { ApiResponse } from "./Responses";
 import { CreateEventRequest, CreateLocationRequest, CreateTicketRequest, LoginRequest} from "./Requests";
 import { toastError } from "../helpers/ToastHelpers";
 import { AuthHelpers } from "../helpers/AuthHelpers";
-import { CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO, TicketDTO, PaginatedList } from "./DTOs";
+import { CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO, TicketDTO, PaginatedList, ImageDTO } from "./DTOs";
 
 axios.defaults.withCredentials = true;
 
@@ -101,16 +101,7 @@ export class Api {
     }
 
     static async GetEventImageByEventId(id: string) {
-        const authKey = AuthHelpers.GetAuthKey();
-        const data = await axios.get(this.url + "/events/images/" + id, {
-            validateStatus: status => status <= 500,
-            responseType: "text",
-            headers: {
-                "Authorization": authKey
-            }
-        }).then(r => r.data)
-
-        return data;
+        return await getApiResponse<undefined, ImageDTO[]>("get", this.url + "/images/" + id)
     }
 
     static async Session() {

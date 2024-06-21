@@ -72,3 +72,10 @@ export type SectionDTO = {
     capacity: number,
     boughtTickets: number
 }
+
+export type ImageDTO = {
+    id: number,
+    eventId: number,
+    image: string,
+    sectionMap: boolean
+}

@@ -2,6 +2,7 @@ package apsi.team3.backend.DTOs;
 
 import apsi.team3.backend.model.Country;
 import apsi.team3.backend.model.Event;
+import apsi.team3.backend.model.EventImage;
 import apsi.team3.backend.model.EventSection;
 import apsi.team3.backend.model.Location;
 import apsi.team3.backend.model.Ticket;
@@ -9,6 +10,7 @@ import apsi.team3.backend.model.TicketType;
 import apsi.team3.backend.model.User;
 
 import java.util.ArrayList;
+import java.util.Base64;
 
 import org.springframework.stereotype.Component;
 
@@ -152,6 +154,18 @@ public class DTOMapper {
                 ticketType.getName(),
                 ticketType.getPrice(),
                 ticketType.getQuantityAvailable()
+        );
+    }
+
+
+    public static ImageDTO toDTO(EventImage image) {
+        var encoder = Base64.getEncoder();
+
+        return new ImageDTO(
+            image.getId(),
+            image.getEvent().getId(),
+            encoder.encodeToString(image.getImage()),
+            image.isSection_map()
         );
     }
 

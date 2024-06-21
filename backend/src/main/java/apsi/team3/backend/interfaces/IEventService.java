@@ -1,10 +1,12 @@
 package apsi.team3.backend.interfaces;
 
 import apsi.team3.backend.DTOs.EventDTO;
+import apsi.team3.backend.DTOs.ImageDTO;
 import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -22,5 +24,5 @@ public interface IEventService {
 
     boolean notExists(Long id);
 
-    byte[] getImageByEventId(Long id);
+    List<ImageDTO> getImagesByEventId(Long id);
 }

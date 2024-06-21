@@ -1,6 +1,7 @@
 package apsi.team3.backend.controller;
 
 import apsi.team3.backend.DTOs.EventDTO;
+import apsi.team3.backend.DTOs.ImageDTO;
 import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IEventService;
@@ -19,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.time.LocalDate;
-import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -53,10 +54,9 @@ public class EventController {
     }
 
     @GetMapping("/images/{id}")
-    public ResponseEntity<byte[]> getEventImage(@PathVariable("id") Long eventId) {
-        var image = eventService.getImageByEventId(eventId);
-        var base64encodedData = Base64.getEncoder().encode(image);
-        return ResponseEntity.ok(base64encodedData);
+    public ResponseEntity<List<ImageDTO>> getEventImage(@PathVariable("id") Long eventId) {
+        var images = eventService.getImagesByEventId(eventId);
+        return ResponseEntity.ok(images);
     }
 
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })

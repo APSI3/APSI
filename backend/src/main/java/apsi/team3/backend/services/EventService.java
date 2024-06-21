@@ -2,6 +2,7 @@ package apsi.team3.backend.services;
 
 import apsi.team3.backend.DTOs.DTOMapper;
 import apsi.team3.backend.DTOs.EventDTO;
+import apsi.team3.backend.DTOs.ImageDTO;
 import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IEventService;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -106,7 +108,7 @@ public class EventService implements IEventService {
     public Optional<EventDTO> getEventById(Long id) {
         var event = eventRepository.findById(id);
         Optional<EventDTO> dto = event.map(e -> DTOMapper.toDTO(e));
-        
+
         if (event.isPresent() && dto.isPresent() && event.get().getSections().size() > 0){
             var countsPerSection = ticketRepository.countTicketsBySectionForEvent(event.get().getId()).stream().collect(Collectors.toMap(a -> a.section_id, b -> b.count));
             var sectionDtos = event.get().getSections().stream().map(s -> DTOMapper.toDTO(s, countsPerSection.get(s.getId()))).toList();
@@ -212,13 +214,8 @@ public class EventService implements IEventService {
     }
 
     @Override
-    public byte[] getImageByEventId(Long id) {
+    public List<ImageDTO> getImagesByEventId(Long id) {
         var images = eventImageRepository.findByEventId(id);
-
-        if (images.size() == 0)
-            return new byte[0];
-        
-        // na razie spodziewamy się 1 obrazka per event 
-        return images.get(0).getImage();
+        return images.stream().map(i -> DTOMapper.toDTO(i)).toList();
     }
 }

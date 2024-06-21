@@ -12,6 +12,7 @@ export default function EventPage() {
     const { eventId } = useParams();
     const [ event, setEvent ] = useState<EventDTO | null>(null);
     const [ image, setImage ] = useState<string | null>(null);
+    const [ , setSectionMapImage ] = useState<string | null>(null);
 
     useEffect(() => {
         Api.GetEventById(eventId).then(res => {
@@ -26,7 +27,15 @@ export default function EventPage() {
     useEffect(() => {
         if (event != null && event.imageIds.length > 0 && image == null) {
             Api.GetEventImageByEventId(eventId!).then(res => {
-                if (res) setImage(`data:image/png;base64,${res}`);
+                if (res.success && res.data) {
+                    const imgToShow = res.data.find(i => !i.sectionMap)?.image;
+                    if (!!imgToShow)
+                        setImage(`data:image/png;base64,${imgToShow}`);
+
+                    const sectionMap = res.data.find(i => i.sectionMap)?.image;
+                    if (!!sectionMap)
+                        setSectionMapImage(`data:image/png;base64,${sectionMap}`);
+                }
                 else toastError("Nie udało się pobrać obrazów dla tego wydarzenia")
             })
         }
