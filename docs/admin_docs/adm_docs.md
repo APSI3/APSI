@@ -19,12 +19,14 @@ System docelowo instalowany oraz uruchamiany jest w ramach jednej fizycznej masz
 Aplikacja kliencka domyślnie dostępna jest pod portem `:3000` oraz osiągalna przy pomocy przeglądarki internetowej z dowolnej maszyny z dostępem do internetu. Komunikacja z serwerem API (domyślnie port `:8080`) odbywa się protokołem HTTP. Serwer bazy danych znajduje się domyślnie pod portem `:5432`.
 
 ## Instalacja systemu
-Istalacja systemu sprowadza się do umieszczenia plików źródłowych systemu w docelowym katalogu na maszynie fizycznej.
+Instalacja systemu sprowadza się do umieszczenia plików źródłowych systemu w docelowym katalogu na maszynie fizycznej.
 
-W celu uruchomienia systemu należy zainstalować odpowiednie oprogramowanie. Wymagana jest instalacja narzędza [*Docker*](https://www.docker.com/) w wersji na system operacyjny maszyny fizycznej. Dokumentacja serwowana jest użytkownikom przy pomocy narzędzi [*MkDocs*](https://pypi.org/project/mkdocs/), [*MkDocs Material*](https://pypi.org/project/mkdocs-material/) oraz [*MkDocs with PDF*](https://pypi.org/project/mkdocs-with-pdf/), które muszą zostać zainstalowane na docelowej maszynie.
+W celu uruchomienia systemu należy zainstalować odpowiednie oprogramowanie. Wymagana jest instalacja narzędzia [*Docker*](https://www.docker.com/) w wersji na system operacyjny maszyny fizycznej. 
+
+Dokumentacja serwowana jest użytkownikom przy pomocy narzędzi [*MkDocs*](https://pypi.org/project/mkdocs/) oraz [*MkDocs Material*](https://pypi.org/project/mkdocs-material/). Istnieje również możliwość eksportowania dokumentacji do pliku PDF za pomocą [*MkDocs with PDF*](https://pypi.org/project/mkdocs-with-pdf/). Powyższe narzędzia muszą zostać przed użyciem zainstalowane na docelowej maszynie.
 
 ## Uruchomienie systemu
-W ramach pierwszego uruchomienia systemu lub po dokonanu zmian w kodzie źródłowym należy użyć [komendy](https://docs.docker.com/reference/cli/docker/compose/up/) w terminalu:  
+W ramach pierwszego uruchomienia systemu lub po dokonaniu zmian w kodzie źródłowym należy użyć [komendy](https://docs.docker.com/reference/cli/docker/compose/up/) w terminalu:  
 ` docker compose up --build `  
 , budującej obrazy poszczególnych modułów systemu oraz uruchamiającej skonteneryzowane oprogramowanie.   
 Przy pierwszym uruchomieniu baza danych wypełniana jest danymi inicjalizującymi, m.in. tworzone jest konto administratora.
@@ -39,6 +41,11 @@ W celu zatrzymania działania instancji systemu należy użyć [komendy](https:/
 ` docker compose stop`
 
 W wyniku powyższej komendy wstrzymane zostaną uruchomione kontenery, bez utraty danych.
+
+Możliwe również jest użycie [komendy](https://docs.docker.com/reference/cli/docker/compose/down/):   
+` docker compose down`
+
+W wyniku powyższej komendy wstrzymane oraz usunięte zostaną wszystkie kontenery, wraz z ich danymi (w tym dane bazy danych) oraz wewnętrzną wirtualną infrastrukturą sieciową.
 
 ## Dziennik zdarzeń
 W ramach każdego z kontenerów dokonywane jest logowanie użytecznych danych opisujących zdarzenia występujące w systemie. Aby wyświetlić dziennik zdarzeń kontenera należy użyć [komendy](https://docs.docker.com/reference/cli/docker/container/logs/):   
