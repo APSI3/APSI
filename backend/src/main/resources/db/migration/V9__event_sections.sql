@@ -11,3 +11,4 @@ DELETE FROM tickets;
 
 ALTER TABLE tickets ADD section_id BIGINT NOT NULL CONSTRAINT tickets_section_id REFERENCES event_sections(id);
 
+ALTER TABLE event_images ADD section_map BOOLEAN NOT NULL DEFAULT FALSE;

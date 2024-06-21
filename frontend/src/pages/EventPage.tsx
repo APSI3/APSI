@@ -6,6 +6,7 @@ import {Typography, Paper, Grid, IconButton, CardMedia} from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import TicketCard from "../components/TicketCard";
 import { toastError } from "../helpers/ToastHelpers";
+import EventSectionItem from "../components/EventSectionItem";
 
 export default function EventPage() {
     const { eventId } = useParams();
@@ -70,7 +71,10 @@ export default function EventPage() {
                     <Typography variant="body1">{event.description}</Typography>
                 </Grid>
                 <Grid container direction="column" alignItems="flex-center" gap={1}>
-                    {event.ticketTypes.map(ticket => <TicketCard key={event.id} ticket={ticket}/>)}
+                    {event.ticketTypes.map(ticket => <TicketCard key={ticket.id} ticket={ticket}/>)}
+                </Grid>
+                <Grid container direction="column" alignItems="flex-center" gap={1}>
+                    {event.sections.map(s => <EventSectionItem key={s.id} section={s} />)}
                 </Grid>
             </Grid>
         </Paper>

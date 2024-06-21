@@ -114,7 +114,7 @@ public class DTOMapper {
             event.getLocation() != null ? DTOMapper.toDTO(event.getLocation()) : null,
             ticketTypes.stream().map(DTOMapper::toDTO).toList(),
             images.stream().map(i -> i.getId()).toList(),
-            sections.stream().map(DTOMapper::toDTO).toList()
+            new ArrayList<>()
         );
     }
 
@@ -155,13 +155,13 @@ public class DTOMapper {
         );
     }
 
-    public static SectionDTO toDTO(EventSection section) {
+    public static SectionDTO toDTO(EventSection section, int ticketsBought) {
         return new SectionDTO(
             section.getId(),
             section.getEvent().getId(),
             section.getName(),
-            section.getCapacity()
-        );
+            section.getCapacity(),
+            ticketsBought);
     }
 
     public static TicketDTO toDTO(Ticket ticket) {

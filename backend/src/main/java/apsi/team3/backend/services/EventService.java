@@ -11,6 +11,7 @@ import apsi.team3.backend.repository.EventImageRepository;
 import apsi.team3.backend.repository.EventRepository;
 import apsi.team3.backend.repository.EventSectionRepository;
 import apsi.team3.backend.repository.LocationRepository;
+import apsi.team3.backend.repository.TicketRepository;
 import apsi.team3.backend.repository.TicketTypeRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ public class EventService implements IEventService {
     private final TicketTypeRepository ticketTypeRepository;
     private final EventImageRepository eventImageRepository;
     private final EventSectionRepository eventSectionRepository;
+    private final TicketRepository ticketRepository;
 
     @Autowired
     public EventService(
@@ -40,13 +42,15 @@ public class EventService implements IEventService {
         LocationRepository locationRepository,
         TicketTypeRepository ticketTypeRepository,
         EventImageRepository eventImageRepository,
-        EventSectionRepository eventSectionRepository
+        EventSectionRepository eventSectionRepository,
+        TicketRepository ticketRepository
     ) {
         this.eventRepository = eventRepository;
         this.locationRepository = locationRepository;
         this.ticketTypeRepository = ticketTypeRepository;
         this.eventImageRepository = eventImageRepository;
         this.eventSectionRepository = eventSectionRepository;
+        this.ticketRepository = ticketRepository;
     }
 
     private void validateEvent(EventDTO eventDTO, User loggedUser) throws ApsiValidationException {
@@ -100,7 +104,16 @@ public class EventService implements IEventService {
 
     @Override
     public Optional<EventDTO> getEventById(Long id) {
-        return eventRepository.findById(id).map(DTOMapper::toDTO);
+        var event = eventRepository.findById(id);
+        Optional<EventDTO> dto = event.map(e -> DTOMapper.toDTO(e));
+        
+        if (event.isPresent() && dto.isPresent() && event.get().getSections().size() > 0){
+            var countsPerSection = ticketRepository.countTicketsBySectionForEvent(event.get().getId()).stream().collect(Collectors.toMap(a -> a.section_id, b -> b.count));
+            var sectionDtos = event.get().getSections().stream().map(s -> DTOMapper.toDTO(s, countsPerSection.get(s.getId()))).toList();
+            dto.get().setSections(sectionDtos);
+        }
+
+        return dto;
     }
 
     @Override

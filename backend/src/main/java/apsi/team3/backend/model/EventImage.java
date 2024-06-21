@@ -38,4 +38,7 @@ public class EventImage {
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "image", nullable = false, columnDefinition = "bytea")
     private byte[] image;
+
+    @Column(name = "section_map", nullable = false)
+    private boolean section_map;
 }
