@@ -18,5 +18,5 @@ public class SectionDTO implements Serializable {
     Long eventId;
     String name;
     int capacity;
-    int boughtTickets;
+    Long boughtTickets;
 }

@@ -12,7 +12,7 @@ export default function EventPage() {
     const { eventId } = useParams();
     const [ event, setEvent ] = useState<EventDTO | null>(null);
     const [ image, setImage ] = useState<string | null>(null);
-    const [ , setSectionMapImage ] = useState<string | null>(null);
+    const [ sectionMapImage, setSectionMapImage ] = useState<string | null>(null);
 
     useEffect(() => {
         Api.GetEventById(eventId).then(res => {
@@ -40,6 +40,8 @@ export default function EventPage() {
             })
         }
     }, [event, eventId, image])
+
+    const sectionOptions = event?.sections.map(s => ({ value: s.id, label: s.name })) ?? []
 
     return event && <>
         <Paper style={{ padding: 20 }}>
@@ -84,7 +86,9 @@ export default function EventPage() {
                     <Typography variant="h5" className="mt-5" gutterBottom>
                         Rodzaje biletów
                     </Typography>
-                    {event.ticketTypes.map(ticket => <TicketCard key={ticket.id} ticket={ticket}/>)}
+                    {event.ticketTypes.map(ticket => <TicketCard sectionMap={sectionMapImage ?? undefined}
+                        key={ticket.id} ticket={ticket} sections={sectionOptions}
+                    />)}
                 </Grid>
                 {/* Sections */}
                 <Grid container direction="column" alignItems="flex-center" gap={1}>

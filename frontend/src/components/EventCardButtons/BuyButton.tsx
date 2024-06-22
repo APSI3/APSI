@@ -1,45 +1,85 @@
-import React from "react";
-import {Fab} from "@mui/material";
+import React, { useState } from "react";
+import {Box, Fab, IconButton, Modal, Tooltip} from "@mui/material";
 import {ShoppingCart} from "@mui/icons-material";
 import {toastDefaultError, toastInfo} from "../../helpers/ToastHelpers";
 import {Api} from "../../api/Api";
-import {CreateTicketRequest} from "../../api/Requests";
-import {AuthHelpers} from "../../helpers/AuthHelpers";
 import {useNavigate} from "react-router-dom";
+import CloseIcon from '@mui/icons-material/Close';
+import { modalStyle } from "../FormButton";
+import { Field, Form, Formik } from "formik";
+import { Option, ValidationMessage } from "../../helpers/FormHelpers";
 
-const BuyButton: React.FC<{ ticketTypeId: number }> = ({ ticketTypeId }) => {
+const BuyButton: React.FC<{ ticketTypeId: number, sectionMap?: string, ticketTypes: Option[], sections: Option[] }>= (
+    { ticketTypeId, sectionMap, ticketTypes, sections }
+) => {
+    const [open, setOpen] = useState(false);
     const nav = useNavigate();
-    const handleOnClick = () => {
-        // TODO: check available ticket numbers
-        const userData = AuthHelpers.GetUserData();
-        if (!userData) {
-            throw Error("Error fetching user data");
-        }
-        const createTicketRequest: CreateTicketRequest = {
-            ticketTypeId,
-            holderId: userData.id,
-            purchaseDate: new Date(),
-        };
 
-        Api.CreateTicket(createTicketRequest).then(res => {
-            if (res.success && res.data) {
-                toastInfo("Zakupiono bilet");
-                nav(`/ticketSummary/${res.data.id}`, { state: res.data });
-            }
-            else {
-                toastDefaultError();
-            }
-
-        // send email to user
-        })
+    const initialValues = {
+        ticketTypeId: ticketTypeId,
+        sectionId: 0,
     }
 
-    return <Fab
-        size="small"
-        onClick={handleOnClick}
-    >
-        <ShoppingCart />
-    </Fab>
+    return <>
+        <Tooltip title={"Kup bilet"} placement="left">
+            <Fab size="small" onClick={() => setOpen(true)}>
+                <ShoppingCart/>
+            </Fab>
+        </Tooltip>
+        <Modal
+            open={open}
+            onClose={() => setOpen(false)}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+        >
+            <Box sx={modalStyle}>
+                <IconButton aria-label="close" onClick={() => setOpen(false)} style={{ position: 'absolute', top: 10, right: 10 }}>
+                    <CloseIcon />
+                </IconButton>
+                <Formik
+                    initialValues={initialValues}
+                    onSubmit={async (values, fh) => {
+                        Api.CreateTicket(values).then(res => {
+                            if (res.success && res.data) {
+                                toastInfo("Zakupiono bilet");
+                                nav(`/ticketSummary/${res.data.id}`, { state: res.data });
+                            }
+                            else if (res.errors) fh.setErrors(res.errors)
+                            else toastDefaultError();
+                        })
+                    }}
+                >
+                    {({ isSubmitting }) => <Form className="form">
+                        <header className="mb-2 text-center h2">Kup bilet</header>
+                        <div className="form-group row justify-content-center mb-2">
+                            <label className="col-sm-6 col-form-label">Typ biletu</label>
+                            <div className="col-sm-6" style={{ position: 'relative' }}>
+                                <Field as="select" className="form-control" name="ticketTypeId" disabled={true}>
+                                    {ticketTypes.map(tt => <option key={tt.value} value={tt.value}>{tt.label}</option>)}
+                                </Field>
+                                <ValidationMessage fieldName="ticketTypeId"/>
+                            </div>
+                        </div>
+                        <div className="form-group row justify-content-center mb-2">
+                            <label className="col-sm-6 col-form-label">Rodzaj miejsca</label>
+                            <div className="col-sm-6" style={{ position: 'relative' }}>
+                                <Field as="select" className="form-control" name="sectionId">
+                                    <option key={0} value={0}>--Wybierz--</option>
+                                    {sections.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+                                </Field>
+                                <ValidationMessage fieldName="sectionId" />
+                            </div>
+                        </div>
+                        <div className="form-group row justify-content-center mb-2 text-center" >
+                            <div className="col-sm-6">
+                                <button className="btn btn-primary form-control" type="submit" disabled={isSubmitting}>Kup</button>
+                            </div>
+                        </div>
+                    </Form>}
+                </Formik>
+            </Box>
+        </Modal>
+    </>
 }
 
 export default BuyButton;

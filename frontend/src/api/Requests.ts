@@ -43,6 +43,5 @@ export type CreateLocationRequest = {
 
 export type CreateTicketRequest = {
     ticketTypeId: number,
-    holderId: string,
-    purchaseDate: Date,
+    sectionId: number,
 }

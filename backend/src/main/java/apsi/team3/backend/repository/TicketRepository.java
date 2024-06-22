@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
-    @Query("SELECT section.id, COUNT(*) FROM ticket WHERE ticketType.event.Id = :eventId GROUP BY section.id")
+    @Query("SELECT new apsi.team3.backend.model.SectionCountResult(section.id section_id, COUNT(*) count) FROM ticket WHERE ticketType.event.Id = :eventId GROUP BY section.id")
     public List<SectionCountResult> countTicketsBySectionForEvent(@Param("eventId") long eventId);
 
     @Query("SELECT COUNT(*) FROM ticket WHERE section.id = :sectionId")

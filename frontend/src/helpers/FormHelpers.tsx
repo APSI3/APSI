@@ -37,3 +37,8 @@ export const getLocationString = (loc: LocationDTO) => {
     string += loc.city;
     return string;
 }
+
+export type Option = {
+    value: any,
+    label: string
+}

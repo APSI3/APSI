@@ -7,5 +7,5 @@ import lombok.Setter;
 @Setter
 public class SectionCountResult {
     public long section_id;
-    public int count;
+    public long count;
 }

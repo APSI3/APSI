@@ -3,8 +3,11 @@ import { TicketTypeDTO} from "../api/DTOs";
 import { Grid, Paper, Typography} from "@mui/material";
 import {Api} from "../api/Api";
 import BuyButton from "./EventCardButtons/BuyButton";
+import { Option } from "../helpers/FormHelpers";
 
-const TicketCard: React.FC<{ ticket: TicketTypeDTO, skipApiCheck?: boolean }> = ({ ticket, skipApiCheck }) => {
+const TicketCard: React.FC<{ ticket: TicketTypeDTO, skipApiCheck?: boolean, sectionMap?: string, sections: Option[] }> = (
+    { ticket, skipApiCheck, sectionMap, sections }
+) => {
     const [soldCount, setSoldCount] = useState(0);
     
     useEffect(() => {
@@ -25,7 +28,9 @@ const TicketCard: React.FC<{ ticket: TicketTypeDTO, skipApiCheck?: boolean }> = 
                 </Typography>
             </Grid>
             <Grid item container direction="row" justifyContent="flex-end" padding='1rem' style={{background: '#ffffff'}}>
-                {(ticket.quantityAvailable - soldCount) > 0 && <BuyButton ticketTypeId={ticket.id}/>}
+                {(ticket.quantityAvailable - soldCount) > 0 && <BuyButton ticketTypes={[ { value: ticket.id, label: ticket.name }]}
+                    ticketTypeId={ticket.id} sectionMap={sectionMap} sections={sections}
+                />}
                 <Grid item container direction="column" alignItems="flex-end">
                     <Typography variant="body1" color="textSecondary" style={{ marginTop: '1rem' }}>
                         <strong>{ticket.price.toFixed(2)} zł</strong>

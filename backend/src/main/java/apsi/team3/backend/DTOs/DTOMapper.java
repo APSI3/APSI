@@ -176,7 +176,7 @@ public class DTOMapper {
         );
     }
 
-    public static SectionDTO toDTO(EventSection section, int ticketsBought) {
+    public static SectionDTO toDTO(EventSection section, long ticketsBought) {
         return new SectionDTO(
             section.getId(),
             section.getEvent().getId(),
