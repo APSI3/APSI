@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {EventDTO} from "../api/DTOs";
+import {CountryDTO, EventDTO} from "../api/DTOs";
 import {Api} from "../api/Api";
 import {useParams} from "react-router-dom";
 import {Typography, Paper, Grid, IconButton, CardMedia} from '@mui/material';
@@ -7,12 +7,25 @@ import { ArrowBack } from '@mui/icons-material';
 import TicketCard from "../components/TicketCard";
 import { toastError } from "../helpers/ToastHelpers";
 import EventSectionItem from "../components/EventSectionItem";
+import { getExtendedLocationString } from "../helpers/FormHelpers";
+import EditButton from "../components/EventCardButtons/EditButton";
+import {AuthHelpers, UserTypes} from "../helpers/AuthHelpers";
 
 export default function EventPage() {
     const { eventId } = useParams();
+    const [ countries, setCountries ] = useState<CountryDTO[]>([]);
     const [ event, setEvent ] = useState<EventDTO | null>(null);
     const [ image, setImage ] = useState<string | null>(null);
     const [ sectionMapImage, setSectionMapImage ] = useState<string | null>(null);
+
+    useEffect(() => {
+        Api.GetCountries().then(res => {
+            if (res.success && res.data) {
+                setCountries(res.data);
+            }
+            else toastError("Nie udało się pobrać danych wydarzenia")
+        })
+    }, [])
 
     useEffect(() => {
         Api.GetEventById(eventId).then(res => {
@@ -21,7 +34,6 @@ export default function EventPage() {
             }
             else toastError("Nie udało się pobrać danych wydarzenia")
         })
-
     }, [eventId]);
 
     useEffect(() => {
@@ -42,6 +54,7 @@ export default function EventPage() {
     }, [event, eventId, image])
 
     const sectionOptions = event?.sections.map(s => ({ value: s.id, label: s.name })) ?? []
+    const country = countries.find(c => c.id === event?.location?.country_id);
 
     return event && <>
         <Paper style={{ padding: 20 }}>
@@ -67,7 +80,13 @@ export default function EventPage() {
                         style={{ maxHeight: '15rem', width: 'auto' }}
                     />
                 </Grid>}
-                {/*TODO: add localization*/}
+                {/* Location */}
+                {!!event.location && <Grid item xs={12} style={{ display: 'flex', justifyContent: 'center' }}>
+                    <Typography variant="body1" gutterBottom>
+                        {getExtendedLocationString(event.location)} <br/>
+                        {!!country && country.full_name}
+                    </Typography>
+                </Grid>}
                 {/* Date */}
                 <Grid item xs={12}>
                     <Typography variant="body2" color="textSecondary">
@@ -97,6 +116,10 @@ export default function EventPage() {
                     </Typography>
                     {event.sections.map(s => <EventSectionItem key={s.id} section={s} />)}
                 </Grid>
+                {/*Edit button*/}
+                {AuthHelpers.getRole() !== UserTypes.PERSON && <Grid container xs={12} style={{ justifyContent: 'right' }}>
+                    <EditButton event={event} />
+                </Grid>}
             </Grid>
         </Paper>
     </>

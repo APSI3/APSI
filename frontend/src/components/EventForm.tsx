@@ -1,4 +1,4 @@
-import { Field, FieldArray, Form, Formik } from "formik";
+import {Field, FieldArray, Form, Formik, FormikHelpers} from "formik";
 import { Helmet } from "react-helmet";
 import { Api } from "../api/Api";
 import { toastDefaultError, toastError, toastInfo } from "../helpers/ToastHelpers";
@@ -6,11 +6,11 @@ import { ValidationMessage, getLocationString } from "../helpers/FormHelpers";
 import { array, date, number, object, string } from "yup";
 import DatePicker from "react-datepicker";
 import { Grid, Paper } from "@mui/material";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LocationDTO } from "../api/DTOs";
-import { CreateEventRequest } from "../api/Requests";
+import {CreateEventRequest, UpdateEventRequest} from "../api/Requests";
 
-const initialValues: CreateEventRequest = {
+const createInitialValues: CreateEventRequest = {
     name: "",
     description: "",
     startDate: new Date(),
@@ -74,11 +74,17 @@ const createEventValidationSchema = object<CreateEventRequest>().shape({
     ).min(1, "Należy dodać przynajmniej jeden rodzaj miejsc"),
     location: object().shape({
         id: number()
-    })
+    }).nullable()
 })
 
-const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+const isUpdateRequest = (values: Object): values is UpdateEventRequest => {
+    return (values as UpdateEventRequest).id !== undefined;
+};
+
+const EventForm: React.FC<{ onClose: () => void, initialValues?: Object }> = ({ onClose, initialValues = createInitialValues }) => {
     const [locations, setLocations] = useState<LocationDTO[]>([])
+    const isUpdate = isUpdateRequest(initialValues);
+    console.log(initialValues);
 
     useEffect(() => {
         Api.GetLocations().then(res => {
@@ -94,6 +100,53 @@ const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         ...locations.map(l => ({ label: getLocationString(l), value: l.id }))
     ]
 
+    const handleCreateEvent = async (newValues: CreateEventRequest, fh: FormikHelpers<any>) => {
+        await Api.CreateEvent(newValues).then(res => {
+            if (res.success && res.data) {
+                toastInfo("Udało się stworzyć wydarzenie " + res.data.name);
+                onClose();
+            } else {
+                if (res.errors)
+                    fh.setErrors(res.errors);
+                else
+                    toastDefaultError()
+            }
+        })
+    }
+
+    const handleUpdateEvent = async (newValues: UpdateEventRequest, fh: FormikHelpers<any>) => {
+        let hasErrors = false;
+
+        for (let idx = 0; idx < newValues.ticketTypes.length; idx++) {
+            const ticket = newValues.ticketTypes[idx];
+            const oldTicket = (initialValues as UpdateEventRequest).ticketTypes[idx];
+
+            if (oldTicket?.quantityAvailable !== ticket?.quantityAvailable) {
+                await Api.GetSoldTicketsCount(ticket.id).then(res => {
+                    if (res.data && ticket.quantityAvailable - res.data < 0) {
+                        fh.setFieldError(`ticketTypes.${idx}.quantityAvailable`, 'Nie można zmienić liczby biletów poniżej dostępnej wartości');
+                        hasErrors = true;
+                    }
+                });
+            }
+        }
+
+        if (hasErrors) {
+            return;
+        }
+        await Api.UpdateEvent({...newValues, id : (initialValues as UpdateEventRequest).id }).then(res => {
+            if (res.success && res.data) {
+                toastInfo("Udało się zaktualizować wydarzenie" + (initialValues as UpdateEventRequest).name);
+                onClose();
+            } else {
+                if (res.errors)
+                    fh.setErrors(res.errors);
+                else
+                    toastDefaultError()
+            }
+        })
+    }
+
     return <>
         <Helmet>
             <title>APSI - Dodawanie wydarzenia</title>
@@ -103,25 +156,14 @@ const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             validationSchema={createEventValidationSchema}
             onSubmit={async (values, fh) => {
                 let newValues = values;
-                if (values.location?.id === 0)
+                if ((values as UpdateEventRequest).location?.id == 0) // location id can come to us as string - soft compare
                     newValues = { ...newValues, location: undefined}
 
-                await Api.CreateEvent(newValues).then(res => {
-                    if (res.success && res.data) {
-                        toastInfo("Udało się stworzyć wydarzenie " + res.data.name);
-                        onClose();
-                    }
-                    else {
-                        if (res.errors)
-                            fh.setErrors(res.errors);
-                        else
-                            toastDefaultError()
-                    }
-                })
+                isUpdate ? handleUpdateEvent((newValues as UpdateEventRequest), fh) : handleCreateEvent((newValues as CreateEventRequest), fh)
             }}
         >
             {({ isSubmitting, values, setFieldValue, setFieldError }) => <Form className="form">
-                <header className="mb-4 mt-3 text-center h2">Nowe wydarzenie</header>
+                <header className="mb-4 mt-3 text-center h2">{isUpdate ? 'Edytuj wydarzenie' : 'Nowe wydarzenie'}</header>
                 <div className="mb-3">
                     <label htmlFor="name" className="form-label">Nazwa</label>
                     <Field type="text" name="name" id="name" className="form-control" />
@@ -139,7 +181,7 @@ const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     <label htmlFor="startDate" className="form-label">Od</label><br />
                     <DatePicker className="form-control"
                         dateFormat={"dd/MM/yyyy"}
-                        selected={values.startDate}
+                        selected={(values as CreateEventRequest).startDate}
                         onChange={e => setFieldValue("startDate", e ?? new Date())}
                         id="startDate"
                     />
@@ -154,7 +196,7 @@ const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     <label htmlFor="endDate" className="form-label">Do</label><br/>
                     <DatePicker className="form-control"
                         dateFormat={"dd/MM/yyyy"}
-                        selected={values.endDate}
+                        selected={(values as CreateEventRequest).endDate}
                         onChange={e => setFieldValue("endDate", e ?? new Date())}
                         id="endDate"
                     />
@@ -175,6 +217,8 @@ const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 </div>
                 <div className="mb-3">
                     <label htmlFor="image" className="form-label">Obraz</label>
+                    {/* couldn't get the initial image to load to the loader */}
+                    {(initialValues as CreateEventRequest)?.image && <span> (zastąpi istniejący obraz)</span>}
                     <input className="form-control" type="file" accept="image/*" id="image" name="image" onChange={e => {
                         const reader = new FileReader();
                         reader.onload = () => {
@@ -185,7 +229,7 @@ const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                         }
 
                         if (!!e.target.files) {
-                            if (e.target.files[0].size > 500_000)
+                            if (e.target.files[0]?.size > 500_000)
                                 setFieldError("image", "Maksymalna wielkość pliku to 500 KB")
                             else
                                 reader.readAsArrayBuffer(e.target.files[0])
@@ -197,31 +241,33 @@ const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     <label htmlFor="ticketTypes" className="form-label">Typy biletów</label>
                     <FieldArray name="ticketTypes" 
                         render={helpers => <div className="p-1">
-                            {values.ticketTypes.map((tt, idx) => {
+                            {(values as CreateEventRequest).ticketTypes.map((tt, idx) => {
                                 const name = `ticketTypes.${idx}`;
-                                return <Paper key={idx} className="m-1"> 
-                                    <Grid item xs={3} style={{ justifyContent:'center', display: 'flex'}}>
-                                        <div className="m-1">
+                                return <Paper key={idx} className="m-1" style={{ padding: 20 }}>
+                                    <Grid container spacing={1} alignItems="center">
+                                        <Grid item xs={12} sm={6} md={4} lg={3}>
                                             <label htmlFor={name + ".name"} className="form-label">Nazwa</label>
-                                            <Field type="string" name={name + ".name"}
-                                                id={name + ".name"} className="form-control"
-                                            />
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={8} lg={9}>
+                                            <Field type="string" name={name + ".name"} id={name + ".name"} className="form-control" />
                                             <ValidationMessage fieldName={name + ".name"} />
-                                        </div>
-                                        <div className="m-1">
+                                        </Grid>
+
+                                        <Grid item xs={12} sm={6} md={4} lg={3}>
                                             <label htmlFor={name + ".price"} className="form-label">Cena</label>
-                                            <Field type="number" name={name + ".price"}
-                                                id={name + ".price"} className="form-control"
-                                            />
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={8} lg={9}>
+                                            <Field type="number" name={name + ".price"} id={name + ".price"} className="form-control" />
                                             <ValidationMessage fieldName={name + ".price"} />
-                                        </div>
-                                        <div className="m-1">
+                                        </Grid>
+
+                                        <Grid item xs={12} sm={6} md={4} lg={3}>
                                             <label htmlFor={name + ".quantityAvailable"} className="form-label">Dostępna ilość</label>
-                                            <Field type="number" name={name + ".quantityAvailable"}
-                                                id={name + ".quantityAvailable"} className="form-control"
-                                            />
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={8} lg={9}>
+                                            <Field type="number" name={name + ".quantityAvailable"} id={name + ".quantityAvailable"} className="form-control" />
                                             <ValidationMessage fieldName={name + ".quantityAvailable"} />
-                                        </div>
+                                        </Grid>
                                     </Grid>
                                     <button className="btn btn-danger" type="button" onClick={() => helpers.remove(idx)}>
                                         Usuń
@@ -296,7 +342,7 @@ const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     <ValidationMessage fieldName="sectionMap" />
                 </div>
                 <div className="mb-3 text-center">
-                    <button className="btn btn-primary" type="submit" disabled={isSubmitting}>Dodaj</button>
+                    <button className="btn btn-primary" type="submit" disabled={isSubmitting}>{isUpdate ? 'Aktualizuj' : 'Dodaj'}</button>
                 </div>
             </Form>}
         </Formik>

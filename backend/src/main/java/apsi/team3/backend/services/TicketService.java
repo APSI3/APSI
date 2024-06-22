@@ -1,6 +1,7 @@
 package apsi.team3.backend.services;
 
 import apsi.team3.backend.DTOs.DTOMapper;
+import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.DTOs.TicketDTO;
 import apsi.team3.backend.DTOs.Requests.CreateTicketRequest;
 import apsi.team3.backend.exceptions.ApsiValidationException;
@@ -11,22 +12,27 @@ import apsi.team3.backend.model.User;
 import apsi.team3.backend.repository.EventSectionRepository;
 import apsi.team3.backend.repository.TicketRepository;
 import apsi.team3.backend.repository.TicketTypeRepository;
-import jakarta.mail.MessagingException;
 
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import com.google.zxing.WriterException;
-
 import java.io.IOException;
 import java.util.Map;
+import org.springframework.data.domain.PageRequest;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static apsi.team3.backend.helpers.PaginationValidator.validatePaginationArgs;
 import static apsi.team3.backend.helpers.MailGenerator.getDateString;
 
 @Service
 public class TicketService implements ITicketService {
+    private final int PAGE_SIZE = 10;
     private final TicketRepository ticketRepository;
     private final TicketTypeRepository ticketTypeRepository;
     private final EventSectionRepository eventSectionRepository;
@@ -85,12 +91,36 @@ public class TicketService implements ITicketService {
         
         var mailStructure = new MailStructure(
             mailSubject,
-            dto.getQRCode(),
             QRCode,
             ticketData
         );
         mailService.sendMail(user.getEmail(), mailStructure);
 
         return dto;
+    }
+
+    @Override
+    public PaginatedList<TicketDTO> getTicketsByUserId(Long id, LocalDate from, LocalDate to, int pageIndex) throws ApsiValidationException {
+        validatePaginationArgs(from, to, pageIndex);
+
+        var page = ticketRepository.getUsersTicketsWithDatesBetween(PageRequest.of(pageIndex, PAGE_SIZE), id, from, to);
+        var items = page
+                .stream()
+                .map(ticket -> {
+                    TicketDTO ticketDTO = DTOMapper.toDTO(ticket);
+                    try {
+                        ticketDTO.setQRCode(QRCodeGenerator.generateQRCode(ticketDTO.toJSON()));
+                    } catch (WriterException | IOException e) {
+                        ticketDTO.setQRCode(null);
+                    }
+                    return ticketDTO;
+                }).collect(Collectors.toList());
+
+        return new PaginatedList<>(items, pageIndex, page.getTotalElements(), page.getTotalPages());
+    }
+
+    @Override
+    public List<TicketDTO> getTicketsByEventId(Long id) throws ApsiValidationException {
+        return Arrays.stream(ticketRepository.getTicketsByEventId(id)).map(DTOMapper::toDTO).toList();
     }
 }

@@ -42,3 +42,12 @@ export type Option = {
     value: any,
     label: string
 }
+
+export const getExtendedLocationString = (loc: LocationDTO) => {
+    let string = getLocationString(loc) + " ";
+    if (!!loc.zip_code)
+        string += loc.zip_code + " "
+    if (!!loc.apartment_nr)
+        string += "lokal " + loc.apartment_nr + " "
+    return string;
+}

@@ -2,19 +2,22 @@ package apsi.team3.backend.controller;
 
 import apsi.team3.backend.DTOs.TicketDTO;
 import apsi.team3.backend.DTOs.Requests.CreateTicketRequest;
+import apsi.team3.backend.DTOs.*;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.helpers.QRCodeGenerator;
 import apsi.team3.backend.interfaces.ITicketService;
-import com.google.zxing.WriterException;
+
 import jakarta.mail.MessagingException;
+import com.google.zxing.WriterException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.Optional;
-
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/tickets")
@@ -31,12 +34,24 @@ public class TicketController {
         Optional<TicketDTO> ticket = ticketService.getTicketById(id);
         ticket.ifPresent(t -> {
             try {
-                t.setQRCode(QRCodeGenerator.generateQRCode(t.toString()));
+                t.setQRCode(QRCodeGenerator.generateQRCode(t.toJSON()));
             } catch (WriterException | IOException e) {
                 t.setQRCode(null);
             }
         });
         return ticket.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("user/{id}")
+    public ResponseEntity<PaginatedList<TicketDTO>> getExtendedTicketsByUserId(
+        @PathVariable("id") Long id,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate from,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate to,
+        @RequestParam int pageIndex
+    ) throws ApsiValidationException
+    {
+        var tickets = ticketService.getTicketsByUserId(id, from, to, pageIndex);
+        return new ResponseEntity<>(tickets, HttpStatus.OK);
     }
 
     @PostMapping

@@ -1,11 +1,11 @@
 package apsi.team3.backend;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-import apsi.team3.backend.model.Event;
-import apsi.team3.backend.model.User;
-import apsi.team3.backend.model.UserType;
+import apsi.team3.backend.DTOs.DTOMapper;
+import apsi.team3.backend.model.*;
 
 public class TestHelper {
     public static Event getTestEvent(Long eventId, String name) {
@@ -38,5 +38,15 @@ public class TestHelper {
 
     public static User getTestUser() {
         return getTestUser(1L, "login");
+    }
+
+    public static TicketType getTestTicketType() {
+        return new TicketType(1L, getTestEvent(), "test ticket type", new BigDecimal(1l), 10);
+    }
+
+    public static Ticket getTestTicket() {
+        var holder = TestHelper.getTestUser();
+        var ticketType = TestHelper.getTestTicketType();
+        return new Ticket(2L, holder, ticketType, LocalDate.now(), "jan", "kowalski");
     }
 }

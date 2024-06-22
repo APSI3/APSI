@@ -51,11 +51,15 @@ export interface LocationDTO {
 }
 
 export interface TicketDTO {
+    qrcode?: string;
     id: number,
-    ticketTypeId: number,
-    holderId: number,
+    ticketType: TicketTypeDTO,
+    holder: UserDTO,
     purchaseDate: Date,
     sectionId: number
+    holderFirstName: string,
+    holderLastName: string,
+    event: EventDTO,
 }
 
 export interface PaginatedList<T>{

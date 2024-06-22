@@ -1,4 +1,4 @@
-site_name: Eventix
+site_name: APSI
 site_author: Julia Jodczyk, Daniel Kobiałka, Maksymilian Łazarski, Hubert Soroka, Bartłomiej Ściseł, Maciej Tymoftyjewicz
 
 repo_name: apsi-git
@@ -6,7 +6,7 @@ repo_url: https://github.com/APSI3/APSI
 edit_uri: ""
 
 nav:
-  - Eventix: index.md
+  - APSI: index.md
   - Analiza UX:
       - Aktorzy: ux/ux-actors.md
       - Przypadki użycia:
@@ -19,9 +19,14 @@ nav:
   - Projekt systemu:
       - Ogólny model architektury: proj/arch-general.md
       - Technologie: proj/tech.md
+  - Instrukcja użytkowania:
+      - Instrukcja użytkownika: instructions/user-instr.md
+      - Instrukcja organizatora: instructions/org-instr.md
+      - Instrukcja administratora: instructions/admin-instr.md
+  - Dokumentacja administratorska: admin_docs/adm_docs.md
 
 theme:
-  name: readthedocs
+  name: material
   language: pl
   analytics:
     gtag: G-ABC123
@@ -68,4 +73,14 @@ theme:
 
 plugins:
   - search
+  # - with-pdf:
+  #     cover_subtitle: Dokumentacja projektu
+  #     cover_logo: https://i.imgur.com/6ZNSv8A.png
+  #     copyright: Analiza i projektowanie systemów informacyjnych 2024L
+  #     toc_title: Spis treści
+  #     toc_level: 3
+  #     output_path: ../docs/dokumentacja.pdf
+      
+  # odkomentować with-pdf, żeby tworzyć PDFa
+      
       

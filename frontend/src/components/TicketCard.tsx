@@ -2,8 +2,9 @@ import React, {useEffect, useState} from "react";
 import { TicketTypeDTO} from "../api/DTOs";
 import { Grid, Paper, Typography} from "@mui/material";
 import {Api} from "../api/Api";
-import BuyButton from "./EventCardButtons/BuyButton";
 import { Option } from "../helpers/FormHelpers";
+import BuyButton from "./EventCardButtons/BuyButton";
+import { AuthHelpers, UserTypes } from "../helpers/AuthHelpers";
 
 const TicketCard: React.FC<{ ticket: TicketTypeDTO, skipApiCheck?: boolean, sectionMap?: string, sections: Option[] }> = (
     { ticket, skipApiCheck, sectionMap, sections }
@@ -20,6 +21,8 @@ const TicketCard: React.FC<{ ticket: TicketTypeDTO, skipApiCheck?: boolean, sect
         }
     }, [ticket.id, skipApiCheck]);
 
+    const canBuyTickets = AuthHelpers.HasAnyRole([ UserTypes.PERSON ]);
+
     return (
         <Paper style={{ alignItems: 'center', display: 'flex', justifyContent: 'space-evenly', margin: '0.5rem', background: '#dee2e6' }}  elevation={3} >
             <Grid item xs={6} >
@@ -28,7 +31,7 @@ const TicketCard: React.FC<{ ticket: TicketTypeDTO, skipApiCheck?: boolean, sect
                 </Typography>
             </Grid>
             <Grid item container direction="row" justifyContent="flex-end" padding='1rem' style={{background: '#ffffff'}}>
-                {(ticket.quantityAvailable - soldCount) > 0 && <BuyButton ticketTypes={[ { value: ticket.id, label: ticket.name }]}
+                {(ticket.quantityAvailable - soldCount) > 0 && canBuyTickets && <BuyButton ticketTypes={[ { value: ticket.id, label: ticket.name }]}
                     ticketTypeId={ticket.id} sectionMap={sectionMap} sections={sections}
                 />}
                 <Grid item container direction="column" alignItems="flex-end">

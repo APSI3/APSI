@@ -13,12 +13,20 @@ import apsi.team3.backend.model.User;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.time.LocalDate;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DTOMapper {
+    public static User toEntity(UserDTO user) {
+        return User.builder()
+                .id(user.getId())
+                .login(user.getLogin())
+                .email(user.getEmail())
+                .build();
+    }
 
     public static Event toEntity(EventDTO event) {
         var organizer = User.builder().id(event.getOrganizerId()).build();
@@ -67,17 +75,36 @@ public class DTOMapper {
             .build();
     }
 
-    public static Ticket toEntity(CreateTicketRequest req) {
-        var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var user = User.builder().id(loggedUser.getId()).build();
-        var ticketType = TicketType.builder().id(req.getTicketTypeId()).build();
-        var section = EventSection.builder().id(req.getSectionId()).build();
+    // public static Ticket toEntity(CreateTicketRequest req) {
+    //     var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    //     var user = User.builder().id(loggedUser.getId()).build();
+    //     var ticketType = TicketType.builder().id(req.getTicketTypeId()).build();
+    //     var section = EventSection.builder().id(req.getSectionId()).build();
+    //     return Ticket.builder()
+    //         .id(null)
+    //         .holder(user)
+    //         .section(section)
+    //         .purchaseDate(LocalDate.now())
+    //         .ticketType(ticketType)
+    public static Ticket toEntity(TicketDTO ticket) {
+        var ticketHolder = ticket.getHolder();
+        if (ticket.getEvent() == null) {
+            return null;
+        }
+        var event = toEntity(ticket.getEvent());
+        User user = User.builder()
+                .id(ticketHolder.getId())
+                .login(ticketHolder.getLogin())
+                .email(ticketHolder.getEmail())
+                .build();
+        TicketType ticketType = DTOMapper.toEntity(ticket.getTicketType(), event);
         return Ticket.builder()
-            .id(null)
+            .id(ticket.getId())
             .holder(user)
-            .section(section)
             .purchaseDate(LocalDate.now())
             .ticketType(ticketType)
+            .holderFirstName(ticket.getHolderFirstName())
+            .holderLastName(ticket.getHolderLastName())
             .build();
     }
 
@@ -186,13 +213,17 @@ public class DTOMapper {
     }
 
     public static TicketDTO toDTO(Ticket ticket) {
+        var event = ticket.getTicketType().getEvent();
         return new TicketDTO(
             ticket.getId(),
-            ticket.getTicketType().getId(),
-            ticket.getHolder().getId(),
-            ticket.getSection().getId(),
+            DTOMapper.toDTO(ticket.getTicketType()),
+            DTOMapper.toDTO(ticket.getHolder()),
+            DTOMapper.toDTO(event),
             ticket.getPurchaseDate(),
-            ""
+            null,
+            ticket.getSection().getId(),
+            ticket.getHolderFirstName(),
+            ticket.getHolderLastName()
         );
     }
 }

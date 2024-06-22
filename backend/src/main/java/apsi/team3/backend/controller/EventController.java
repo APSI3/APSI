@@ -3,9 +3,12 @@ package apsi.team3.backend.controller;
 import apsi.team3.backend.DTOs.EventDTO;
 import apsi.team3.backend.DTOs.ImageDTO;
 import apsi.team3.backend.DTOs.PaginatedList;
+import apsi.team3.backend.DTOs.TicketDTO;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IEventService;
 
+import apsi.team3.backend.services.MailService;
+import apsi.team3.backend.services.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
@@ -21,7 +24,10 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+
+import static apsi.team3.backend.helpers.MailSender.sendTicketByEmail;
 
 @RestController
 @RequestMapping("/events")
@@ -29,10 +35,14 @@ import java.util.Optional;
 public class EventController {
     private final IEventService eventService;
     private final static int MAX_IMAGE_SIZE = 500_000;
+    private final MailService mailService;
+    private final TicketService ticketService;
 
     @Autowired
-    public EventController(IEventService eventService) {
+    public EventController(IEventService eventService, MailService mailService, TicketService ticketService) {
         this.eventService = eventService;
+        this.mailService = mailService;
+        this.ticketService = ticketService;
     }
 
     @GetMapping
@@ -49,9 +59,7 @@ public class EventController {
     public ResponseEntity<EventDTO> getEventById(@PathVariable("id") Long id) {
         Optional<EventDTO> event = eventService.getEventById(id);
 
-        if (!event.isPresent())
-            return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(event.get());
+        return event.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/images/{id}")
@@ -83,14 +91,52 @@ public class EventController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<EventDTO> replaceEvent(@PathVariable("id") Long id, @RequestBody EventDTO eventDTO) throws ApsiValidationException {
-        validateSameId(id, eventDTO);
-        if (eventService.notExists(id)) {
-            return ResponseEntity.notFound().build();
+    @PutMapping(value="/{id}", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<EventDTO> replaceEvent(
+        @PathVariable("id") Long id,
+        @RequestPart("event") String event,
+        @RequestPart(name = "image", required = false) MultipartFile image
+    ) throws ApsiValidationException
+    {
+        if (image != null && image.getSize() > MAX_IMAGE_SIZE)
+            throw new ApsiValidationException("Zbyt duży obraz. Maksymalna wielkość to 500 KB", "image");
+
+        try {
+            var mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            var eventDTO = mapper.readValue(event, EventDTO.class);
+
+            validateSameId(id, eventDTO);
+            var oldEvent = eventService.getEventById(id);
+            if (oldEvent.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            var resp = eventService.replace(eventDTO, image);
+
+            boolean timeChanged = !Objects.equals(eventDTO.getStartTime(), oldEvent.get().getStartTime())
+                    || !Objects.equals(eventDTO.getEndTime(), oldEvent.get().getEndTime())
+                    || !Objects.equals(eventDTO.getStartDate(), oldEvent.get().getStartDate())
+                    || !Objects.equals(eventDTO.getEndDate(), oldEvent.get().getEndDate());
+
+            boolean locationChanged = eventDTO.getLocation() != oldEvent.get().getLocation();
+
+            if (timeChanged || locationChanged) {
+                try {
+                    List<TicketDTO> tickets = ticketService.getTicketsByEventId(resp.getId());
+                    for (TicketDTO ticket : tickets) {
+                        ticket.setEvent(resp);
+                        sendTicketByEmail(mailService, "Szczegóły wydarzenia, w którym uczestniczysz uległy zmianie", ticket);
+                    }
+                } catch (Exception ignored) {
+                    // we hope everyone gets an email but failing update when some got email and some didn't doesn't seem right
+                }
+            }
+
+            return ResponseEntity.ok(resp);
+        } catch (JsonProcessingException e){
+            throw new ApsiValidationException("Niepoprawne żądanie", "id");
         }
-        var resp = eventService.replace(eventDTO);
-        return ResponseEntity.ok(resp);
     }
 
     @DeleteMapping("/{id}")

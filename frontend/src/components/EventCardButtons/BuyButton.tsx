@@ -8,6 +8,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { modalStyle } from "../FormButton";
 import { Field, Form, Formik } from "formik";
 import { Option, ValidationMessage } from "../../helpers/FormHelpers";
+import { CreateTicketRequest } from "../../api/Requests";
 
 const BuyButton: React.FC<{ ticketTypeId: number, sectionMap?: string, ticketTypes: Option[], sections: Option[] }>= (
     { ticketTypeId, sectionMap, ticketTypes, sections }
@@ -15,9 +16,11 @@ const BuyButton: React.FC<{ ticketTypeId: number, sectionMap?: string, ticketTyp
     const [open, setOpen] = useState(false);
     const nav = useNavigate();
 
-    const initialValues = {
+    const initialValues: CreateTicketRequest = {
         ticketTypeId: ticketTypeId,
         sectionId: 0,
+        holderFirstName: "",
+        holderLastName: "",
     }
 
     return <>

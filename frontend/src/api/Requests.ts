@@ -19,7 +19,12 @@ export type CreateEventRequest = {
     sectionMap?: File,
 }
 
+export type UpdateEventRequest = CreateEventRequest & {
+    id: number
+}
+
 export type SimpleTicketTypeDTO = {
+    id?: number, 
     name: string,
     price: number,
     quantityAvailable: number
@@ -44,4 +49,6 @@ export type CreateLocationRequest = {
 export type CreateTicketRequest = {
     ticketTypeId: number,
     sectionId: number,
+    holderFirstName: string,
+    holderLastName: string,
 }

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ApiResponse } from "./Responses";
-import { CreateEventRequest, CreateLocationRequest, CreateTicketRequest, LoginRequest} from "./Requests";
+import { CreateEventRequest, CreateLocationRequest, LoginRequest, CreateTicketRequest, UpdateEventRequest } from "./Requests";
 import { toastError } from "../helpers/ToastHelpers";
 import { AuthHelpers } from "../helpers/AuthHelpers";
 import { CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO, TicketDTO, PaginatedList, ImageDTO } from "./DTOs";
@@ -68,20 +68,38 @@ export class Api {
         return await getApiResponse<object, EventDTO>("post", this.url + "/events", body, true);
     }
 
+    static async UpdateEvent(request: UpdateEventRequest) {
+        const eventPart = { ...request, image: undefined }
+        const body = {
+            event: JSON.stringify(eventPart),
+            image: request.image
+        }
+        return await getApiResponse<object, EventDTO>("put", this.url + `/events/${request.id}`, body, true);
+    }
+
     static async GetEvents(from: Date, to: Date, pageIndex: number) {
         return await getApiResponse<undefined, PaginatedList<EventDTO>>("get", 
             this.url + `/events?from=${from.toISOString()}&to=${to.toISOString()}&pageIndex=${pageIndex}`);
     }
 
-    static async GetEventById(id: string | undefined) {
+    static async GetEventById(id: string | number | undefined) {
         return await getApiResponse<undefined, EventDTO>("get", this.url + `/events/${id}`);
+    }
+
+    static async GetTicketsByHolderId(id: string | undefined, from: Date, to: Date, pageIndex: number) {
+        return await getApiResponse<undefined, PaginatedList<TicketDTO>>("get",
+            this.url + `/tickets/user/${id}?from=${from.toISOString()}&to=${to.toISOString()}&pageIndex=${pageIndex}`);
     }
 
     static async GetTicketTypesByEvent(id: string | undefined) {
         return await getApiResponse<undefined, TicketTypeDTO[]>("get", this.url + `/ticket_types/event/${id}`);
     }
 
-    static async GetSoldTicketsCount(id: number) {
+    static async GetTicketTypeById(id: number | undefined) {
+        return await getApiResponse<undefined, TicketTypeDTO>("get", this.url + `/ticket_types/${id}`);
+    }
+
+    static async GetSoldTicketsCount(id: number | undefined) {
         return await getApiResponse<undefined, number>("get", this.url + `/ticket_types/${id}/count`);
     }
 
@@ -95,6 +113,11 @@ export class Api {
 
     static async CreateLocation(request: CreateLocationRequest) {
         return await getApiResponse<CreateLocationRequest, LocationDTO>("post", this.url + "/locations", request);
+    }
+
+    static async GetLocationsPageable(pageIndex: number) {
+        return await getApiResponse<undefined, PaginatedList<LocationDTO>>("get",
+            this.url + `/locations/pageable?pageIndex=${pageIndex}`);
     }
 
     static async GetLocations() {
