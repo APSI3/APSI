@@ -26,7 +26,7 @@ export default function EventPage() {
 
     useEffect(() => {
         if (event != null && event.imageIds.length > 0 && image == null) {
-            Api.GetEventImageByEventId(eventId!).then(res => {
+            Api.GetEventImagesByEventId(eventId!).then(res => {
                 if (res.success && res.data) {
                     const imgToShow = res.data.find(i => !i.sectionMap)?.image;
                     if (!!imgToShow)

@@ -55,14 +55,14 @@ public class EventController {
     }
 
     @GetMapping("/images/{id}")
-    public ResponseEntity<List<ImageDTO>> getEventImage(@PathVariable("id") Long eventId) {
+    public ResponseEntity<List<ImageDTO>> getEventImages(@PathVariable("id") Long eventId) {
         var images = eventService.getImagesByEventId(eventId);
         return ResponseEntity.ok(images);
     }
 
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<EventDTO> createEvent(@RequestParam(name = "image", required = false) MultipartFile image,
-        @RequestParam(name = "section_map", required = false) MultipartFile sectionMap,
+        @RequestParam(name = "sectionMap", required = false) MultipartFile sectionMap,
         @RequestParam("event") String event
     ) throws ApsiValidationException
     {

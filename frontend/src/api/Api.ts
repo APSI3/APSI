@@ -101,8 +101,8 @@ export class Api {
         return await getApiResponse<undefined, LocationDTO[]>("get", this.url + "/locations");
     }
 
-    static async GetEventImageByEventId(id: string) {
-        return await getApiResponse<undefined, ImageDTO[]>("get", this.url + "/images/" + id)
+    static async GetEventImagesByEventId(id: string) {
+        return await getApiResponse<undefined, ImageDTO[]>("get", this.url + "/events/images/" + id)
     }
 
     static async Session() {
