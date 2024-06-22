@@ -10,7 +10,8 @@ import React, { useEffect, useState } from "react";
 import { LocationDTO } from "../api/DTOs";
 import {CreateEventRequest, UpdateEventRequest} from "../api/Requests";
 
-const createInitialValues: CreateEventRequest = {
+const defaultInitialValues: UpdateEventRequest = {
+    id: 0,
     name: "",
     description: "",
     startDate: new Date(),
@@ -77,14 +78,11 @@ const createEventValidationSchema = object<CreateEventRequest>().shape({
     }).nullable()
 })
 
-const isUpdateRequest = (values: Object): values is UpdateEventRequest => {
-    return (values as UpdateEventRequest).id !== undefined;
-};
-
-const EventForm: React.FC<{ onClose: () => void, initialValues?: Object }> = ({ onClose, initialValues = createInitialValues }) => {
+const EventForm: React.FC<{ onClose: () => void, initialValues?: Partial<UpdateEventRequest> }> = ({ onClose, initialValues }) => {
     const [locations, setLocations] = useState<LocationDTO[]>([])
-    const isUpdate = isUpdateRequest(initialValues);
-    console.log(initialValues);
+    const isUpdate = !!initialValues;
+
+    const mergedInitialValues: UpdateEventRequest = {...defaultInitialValues, ...initialValues};
 
     useEffect(() => {
         Api.GetLocations().then(res => {
@@ -115,28 +113,24 @@ const EventForm: React.FC<{ onClose: () => void, initialValues?: Object }> = ({ 
     }
 
     const handleUpdateEvent = async (newValues: UpdateEventRequest, fh: FormikHelpers<any>) => {
-        let hasErrors = false;
-
         for (let idx = 0; idx < newValues.ticketTypes.length; idx++) {
             const ticket = newValues.ticketTypes[idx];
-            const oldTicket = (initialValues as UpdateEventRequest).ticketTypes[idx];
+            const oldTicket = mergedInitialValues.ticketTypes[idx];
 
             if (oldTicket?.quantityAvailable !== ticket?.quantityAvailable) {
                 await Api.GetSoldTicketsCount(ticket.id).then(res => {
                     if (res.data && ticket.quantityAvailable - res.data < 0) {
-                        fh.setFieldError(`ticketTypes.${idx}.quantityAvailable`, 'Nie można zmienić liczby biletów poniżej dostępnej wartości');
-                        hasErrors = true;
+                        fh.setFieldError(`ticketTypes.${idx}.quantityAvailable`, 
+                            'Nie można zmienić liczby biletów poniżej dostępnej wartości');
+                        return;
                     }
                 });
             }
         }
 
-        if (hasErrors) {
-            return;
-        }
-        await Api.UpdateEvent({...newValues, id : (initialValues as UpdateEventRequest).id }).then(res => {
+        await Api.UpdateEvent({...newValues, id: mergedInitialValues.id }).then(res => {
             if (res.success && res.data) {
-                toastInfo("Udało się zaktualizować wydarzenie" + (initialValues as UpdateEventRequest).name);
+                toastInfo("Udało się zaktualizować wydarzenie" + mergedInitialValues.name);
                 onClose();
             } else {
                 if (res.errors)
@@ -152,14 +146,14 @@ const EventForm: React.FC<{ onClose: () => void, initialValues?: Object }> = ({ 
             <title>APSI - Dodawanie wydarzenia</title>
         </Helmet>
         <Formik
-            initialValues={initialValues}
+            initialValues={mergedInitialValues}
             validationSchema={createEventValidationSchema}
             onSubmit={async (values, fh) => {
                 let newValues = values;
-                if ((values as UpdateEventRequest).location?.id == 0) // location id can come to us as string - soft compare
+                if (!values.location?.id)
                     newValues = { ...newValues, location: undefined}
 
-                isUpdate ? handleUpdateEvent((newValues as UpdateEventRequest), fh) : handleCreateEvent((newValues as CreateEventRequest), fh)
+                isUpdate ? handleUpdateEvent(newValues, fh) : handleCreateEvent(newValues, fh)
             }}
         >
             {({ isSubmitting, values, setFieldValue, setFieldError }) => <Form className="form">
@@ -181,7 +175,7 @@ const EventForm: React.FC<{ onClose: () => void, initialValues?: Object }> = ({ 
                     <label htmlFor="startDate" className="form-label">Od</label><br />
                     <DatePicker className="form-control"
                         dateFormat={"dd/MM/yyyy"}
-                        selected={(values as CreateEventRequest).startDate}
+                        selected={values.startDate}
                         onChange={e => setFieldValue("startDate", e ?? new Date())}
                         id="startDate"
                     />
@@ -196,7 +190,7 @@ const EventForm: React.FC<{ onClose: () => void, initialValues?: Object }> = ({ 
                     <label htmlFor="endDate" className="form-label">Do</label><br/>
                     <DatePicker className="form-control"
                         dateFormat={"dd/MM/yyyy"}
-                        selected={(values as CreateEventRequest).endDate}
+                        selected={values.endDate}
                         onChange={e => setFieldValue("endDate", e ?? new Date())}
                         id="endDate"
                     />
@@ -217,8 +211,7 @@ const EventForm: React.FC<{ onClose: () => void, initialValues?: Object }> = ({ 
                 </div>
                 <div className="mb-3">
                     <label htmlFor="image" className="form-label">Obraz</label>
-                    {/* couldn't get the initial image to load to the loader */}
-                    {(initialValues as CreateEventRequest)?.image && <span> (zastąpi istniejący obraz)</span>}
+                    {mergedInitialValues.image && <span> (zastąpi istniejący obraz)</span>}
                     <input className="form-control" type="file" accept="image/*" id="image" name="image" onChange={e => {
                         const reader = new FileReader();
                         reader.onload = () => {
@@ -241,7 +234,7 @@ const EventForm: React.FC<{ onClose: () => void, initialValues?: Object }> = ({ 
                     <label htmlFor="ticketTypes" className="form-label">Typy biletów</label>
                     <FieldArray name="ticketTypes" 
                         render={helpers => <div className="p-1">
-                            {(values as CreateEventRequest).ticketTypes.map((tt, idx) => {
+                            {values.ticketTypes.map((tt, idx) => {
                                 const name = `ticketTypes.${idx}`;
                                 return <Paper key={idx} className="m-1" style={{ padding: 20 }}>
                                     <Grid container spacing={1} alignItems="center">

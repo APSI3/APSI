@@ -84,6 +84,20 @@ const BuyButton: React.FC<{ ticketTypeId: number, sectionMap?: string, ticketTyp
                                 <ValidationMessage fieldName="sectionId" />
                             </div>
                         </div>
+                        <div className="form-group row justify-content-center mb-2">
+                            <label className="col-sm-6 col-form-label">Imię posiadacza biletu</label>
+                            <div className="col-sm-6">
+                                <Field type="string" name="holderFirstName" className="form-control" />
+                                <ValidationMessage fieldName="holderFirstName" />
+                            </div>
+                        </div>
+                        <div className="form-group row justify-content-center mb-2">
+                            <label className="col-sm-6 col-form-label">Nazwisko posiadacza biletu</label>
+                            <div className="col-sm-6">
+                                <Field type="string" name="holderLastName" className="form-control" />
+                                <ValidationMessage fieldName="holderLastName" />
+                            </div>
+                        </div>
                         <div className="form-group row justify-content-center mb-2 text-center" >
                             <div className="col-sm-4">
                                 <button className="btn btn-primary form-control" type="submit" disabled={isSubmitting}>Kup</button>

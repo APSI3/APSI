@@ -117,7 +117,7 @@ export default function EventPage() {
                     {event.sections.map(s => <EventSectionItem key={s.id} section={s} />)}
                 </Grid>
                 {/*Edit button*/}
-                {AuthHelpers.getRole() !== UserTypes.PERSON && <Grid container xs={12} style={{ justifyContent: 'right' }}>
+                {AuthHelpers.getRole() !== UserTypes.PERSON && <Grid container className="mt-3" style={{ justifyContent: 'right' }}>
                     <EditButton event={event} />
                 </Grid>}
             </Grid>

@@ -13,6 +13,6 @@ export default function MainPage() {
         } else {
             return navigate(Paths.events)
         }
-    }, []);
+    }, [navigate]);
     return <></>
 }
