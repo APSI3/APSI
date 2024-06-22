@@ -79,10 +79,18 @@ export default function EventPage() {
                 <Grid item xs={12}>
                     <Typography variant="body1">{event.description}</Typography>
                 </Grid>
+                {/* Ticket types */}
                 <Grid container direction="column" alignItems="flex-center" gap={1}>
+                    <Typography variant="h5" className="mt-5" gutterBottom>
+                        Rodzaje biletów
+                    </Typography>
                     {event.ticketTypes.map(ticket => <TicketCard key={ticket.id} ticket={ticket}/>)}
                 </Grid>
+                {/* Sections */}
                 <Grid container direction="column" alignItems="flex-center" gap={1}>
+                    <Typography variant="h5" className="mt-5" gutterBottom>
+                        Rodzaje miejsc
+                    </Typography>
                     {event.sections.map(s => <EventSectionItem key={s.id} section={s} />)}
                 </Grid>
             </Grid>

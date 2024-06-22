@@ -110,8 +110,9 @@ public class EventService implements IEventService {
         Optional<EventDTO> dto = event.map(e -> DTOMapper.toDTO(e));
 
         if (event.isPresent() && dto.isPresent() && event.get().getSections().size() > 0){
-            var countsPerSection = ticketRepository.countTicketsBySectionForEvent(event.get().getId()).stream().collect(Collectors.toMap(a -> a.section_id, b -> b.count));
-            var sectionDtos = event.get().getSections().stream().map(s -> DTOMapper.toDTO(s, countsPerSection.get(s.getId()))).toList();
+            var ticketsPerSection = ticketRepository.countTicketsBySectionForEvent(event.get().getId());
+            var dict = ticketsPerSection.stream().collect(Collectors.toMap(a -> a.section_id, b -> b.count));
+            var sectionDtos = event.get().getSections().stream().map(s -> DTOMapper.toDTO(s, dict.getOrDefault(s.getId(), 0))).toList();
             dto.get().setSections(sectionDtos);
         }
 
