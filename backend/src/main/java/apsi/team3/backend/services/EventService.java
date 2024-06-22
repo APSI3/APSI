@@ -93,15 +93,15 @@ public class EventService implements IEventService {
             throw new ApsiValidationException("Dla każdego typu biletów należy podać maksymalnie 100-znakową nazwę", "tickets");
         if (eventDTO.getSections().size() < 1)
             throw new ApsiValidationException("Należy stworzyć przynajmniej jedną sekcję z miejscami", "sections");
-        if (!eventDTO.getSections().stream().allMatch(x -> x.getName() != null && !x.getName().isEmpty() && x.getName().length() < 32))
-            throw new ApsiValidationException("Nazwa sekcji nie może być dłuższa niż 32 znaki", "sections");
-        if (!eventDTO.getSections().stream().allMatch(x -> x.getCapacity() < 1))
+        if (!eventDTO.getSections().stream().allMatch(x -> x.getName() != null && !x.getName().isEmpty() && x.getName().length() < 64))
+            throw new ApsiValidationException("Nazwa sekcji nie może być dłuższa niż 64 znaki", "sections");
+        if (!eventDTO.getSections().stream().allMatch(x -> x.getCapacity() >= 1))
             throw new ApsiValidationException("Sekcja musi mieć przynajmniej jedno dostępne miejsce", "sections");
 
         var ttSum = eventDTO.getTicketTypes().stream().mapToInt(tt -> tt.getQuantityAvailable()).sum();
         var sectionSum = eventDTO.getSections().stream().mapToInt(tt -> tt.getCapacity()).sum();
         if (ttSum > sectionSum)
-            throw new ApsiValidationException("Nie można sprzedać więcej biletów niż dostępnych miejsc", "id");
+            throw new ApsiValidationException("Nie można sprzedać więcej biletów niż dostępnych miejsc", "sections");
     }
 
     @Override
@@ -141,7 +141,7 @@ public class EventService implements IEventService {
     }
 
     @Override
-    public EventDTO create(EventDTO eventDTO, MultipartFile image) throws ApsiValidationException {
+    public EventDTO create(EventDTO eventDTO, MultipartFile image, MultipartFile sectionMap) throws ApsiValidationException {
         if (eventDTO.getId() != null)
             throw new ApsiValidationException("Podano niedozwolony identyfikator wydarzenia", "id");
 
@@ -156,18 +156,11 @@ public class EventService implements IEventService {
             entity.setLocation(loc);
         }
 
-        byte[] bytes = null;
-        if (image != null) {
-            try{
-                bytes = image.getBytes();
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-                throw new ApsiValidationException("Uszkodzony plik obrazu", "image");
-            }
-        }
+        var imgBytes = imgToBytes(image, "image");
+        var sectionMapBytes = imgToBytes(sectionMap, "sectionMap");
 
         var saved = eventRepository.save(entity);
+        saved.setImages(new ArrayList<>());
         
         if (!eventDTO.getTicketTypes().isEmpty()){
             var entities = eventDTO.getTicketTypes().stream().map(e -> DTOMapper.toEntity(e, saved)).toList();
@@ -181,16 +174,40 @@ public class EventService implements IEventService {
             saved.setSections(sections);
         }
 
-        if (bytes != null){
+        if (imgBytes != null) {
             var eventImage = EventImage.builder()
-                .image(bytes)
+                .image(imgBytes)
                 .event(saved)
+                .section_map(false)
                 .build();
             eventImageRepository.save(eventImage);
-            saved.setImages(new ArrayList<>() {{ add(eventImage); }});
+            saved.getImages().add(eventImage);
+        }
+
+        if (sectionMapBytes != null) {
+            var eventImage = EventImage.builder()
+                .image(sectionMapBytes)
+                .event(saved)
+                .section_map(true)
+                .build();
+            eventImageRepository.save(eventImage);
+            saved.getImages().add(eventImage);
         }
 
         return DTOMapper.toDTO(saved);
+    }
+
+    private byte[] imgToBytes(MultipartFile image, String key) throws ApsiValidationException {
+        if (image == null)
+            return null;
+
+        try {
+            return image.getBytes();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            throw new ApsiValidationException("Uszkodzony plik obrazu", key);
+        }
     }
 
     @Override

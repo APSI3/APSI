@@ -16,7 +16,7 @@ public interface IEventService {
 
     PaginatedList<EventDTO> getEvents(LocalDate from, LocalDate to, int pageIndex) throws ApsiValidationException;
 
-    EventDTO create(EventDTO event, MultipartFile image) throws ApsiValidationException;
+    EventDTO create(EventDTO event, MultipartFile image, MultipartFile sectionMap) throws ApsiValidationException;
 
     EventDTO replace(EventDTO event) throws ApsiValidationException;
 

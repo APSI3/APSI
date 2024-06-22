@@ -14,13 +14,20 @@ export type CreateEventRequest = {
         id: number
     },
     ticketTypes: SimpleTicketTypeDTO[],
-    image?: File
+    sections: SimpleSectionDTO[],
+    image?: File,
+    sectionMap?: File,
 }
 
 export type SimpleTicketTypeDTO = {
     name: string,
     price: number,
     quantityAvailable: number
+}
+
+export type SimpleSectionDTO = {
+    name: string,
+    capacity: number
 }
 
 export type CreateLocationRequest = {

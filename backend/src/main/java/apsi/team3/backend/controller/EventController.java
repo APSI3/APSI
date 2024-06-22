@@ -28,6 +28,7 @@ import java.util.Optional;
 @CrossOrigin(origins = {"http://localhost:3000"}, allowCredentials = "true")
 public class EventController {
     private final IEventService eventService;
+    private final static int MAX_IMAGE_SIZE = 500_000;
 
     @Autowired
     public EventController(IEventService eventService) {
@@ -60,15 +61,21 @@ public class EventController {
     }
 
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<EventDTO> createEvent(@RequestParam(name = "image", required = false) MultipartFile image, @RequestParam("event") String event) throws ApsiValidationException {
-        if (image != null && image.getSize() > 500_000)
+    public ResponseEntity<EventDTO> createEvent(@RequestParam(name = "image", required = false) MultipartFile image,
+        @RequestParam(name = "section_map", required = false) MultipartFile sectionMap,
+        @RequestParam("event") String event
+    ) throws ApsiValidationException
+    {
+        if (image != null && image.getSize() > MAX_IMAGE_SIZE)
             throw new ApsiValidationException("Zbyt duży obraz. Maksymalna wielkość to 500 KB", "image");
+        if (sectionMap != null && sectionMap.getSize() > MAX_IMAGE_SIZE)
+            throw new ApsiValidationException("Zbyt duży obraz. Maksymalna wielkość to 500 KB", "sectionMap");
 
         try {
             var mapper = new ObjectMapper();
             mapper.registerModule(new JavaTimeModule());
             var dto = mapper.readValue(event, EventDTO.class);
-            var resp = eventService.create(dto, image);
+            var resp = eventService.create(dto, image, sectionMap);
             return ResponseEntity.status(HttpStatus.CREATED).body(resp);
         }
         catch (JsonProcessingException e){

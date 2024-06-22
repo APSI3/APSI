@@ -59,10 +59,11 @@ export class Api {
     }
 
     static async CreateEvent(request: CreateEventRequest) {
-        const eventPart = { ...request, image: undefined }
+        const eventPart = { ...request, image: undefined, sectionMap: undefined }
         const body = {
             event: JSON.stringify(eventPart),
-            image: request.image
+            image: request.image,
+            sectionMap: request.sectionMap,
         }  
         return await getApiResponse<object, EventDTO>("post", this.url + "/events", body, true);
     }

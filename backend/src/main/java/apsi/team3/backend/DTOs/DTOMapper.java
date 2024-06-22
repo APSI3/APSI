@@ -35,6 +35,7 @@ public class DTOMapper {
             .location(loc)
             .ticketTypes(null)
             .sections(null)
+            .images(null)
             .build();
     }
 

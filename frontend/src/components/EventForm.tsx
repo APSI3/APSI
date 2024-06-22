@@ -24,6 +24,12 @@ const initialValues: CreateEventRequest = {
     ],
     startTime: "",
     endTime: "",
+    sections: [
+        {
+            name: "Nowy rodzaj miejsc",
+            capacity: 0
+        }
+    ]
 }
 
 const timeRegex = new RegExp("^[0-9]{2}:[0-9]{2}$");
@@ -56,6 +62,16 @@ const createEventValidationSchema = object<CreateEventRequest>().shape({
                 .max(100000, "Zbyt wysoka cena za bilet"),
         })
     ).min(1, "Należy dodać przynajmniej jeden typ biletów"),
+    sections: array().of(
+        object().shape({
+            name: string()
+                .max(64, "Zbyt długa nazwa rodzaju miejsc")
+                .required("Należy podać nazwę rodzaju miejsc"),
+            capacity: number()
+                .max(1000000, "Zbyt duża pojemność")
+                .min(1, "Minimalna wartość wynosi 1"),
+        })
+    ).min(1, "Należy dodać przynajmniej jeden rodzaj miejsc"),
     location: object().shape({
         id: number()
     })
@@ -221,6 +237,63 @@ const EventForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     />
                     <ValidationMessage fieldName="tickets" />
                     <ValidationMessage fieldName="ticketTypes" />
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="sections" className="form-label">Rodzaje miejsc</label>
+                    <FieldArray name="sections"
+                        render={helpers => <div className="p-1" style={{ justifyContent: 'center' }}>
+                            {values.sections.map((s, idx) => {
+                                const name = `sections.${idx}`;
+                                return <Paper key={idx} className="m-1">
+                                    <Grid item xs={3} style={{ justifyContent: 'center', display: 'flex' }}>
+                                        <div className="m-1">
+                                            <label htmlFor={name + ".name"} className="form-label">Nazwa</label>
+                                            <Field type="string" name={name + ".name"}
+                                                id={name + ".name"} className="form-control"
+                                            />
+                                            <ValidationMessage fieldName={name + ".name"} />
+                                        </div>
+                                        <div className="m-1">
+                                            <label htmlFor={name + ".capacity"} className="form-label">Pojemność</label>
+                                            <Field type="number" name={name + ".capacity"}
+                                                id={name + ".capacity"} className="form-control"
+                                            />
+                                            <ValidationMessage fieldName={name + ".capacity"} />
+                                        </div>
+                                    </Grid>
+                                    <button className="btn btn-danger" type="button" onClick={() => helpers.remove(idx)}>
+                                        Usuń
+                                    </button>
+                                </Paper>
+                            })}
+                            <button className="btn btn-primary" type="button"
+                                onClick={e => helpers.push({ name: "", capacity: 0 })}
+                            >
+                                Dodaj rodzaj miejsc
+                            </button>
+                        </div>}
+                    />
+                    <ValidationMessage fieldName="sections" />
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="sectionMap" className="form-label">Obraz z rozpiską miejsc</label>
+                    <input className="form-control" type="file" accept="image/*" id="sectionMap" name="sectionMap" onChange={e => {
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                            if (reader.readyState === 2)
+                                setFieldValue("sectionMap", reader.result)
+                            else
+                                setFieldError("sectionMap", "Nie udało się wczytać obrazu")
+                        }
+
+                        if (!!e.target.files) {
+                            if (e.target.files[0].size > 500_000)
+                                setFieldError("sectionMap", "Maksymalna wielkość pliku to 500 KB")
+                            else
+                                reader.readAsArrayBuffer(e.target.files[0])
+                        }
+                    }} />
+                    <ValidationMessage fieldName="sectionMap" />
                 </div>
                 <div className="mb-3 text-center">
                     <button className="btn btn-primary" type="submit" disabled={isSubmitting}>Dodaj</button>
