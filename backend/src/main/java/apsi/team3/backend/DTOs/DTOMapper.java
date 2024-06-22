@@ -1,5 +1,6 @@
 package apsi.team3.backend.DTOs;
 
+import apsi.team3.backend.DTOs.Requests.CreateTicketRequest;
 import apsi.team3.backend.model.Country;
 import apsi.team3.backend.model.Event;
 import apsi.team3.backend.model.EventImage;
@@ -9,9 +10,11 @@ import apsi.team3.backend.model.Ticket;
 import apsi.team3.backend.model.TicketType;
 import apsi.team3.backend.model.User;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Base64;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -64,15 +67,18 @@ public class DTOMapper {
             .build();
     }
 
-    public static Ticket toEntity(TicketDTO ticket) {
-        User user = User.builder().id(ticket.getHolderId()).build();
-        TicketType ticketType = TicketType.builder().id(ticket.getTicketTypeId()).build();
+    public static Ticket toEntity(CreateTicketRequest req) {
+        var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var user = User.builder().id(loggedUser.getId()).build();
+        var ticketType = TicketType.builder().id(req.getTicketTypeId()).build();
+        var section = EventSection.builder().id(req.getSectionId()).build();
         return Ticket.builder()
-                .id(ticket.getId())
-                .holder(user)
-                .purchaseDate(ticket.getPurchaseDate())
-                .ticketType(ticketType)
-                .build();
+            .id(null)
+            .holder(user)
+            .section(section)
+            .purchaseDate(LocalDate.now())
+            .ticketType(ticketType)
+            .build();
     }
 
     public static Location toEntity(LocationDTO loc) {

@@ -33,10 +33,10 @@ public class TicketDTO extends RepresentationModel<TicketDTO> {
     @Override
     public String toString() {
         return "{\"id\": " + this.id + ",\n"
-                + "\"ticketTypeId\": " + this.ticketTypeId + ",\n"
-                + "\"holderId\": " + this.holderId + ",\n"
-                + "\"sectionId\": " + this.sectionId + ",\n"
-                + "\"purchaseDate\": " + this.purchaseDate + ",\n"
-                + "\"QRCode\": " + this.QRCode + "}";
+            + "\"ticketTypeId\": " + this.ticketTypeId + ",\n"
+            + "\"holderId\": " + this.holderId + ",\n"
+            + "\"sectionId\": " + this.sectionId + ",\n"
+            + "\"purchaseDate\": " + this.purchaseDate + ",\n"
+            + "\"QRCode\": " + this.QRCode + "}";
     }
 }
