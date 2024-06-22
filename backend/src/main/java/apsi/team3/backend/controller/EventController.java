@@ -95,11 +95,14 @@ public class EventController {
     public ResponseEntity<EventDTO> replaceEvent(
         @PathVariable("id") Long id,
         @RequestPart("event") String event,
-        @RequestPart(name = "image", required = false) MultipartFile image
+        @RequestPart(name = "image", required = false) MultipartFile image,
+        @RequestPart(name = "image", required = false) MultipartFile sectionMap
     ) throws ApsiValidationException
     {
         if (image != null && image.getSize() > MAX_IMAGE_SIZE)
             throw new ApsiValidationException("Zbyt duży obraz. Maksymalna wielkość to 500 KB", "image");
+        if (sectionMap != null && sectionMap.getSize() > MAX_IMAGE_SIZE)
+            throw new ApsiValidationException("Zbyt duży obraz. Maksymalna wielkość to 500 KB", "sectionMap");
 
         try {
             var mapper = new ObjectMapper();
@@ -112,7 +115,7 @@ public class EventController {
                 return ResponseEntity.notFound().build();
             }
 
-            var resp = eventService.replace(eventDTO, image);
+            var resp = eventService.replace(eventDTO, image, sectionMap);
 
             boolean timeChanged = !Objects.equals(eventDTO.getStartTime(), oldEvent.get().getStartTime())
                     || !Objects.equals(eventDTO.getEndTime(), oldEvent.get().getEndTime())

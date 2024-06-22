@@ -13,7 +13,6 @@ import apsi.team3.backend.model.User;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.time.LocalDate;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -75,36 +74,19 @@ public class DTOMapper {
             .build();
     }
 
-    // public static Ticket toEntity(CreateTicketRequest req) {
-    //     var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    //     var user = User.builder().id(loggedUser.getId()).build();
-    //     var ticketType = TicketType.builder().id(req.getTicketTypeId()).build();
-    //     var section = EventSection.builder().id(req.getSectionId()).build();
-    //     return Ticket.builder()
-    //         .id(null)
-    //         .holder(user)
-    //         .section(section)
-    //         .purchaseDate(LocalDate.now())
-    //         .ticketType(ticketType)
-    public static Ticket toEntity(TicketDTO ticket) {
-        var ticketHolder = ticket.getHolder();
-        if (ticket.getEvent() == null) {
-            return null;
-        }
-        var event = toEntity(ticket.getEvent());
-        User user = User.builder()
-                .id(ticketHolder.getId())
-                .login(ticketHolder.getLogin())
-                .email(ticketHolder.getEmail())
-                .build();
-        TicketType ticketType = DTOMapper.toEntity(ticket.getTicketType(), event);
+    public static Ticket toEntity(CreateTicketRequest req) {
+        var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var user = User.builder().id(loggedUser.getId()).build();
+        var ticketType = TicketType.builder().id(req.getTicketTypeId()).build();
+        var section = EventSection.builder().id(req.getSectionId()).build();
         return Ticket.builder()
-            .id(ticket.getId())
+            .id(null)
             .holder(user)
+            .section(section)
             .purchaseDate(LocalDate.now())
             .ticketType(ticketType)
-            .holderFirstName(ticket.getHolderFirstName())
-            .holderLastName(ticket.getHolderLastName())
+            .holderFirstName(req.getHolderFirstName())
+            .holderLastName(req.getHolderLastName())
             .build();
     }
 

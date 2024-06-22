@@ -6,4 +6,6 @@ import lombok.Value;
 public class CreateTicketRequest {
     long sectionId;
     long ticketTypeId;
+    String holderFirstName;
+    String holderLastName;
 }
