@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {Box, Fab, IconButton, Modal, Tooltip} from "@mui/material";
+import {Box, CardMedia, Fab, IconButton, Modal, Tooltip} from "@mui/material";
 import {ShoppingCart} from "@mui/icons-material";
 import {toastDefaultError, toastInfo} from "../../helpers/ToastHelpers";
 import {Api} from "../../api/Api";
@@ -50,7 +50,18 @@ const BuyButton: React.FC<{ ticketTypeId: number, sectionMap?: string, ticketTyp
                     }}
                 >
                     {({ isSubmitting }) => <Form className="form">
-                        <header className="mb-2 text-center h2">Kup bilet</header>
+                        <header className="mb-3 text-center h2">Kup bilet</header>
+                        <div className="d-flex justify-content-center">
+                            <label>Rozkład miejsc:</label>
+                        </div>
+                        {!!sectionMap && <div className="d-flex justify-content-center mb-5">
+                            <CardMedia
+                                component="img"
+                                src={sectionMap}
+                                alt="Section Map"
+                                style={{ maxHeight: '15rem', width: 'auto' }}
+                            />
+                        </div>}
                         <div className="form-group row justify-content-center mb-2">
                             <label className="col-sm-6 col-form-label">Typ biletu</label>
                             <div className="col-sm-6" style={{ position: 'relative' }}>
@@ -71,7 +82,7 @@ const BuyButton: React.FC<{ ticketTypeId: number, sectionMap?: string, ticketTyp
                             </div>
                         </div>
                         <div className="form-group row justify-content-center mb-2 text-center" >
-                            <div className="col-sm-6">
+                            <div className="col-sm-4">
                                 <button className="btn btn-primary form-control" type="submit" disabled={isSubmitting}>Kup</button>
                             </div>
                         </div>
