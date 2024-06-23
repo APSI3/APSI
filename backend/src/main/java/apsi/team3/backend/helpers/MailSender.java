@@ -1,11 +1,13 @@
 package apsi.team3.backend.helpers;
 
 import apsi.team3.backend.DTOs.TicketDTO;
+import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.model.MailStructure;
 import apsi.team3.backend.services.MailService;
 import com.google.zxing.WriterException;
 import jakarta.mail.MessagingException;
+import org.springframework.security.core.parameters.P;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -53,7 +55,7 @@ public class MailSender {
                 ticketData
         );
         try {
-            mailService.sendMail(user.getEmail(), mailStructure);
+            mailService.sendTicketMail(user.getEmail(), mailStructure);
         } catch (MessagingException | IOException | WriterException e) {
             throw new ApsiValidationException("Nie udało się wysłać maila z biletem", "mail");
         }
@@ -65,6 +67,26 @@ public class MailSender {
         }
         catch (WriterException|IOException e) {
             throw new ApsiValidationException(e);
+        }
+    }
+
+    public static void sendTicketDeletedEmail(
+            MailService mailService,
+            TicketDTO ticket
+    ) throws ApsiException {
+        var user = ticket.getHolder();
+        var event = ticket.getEvent();
+        String eventUrl = String.format("localhost:3000/event/%s", event.getId());
+        String mailSubject = "Kupiony przez Ciebie bilet został anulowany";
+        String message = String.format("""
+                Przepraszamy,
+                Organizator wydarzenia %s anulował twój typ biletu. Wysłaliśmy %s zł na Twoje konto.
+                Aby wziąć udział w wydarzeniu, sprawdź czy dostępne są inne bilety na stronie: %s.
+                """, event.getName(), ticket.getTicketType().getPrice(), eventUrl);
+        try {
+            mailService.sendMail(user.getEmail(), mailSubject, message);
+        } catch (MessagingException  e) {
+            throw new ApsiException("Nie udało się wysłać maila ze zwrotem pieniędzy");
         }
     }
 }

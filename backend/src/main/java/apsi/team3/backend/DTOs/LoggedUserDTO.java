@@ -12,12 +12,10 @@ import lombok.ToString;
 @NoArgsConstructor
 public class LoggedUserDTO extends UserDTO {
     private String authHeader;
-    private String type;
     private String email;
 
     public LoggedUserDTO(Long id, String login,  String email, String authHeader, UserType type) {
-        super(id, login, email);
+        super(id, login, email, type.toString());
         this.authHeader = authHeader;
-        this.type = type.toString();
     }
 }
