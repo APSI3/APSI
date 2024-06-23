@@ -1,13 +1,14 @@
 import React, {useEffect, useState} from "react";
-import { TicketTypeDTO} from "../api/DTOs";
+import { EventDTO, TicketTypeDTO} from "../api/DTOs";
 import { Grid, Paper, Typography} from "@mui/material";
 import {Api} from "../api/Api";
 import { Option } from "../helpers/FormHelpers";
-import BuyButton from "./EventCardButtons/BuyButton";
 import { AuthHelpers, UserTypes } from "../helpers/AuthHelpers";
+import DeleteButton from "./TicketCardButtons/DeleteButton";
+import BuyButton from "./TicketCardButtons/BuyButton";
 
-const TicketCard: React.FC<{ ticket: TicketTypeDTO, skipApiCheck?: boolean, sectionMap?: string, sections: Option[] }> = (
-    { ticket, skipApiCheck, sectionMap, sections }
+const TicketCard: React.FC<{ ticket: TicketTypeDTO, skipApiCheck?: boolean, sectionMap?: string, sections: Option[], event: EventDTO, onDelete: (id: number) => void }> = (
+    { ticket, skipApiCheck, sectionMap, sections, event, onDelete }
 ) => {
     const [soldCount, setSoldCount] = useState(0);
     
@@ -22,6 +23,7 @@ const TicketCard: React.FC<{ ticket: TicketTypeDTO, skipApiCheck?: boolean, sect
     }, [ticket.id, skipApiCheck]);
 
     const canBuyTickets = AuthHelpers.HasAnyRole([ UserTypes.PERSON ]);
+    const canDeleteTicket = AuthHelpers.HasAnyRole([ UserTypes.ORGANIZER ]);
 
     return (
         <Paper style={{ alignItems: 'center', display: 'flex', justifyContent: 'space-evenly', margin: '0.5rem', background: '#dee2e6' }}  elevation={3} >
@@ -42,6 +44,7 @@ const TicketCard: React.FC<{ ticket: TicketTypeDTO, skipApiCheck?: boolean, sect
                         Dostępność: {ticket.quantityAvailable - soldCount}/{ticket.quantityAvailable}
                     </Typography>
                 </Grid>
+                {canDeleteTicket && <Grid paddingTop='1rem'><DeleteButton ticketType={ticket} event={event} onDelete={onDelete} /></Grid>}
             </Grid>
         </Paper>
     );

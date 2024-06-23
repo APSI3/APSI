@@ -5,6 +5,7 @@ import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.DTOs.TicketDTO;
 import apsi.team3.backend.DTOs.Requests.CreateTicketRequest;
 import apsi.team3.backend.exceptions.ApsiValidationException;
+import apsi.team3.backend.helpers.MailGenerator;
 import apsi.team3.backend.helpers.QRCodeGenerator;
 import apsi.team3.backend.interfaces.ITicketService;
 import apsi.team3.backend.model.MailStructure;
@@ -28,7 +29,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static apsi.team3.backend.helpers.PaginationValidator.validatePaginationArgs;
-import static apsi.team3.backend.helpers.MailGenerator.getDateString;
 
 @Service
 public class TicketService implements ITicketService {
@@ -83,7 +83,7 @@ public class TicketService implements ITicketService {
         var mailSubject = "Twój bilet jest tutaj!";
         var ticketData =  Map.of(
             "eventName", event.getName(),
-            "date", getDateString(event.getStartDate(), event.getEndDate()),
+            "date", MailGenerator.getDateString(event.getStartDate()) + " " + MailGenerator.getDateString(event.getEndDate()),
             "ticketType", type.get().getName(),
             "price", type.get().getPrice().toString(),
             "holderName", user.getLogin(),
@@ -95,7 +95,7 @@ public class TicketService implements ITicketService {
             QRCodeGenerator.generateQRCodeByte(dto.toJSON()),
             ticketData
         );
-        mailService.sendMail(user.getEmail(), mailStructure);
+        mailService.sendTicketMail(user.getEmail(), mailStructure);
 
         return dto;
     }
@@ -123,5 +123,15 @@ public class TicketService implements ITicketService {
     @Override
     public List<TicketDTO> getTicketsByEventId(Long id) throws ApsiValidationException {
         return Arrays.stream(ticketRepository.getTicketsByEventId(id)).map(DTOMapper::toDTO).toList();
+    }
+
+    @Override
+    public List<TicketDTO> getTicketsByTicketTypeId(Long id) throws ApsiValidationException {
+        return Arrays.stream(ticketRepository.getByTicketTypeId(id)).map(DTOMapper::toDTO).toList();
+    }
+
+    @Override
+    public void deleteByTicketTypeId(Long id) {
+        ticketRepository.deleteByTicketTypeId(id);
     }
 }

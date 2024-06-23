@@ -2,15 +2,11 @@ package apsi.team3.backend.services;
 
 import apsi.team3.backend.DTOs.DTOMapper;
 import apsi.team3.backend.DTOs.TicketDTO;
-import apsi.team3.backend.DTOs.Requests.CreateTicketRequest;
-import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.TestHelper;
 import apsi.team3.backend.model.Event;
-import apsi.team3.backend.model.Ticket;
 import apsi.team3.backend.model.User;
 import apsi.team3.backend.repository.TicketRepository;
 import apsi.team3.backend.repository.TicketTypeRepository;
-import jakarta.mail.MessagingException;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,9 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.google.zxing.WriterException;
-
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Optional;
 

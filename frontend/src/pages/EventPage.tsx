@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {CountryDTO, EventDTO} from "../api/DTOs";
+import {CountryDTO, EventDTO, TicketTypeDTO} from "../api/DTOs";
 import {Api} from "../api/Api";
 import {useParams} from "react-router-dom";
 import {Typography, Paper, Grid, IconButton, CardMedia} from '@mui/material';
@@ -17,6 +17,7 @@ export default function EventPage() {
     const [ event, setEvent ] = useState<EventDTO | null>(null);
     const [ image, setImage ] = useState<string | null>(null);
     const [ sectionMapImage, setSectionMapImage ] = useState<string | null>(null);
+    const [ ticketTypes, setTicketTypes ] = useState<TicketTypeDTO[]>([]);
 
     useEffect(() => {
         Api.GetCountries().then(res => {
@@ -31,6 +32,7 @@ export default function EventPage() {
         Api.GetEventById(eventId).then(res => {
             if (res.success && res.data) {
                 setEvent(res.data ?? null);
+                setTicketTypes(res.data.ticketTypes ?? null);
             }
             else toastError("Nie udało się pobrać danych wydarzenia")
         })
@@ -55,6 +57,14 @@ export default function EventPage() {
 
     const sectionOptions = event?.sections.map(s => ({ value: s.id, label: s.name })) ?? []
     const country = countries.find(c => c.id === event?.location?.country_id);
+
+    const handleDelete = (id: number) => {
+        const newTicketList = ticketTypes.filter(ticketType => ticketType.id !== id);
+        setTicketTypes(newTicketList);
+        if (event) {
+            setEvent({...event, ticketTypes: newTicketList});
+        }
+    }
 
     return event && <>
         <Paper style={{ padding: 20 }}>
@@ -106,7 +116,8 @@ export default function EventPage() {
                         Rodzaje biletów
                     </Typography>
                     {event.ticketTypes.map(ticket => <TicketCard sectionMap={sectionMapImage ?? undefined}
-                        key={ticket.id} ticket={ticket} sections={sectionOptions}
+                        key={ticket.id} ticket={ticket} sections={sectionOptions} onDelete={handleDelete}
+                        event={event}
                     />)}
                 </Grid>
                 {/* Section Map */}
