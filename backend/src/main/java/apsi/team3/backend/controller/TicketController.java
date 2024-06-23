@@ -34,7 +34,7 @@ public class TicketController {
         Optional<TicketDTO> ticket = ticketService.getTicketById(id);
         ticket.ifPresent(t -> {
             try {
-                t.setQRCode(QRCodeGenerator.generateQRCode(t.toJSON()));
+                t.setQRCode(QRCodeGenerator.generateQRCodeBase64(t.toJSON()));
             } catch (WriterException | IOException e) {
                 t.setQRCode(null);
             }

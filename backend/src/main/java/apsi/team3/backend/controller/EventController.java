@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static apsi.team3.backend.helpers.MailSender.sendTicketByEmail;
-
 @RestController
 @RequestMapping("/events")
 @CrossOrigin(origins = {"http://localhost:3000"}, allowCredentials = "true")
@@ -129,7 +127,7 @@ public class EventController {
                     List<TicketDTO> tickets = ticketService.getTicketsByEventId(resp.getId());
                     for (TicketDTO ticket : tickets) {
                         ticket.setEvent(resp);
-                        sendTicketByEmail(mailService, "Szczegóły wydarzenia, w którym uczestniczysz uległy zmianie", ticket);
+                        mailService.sendTicketByEmail("Szczegóły wydarzenia, w którym uczestniczysz uległy zmianie", ticket);
                     }
                 } catch (Exception ignored) {
                     // we hope everyone gets an email but failing update when some got email and some didn't doesn't seem right

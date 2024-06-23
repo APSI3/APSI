@@ -11,6 +11,6 @@ import java.util.Map;
 @AllArgsConstructor
 public class MailStructure {
     private String subject;
-    private String QRCodeContent;
+    private byte[] QRCodeContent;
     private Map<String, String> mailContentParameters;
 }

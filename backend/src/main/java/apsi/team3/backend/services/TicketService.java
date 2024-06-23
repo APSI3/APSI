@@ -74,7 +74,7 @@ public class TicketService implements ITicketService {
         saved.setTicketType(type.get());
         var dto = DTOMapper.toDTO(saved);
 
-        var QRCode = QRCodeGenerator.generateQRCode(dto.toJSON());
+        var QRCode = QRCodeGenerator.generateQRCodeBase64(dto.toJSON());
         dto.setQRCode(QRCode);
 
         var event = type.get().getEvent();
@@ -92,7 +92,7 @@ public class TicketService implements ITicketService {
         
         var mailStructure = new MailStructure(
             mailSubject,
-            QRCode,
+            QRCodeGenerator.generateQRCodeByte(dto.toJSON()),
             ticketData
         );
         mailService.sendMail(user.getEmail(), mailStructure);
@@ -110,7 +110,7 @@ public class TicketService implements ITicketService {
             .map(ticket -> {
                 TicketDTO ticketDTO = DTOMapper.toDTO(ticket);
                 try {
-                    ticketDTO.setQRCode(QRCodeGenerator.generateQRCode(ticketDTO.toJSON()));
+                    ticketDTO.setQRCode(QRCodeGenerator.generateQRCodeBase64(ticketDTO.toJSON()));
                 } catch (WriterException | IOException e) {
                     ticketDTO.setQRCode(null);
                 }
