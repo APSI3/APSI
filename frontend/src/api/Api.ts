@@ -3,7 +3,7 @@ import { ApiResponse } from "./Responses";
 import { CreateEventRequest, CreateLocationRequest, LoginRequest, CreateTicketRequest, UpdateEventRequest } from "./Requests";
 import { toastError } from "../helpers/ToastHelpers";
 import { AuthHelpers } from "../helpers/AuthHelpers";
-import {CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO, PaginatedList, TicketDTO} from "./DTOs";
+import {CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO, PaginatedList, TicketDTO, UserDTO} from "./DTOs";
 
 axios.defaults.withCredentials = true;
 
@@ -56,6 +56,15 @@ export class Api {
 
     static async Login(request: LoginRequest) {
         return await getApiResponse<LoginRequest, LoggedUserDTO>("post", this.url + "/user/login", request);
+    }
+
+    static async GetUsers(pageIndex: number) {
+        return await getApiResponse<undefined, PaginatedList<UserDTO>>("get",
+            this.url + `/user?pageIndex=${pageIndex}`);
+    }
+
+    static async DeleteUser(id: string) {
+        return await getApiResponse<undefined, void>("delete", this.url + `/user/${id}`);
     }
 
     static async CreateEvent(request: CreateEventRequest) {

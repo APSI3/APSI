@@ -1,6 +1,8 @@
 export type UserDTO = {
     id: string;
     login: string;
+    email: string,
+    type: string,
 }
 
 export type LoggedUserDTO = UserDTO & {

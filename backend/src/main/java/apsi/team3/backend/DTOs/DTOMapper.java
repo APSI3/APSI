@@ -14,6 +14,7 @@ public class DTOMapper {
                 .id(user.getId())
                 .login(user.getLogin())
                 .email(user.getEmail())
+                .type(UserType.valueOf(user.getType()))
                 .build();
     }
 
@@ -61,6 +62,7 @@ public class DTOMapper {
                 .id(ticketHolder.getId())
                 .login(ticketHolder.getLogin())
                 .email(ticketHolder.getEmail())
+                .type(UserType.valueOf(ticketHolder.getType()))
                 .build();
         TicketType ticketType = DTOMapper.toEntity(ticket.getTicketType(), event);
         return Ticket.builder()
@@ -119,7 +121,7 @@ public class DTOMapper {
     }
 
     public static UserDTO toDTO(User user) {
-        return new UserDTO(user.getId(), user.getLogin(), user.getEmail());
+        return new UserDTO(user.getId(), user.getLogin(), user.getEmail(), user.getType().toString());
     }
 
     public static LocationDTO toDTO(Location loc) {
