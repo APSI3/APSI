@@ -204,4 +204,20 @@ public class DTOMapper {
             ticket.getHolderLastName()
         );
     }
+
+    public static Ticket toEntity(TicketDTO ticketDTO) {
+        var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var user = User.builder().id(loggedUser.getId()).build();
+        var ticketType = TicketType.builder().id(ticketDTO.getTicketType().getId()).build();
+        var section = EventSection.builder().id(ticketDTO.getSectionId()).build();
+        return Ticket.builder()
+            .id(null)
+            .holder(user)
+            .section(section)
+            .purchaseDate(LocalDate.now())
+            .ticketType(ticketType)
+            .holderFirstName(ticketDTO.getHolderFirstName())
+            .holderLastName(ticketDTO.getHolderLastName())
+            .build();
+    }
 }

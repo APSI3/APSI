@@ -5,18 +5,15 @@ import apsi.team3.backend.DTOs.LoggedUserDTO;
 import apsi.team3.backend.DTOs.Requests.LoginRequest;
 import apsi.team3.backend.DTOs.TicketDTO;
 import apsi.team3.backend.TestHelper;
-import apsi.team3.backend.helpers.MailSender;
 import apsi.team3.backend.helpers.QRCodeGenerator;
 import apsi.team3.backend.model.UserType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -36,9 +33,6 @@ public class TicketControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    @MockBean
-    private MailSender mailSender;
-
     static ObjectMapper objectMapper;
     final static String ADMIN_LOGIN = "testuser1";
     final static String PERSON_LOGIN = "person";
@@ -48,10 +42,10 @@ public class TicketControllerTest {
         LoginRequest loginRequest = new LoginRequest(type == UserType.SUPERADMIN ? ADMIN_LOGIN : PERSON_LOGIN, PASSWORD);
         String stringLoginRequest = objectMapper.writeValueAsString(loginRequest);
         String responseContent = mockMvc.perform(MockMvcRequestBuilders.post("/user/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(stringLoginRequest)
-                )
-                .andReturn().getResponse().getContentAsString();
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(stringLoginRequest)
+            )
+            .andReturn().getResponse().getContentAsString();
         return objectMapper.readValue(responseContent, LoggedUserDTO.class);
     }
 
@@ -106,7 +100,7 @@ public class TicketControllerTest {
                 "\"eventName\": testowe wydarzenie1,\n" +
                 "\"eventStartDate\": 2024-04-18,\n" +
                 "\"eventEndDate\": 2024-04-18}";
-        String qrCode = QRCodeGenerator.generateQRCode(ticketToJSON);
+        String qrCode = QRCodeGenerator.generateQRCodeBase64(ticketToJSON);
         String expectedJson = String.format("""
             {
                 "items": [
@@ -144,11 +138,10 @@ public class TicketControllerTest {
     @Test
     @Transactional
     public void testCreateTicketReturnsCreatedObject() throws Exception {
-        Mockito.mockStatic(MailSender.class);
         LoggedUserDTO loggedUser = login(UserType.PERSON);
         TicketDTO ticket = DTOMapper.toDTO(TestHelper.getTestTicket());
 
-        String qrCode = QRCodeGenerator.generateQRCode(ticket.toJSON());
+        String qrCode = QRCodeGenerator.generateQRCodeBase64(ticket.toJSON());
         var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         var todayDateStr = LocalDate.now().format(formatter);
         String expectedJson = String.format("""
@@ -164,9 +157,8 @@ public class TicketControllerTest {
 
         String request = String.format("""
             {
-                "ticketType": { "id": 1 },
-                "holder" : { "id": 2 },
-                "event" : { "id": 1, "startDate": "2024-04-18", "endDate": "2024-04-18" },
+                "ticketTypeid": 1,
+                "sectionId": 1,
                 "holderFirstName": "jan",
                 "holderLastName": "kowalski"
             }
