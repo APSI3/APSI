@@ -67,20 +67,16 @@ public class LocationServiceTest {
         );
         Location location = DTOMapper.toEntity(locationDTO);
         location.setId(1L);
-        try (var securityContextHolderMockedStatic = mockStatic(SecurityContextHolder.class)) {
-            User creator = new User(1L, "login", "hash", "salt", UserType.ORGANIZER, "email", new ArrayList<>());
-            SecurityContext securityContextMock = mock(SecurityContext.class);
-            securityContextHolderMockedStatic.when(SecurityContextHolder::getContext).thenReturn(securityContextMock);
-            Authentication authenticationMock = mock(Authentication.class);
-            when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
-            when(authenticationMock.getPrincipal()).thenReturn(creator);
-            when(locationRepository.save(any())).thenReturn(location);
-            location.setCreator(creator);
-            LocationDTO expectedDTO = DTOMapper.toDTO(location);
-            assertEquals(locationService.create(locationDTO), expectedDTO);
-        } catch (Exception e) {
-            fail();
-        }
-
+        var securityContextHolderMockedStatic = mockStatic(SecurityContextHolder.class)
+        User creator = new User(1L, "login", "hash", "salt", UserType.ORGANIZER, "email", new ArrayList<>());
+        SecurityContext securityContextMock = mock(SecurityContext.class);
+        securityContextHolderMockedStatic.when(SecurityContextHolder::getContext).thenReturn(securityContextMock);
+        Authentication authenticationMock = mock(Authentication.class);
+        when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
+        when(authenticationMock.getPrincipal()).thenReturn(creator);
+        when(locationRepository.save(any())).thenReturn(location);
+        location.setCreator(creator);
+        LocationDTO expectedDTO = DTOMapper.toDTO(location);
+        assertEquals(locationService.create(locationDTO), expectedDTO);
     }
 }
