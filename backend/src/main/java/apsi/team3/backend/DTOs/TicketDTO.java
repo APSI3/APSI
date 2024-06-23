@@ -34,6 +34,9 @@ public class TicketDTO {
             + "\"eventEndDate\": " + event.getEndDate().toString() :
             "";
 
+        var locationId = this.event != null ? this.event.getLocation() != null ? this.event.getLocation().getId() : null : null;
+        var locationPart = locationId != null ? "\"locationId\": " + locationId + ",\n" : "";
+
         return "{"
             + "\"id\": " + this.id + ",\n"
             + "\"ticketTypeId\": " + this.ticketType.getId() + ",\n"
@@ -43,6 +46,8 @@ public class TicketDTO {
             + "\"holderFirstName\": " + this.holderFirstName + ",\n"
             + "\"holderLastName\": " + this.holderLastName + ",\n"
             + "\"eventId\": " + this.getEvent().getId() + ",\n"
+            + "\"eventId\": " + this.getEvent().getId() + ",\n"
+            + locationPart
             + eventPart
         + "}";
     }

@@ -34,10 +34,10 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             nativeQuery = true)
     Page<Ticket> getUsersTicketsWithDatesBetween(Pageable pageable, @Param("_holder_id") Long holderId, @Param("_from") LocalDate from, @Param("_to") LocalDate to);
 
-    @Query(value = "SELECT t.id as id, ticket_type_id, holder_id, holder_first_name, holder_last_name, purchase_date, tt.name as ticketTypeName, price FROM tickets t LEFT JOIN ticket_types tt ON (t.ticket_type_id=tt.id) WHERE event_id = :eventId", nativeQuery = true)
+    @Query(value = "SELECT t.id as id, ticket_type_id, holder_id, holder_first_name, holder_last_name, purchase_date, tt.name as ticketTypeName, price, section_id FROM tickets t LEFT JOIN ticket_types tt ON (t.ticket_type_id=tt.id) WHERE event_id = :eventId", nativeQuery = true)
     Ticket[] getTicketsByEventId(Long eventId);
 
-    @Query(value = "SELECT t.id as id, ticket_type_id, holder_id, holder_first_name, holder_last_name, purchase_date, tt.name as ticketTypeName, price FROM tickets t LEFT JOIN ticket_types tt ON (t.ticket_type_id=tt.id) WHERE ticket_type_id = :ticketTypeId", nativeQuery = true)
+    @Query(value = "SELECT t.id as id, ticket_type_id, holder_id, holder_first_name, holder_last_name, purchase_date, tt.name as ticketTypeName, price, section_id FROM tickets t LEFT JOIN ticket_types tt ON (t.ticket_type_id=tt.id) WHERE ticket_type_id = :ticketTypeId", nativeQuery = true)
     Ticket[] getByTicketTypeId(Long ticketTypeId);
 
     @Modifying

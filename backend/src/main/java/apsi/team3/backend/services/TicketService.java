@@ -5,7 +5,6 @@ import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.DTOs.TicketDTO;
 import apsi.team3.backend.DTOs.Requests.CreateTicketRequest;
 import apsi.team3.backend.exceptions.ApsiValidationException;
-import apsi.team3.backend.helpers.MailGenerator;
 import apsi.team3.backend.helpers.QRCodeGenerator;
 import apsi.team3.backend.interfaces.ITicketService;
 import apsi.team3.backend.model.MailStructure;
@@ -26,8 +25,6 @@ import org.springframework.data.domain.PageRequest;
 import java.time.LocalDate;
 import java.util.stream.Collectors;
 
-import static apsi.team3.backend.helpers.MailGenerator.getDateString;
-import static apsi.team3.backend.helpers.MailGenerator.getTimeString;
 import static apsi.team3.backend.helpers.PaginationValidator.validatePaginationArgs;
 
 @Service

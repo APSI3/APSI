@@ -4,6 +4,7 @@ import { EventDTO, TicketDTO } from "../api/DTOs";
 import { useEffect, useState } from "react";
 import { Api } from "../api/Api";
 import { toastError } from "../helpers/ToastHelpers";
+import { getLocationString } from "../helpers/FormHelpers";
 
 export default function TicketSummaryPage() {
     const [event, setEvent] = useState<EventDTO | null>(null);
@@ -66,6 +67,10 @@ export default function TicketSummaryPage() {
                 {section?.name && <Grid item xs={12}>
                     <label className="form-label">Rodzaj miejsca:</label>
                     <span className="form-control">{section.name}</span>
+                </Grid>}
+                {event?.location && <Grid item xs={12}>
+                    <label className="form-label">Lokalizacja:</label>
+                    <span className="form-control">{getLocationString(event.location)}</span>
                 </Grid>}
             </Grid>
         </Paper>

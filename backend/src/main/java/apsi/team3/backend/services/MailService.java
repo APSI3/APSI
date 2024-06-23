@@ -2,8 +2,6 @@ package apsi.team3.backend.services;
 
 import apsi.team3.backend.DTOs.TicketDTO;
 import apsi.team3.backend.exceptions.ApsiException;
-import apsi.team3.backend.exceptions.ApsiValidationException;
-import apsi.team3.backend.helpers.QRCodeGenerator;
 import apsi.team3.backend.model.MailStructure;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Value;

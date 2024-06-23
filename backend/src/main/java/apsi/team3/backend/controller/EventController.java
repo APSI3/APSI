@@ -129,7 +129,7 @@ public class EventController {
 
             if (timeChanged || locationChanged) {
                 try {
-                    List<TicketDTO> tickets = ticketService.getTicketsByEventId(resp.getId());
+                    List<TicketDTO> tickets = ticketService.getTicketsByEventId(oldEvent.get().getId());
                     for (TicketDTO ticket : tickets) {
                         ticket.setEvent(resp);
                         var QRCode = QRCodeGenerator.generateQRCodeByte(ticket.toJSON());
@@ -144,6 +144,7 @@ public class EventController {
                         mailService.sendTicketMail(user.getEmail(), mailStructure);
                     }
                 } catch (Exception ignored) {
+                    var a = "test";
                     // we hope everyone gets an email but failing update when some got email and some didn't doesn't seem right
                 }
             }
