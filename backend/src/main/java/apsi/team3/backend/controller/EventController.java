@@ -5,8 +5,11 @@ import apsi.team3.backend.DTOs.ImageDTO;
 import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.DTOs.TicketDTO;
 import apsi.team3.backend.exceptions.ApsiValidationException;
+import apsi.team3.backend.helpers.QRCodeGenerator;
 import apsi.team3.backend.interfaces.IEventService;
 
+import apsi.team3.backend.model.MailStructure;
+import apsi.team3.backend.model.User;
 import apsi.team3.backend.services.MailService;
 import apsi.team3.backend.services.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,7 @@ import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -120,14 +124,24 @@ public class EventController {
                     || !Objects.equals(eventDTO.getStartDate(), oldEvent.get().getStartDate())
                     || !Objects.equals(eventDTO.getEndDate(), oldEvent.get().getEndDate());
 
-            boolean locationChanged = eventDTO.getLocation() != oldEvent.get().getLocation();
+            boolean locationChanged = eventDTO.getLocation().getId() != oldEvent.get().getLocation().getId();
+            var sections = resp.getSections();
 
             if (timeChanged || locationChanged) {
                 try {
                     List<TicketDTO> tickets = ticketService.getTicketsByEventId(resp.getId());
                     for (TicketDTO ticket : tickets) {
                         ticket.setEvent(resp);
-                        mailService.sendTicketByEmail("Szczegóły wydarzenia, w którym uczestniczysz uległy zmianie", ticket);
+                        var QRCode = QRCodeGenerator.generateQRCodeByte(ticket.toJSON());
+                        ticket.setQRCode(QRCodeGenerator.convertQRCodeByteToBase64(QRCode));
+
+                        var user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                        var section = sections.stream().filter(s -> s.getId().equals(ticket.getSectionId())).findFirst();
+                        var ticketData = mailService.getTicketContentParams(ticket, section.get().getName());
+                        var mailSubject = "Szczegóły wydarzenia, w którym uczestniczysz uległy zmianie";
+
+                        var mailStructure = new MailStructure(mailSubject, QRCode, ticketData);
+                        mailService.sendTicketMail(user.getEmail(), mailStructure);
                     }
                 } catch (Exception ignored) {
                     // we hope everyone gets an email but failing update when some got email and some didn't doesn't seem right

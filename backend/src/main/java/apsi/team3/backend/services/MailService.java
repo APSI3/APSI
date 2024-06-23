@@ -47,11 +47,10 @@ public class MailService {
         mailSender.send(message);
     }
 
-    public void sendTicketByEmail(String mailSubject, TicketDTO ticket) throws ApsiValidationException, WriterException, IOException {
+    public Map<String, String> getTicketContentParams(TicketDTO ticket, String section) {
         var event = ticket.getEvent();
         var location = event.getLocation();
         var ticketType = ticket.getTicketType();
-        var user = ticket.getHolder();
         Map<String, String> ticketData = new HashMap<>();
 
         ticketData.put("eventName", event.getName());
@@ -69,31 +68,12 @@ public class MailService {
         }
 
         ticketData.put("ticketType", ticketType.getName());
+        ticketData.put("sectionName", section);
         ticketData.put("price", ticketType.getPrice().toString());
-        ticketData.put("userName", user.getLogin());
         ticketData.put("holderFirstName", ticket.getHolderFirstName());
         ticketData.put("holderLastName", ticket.getHolderLastName());
 
-        MailStructure mailStructure = new MailStructure(
-            mailSubject,
-            QRCodeGenerator.generateQRCodeByte(ticket.toJSON()),
-            ticketData
-        );
-
-        try {
-            sendTicketMail(user.getEmail(), mailStructure);
-        } catch (MessagingException | IOException | WriterException e) {
-            throw new ApsiValidationException("Nie udało się wysłać maila z biletem", "mail");
-        }
-
-        String QRCode;
-        try {
-            QRCode = QRCodeGenerator.generateQRCodeBase64(ticket.toJSON());
-            ticket.setQRCode(QRCode);
-        }
-        catch (WriterException|IOException e) {
-            throw new ApsiValidationException(e);
-        }
+        return ticketData;
     }
 
     @Async

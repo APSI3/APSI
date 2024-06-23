@@ -13,9 +13,11 @@ import com.google.zxing.qrcode.QRCodeWriter;
 public class QRCodeGenerator {
     public static String generateQRCodeBase64(String ticketInfo) throws WriterException, IOException {
         byte[] qrBytes = generateQRCodeByte(ticketInfo);
-        String base64QRCode = Base64.getEncoder().encodeToString(qrBytes);
+        return convertQRCodeByteToBase64(qrBytes);
+    }
 
-        return base64QRCode;
+    public static String convertQRCodeByteToBase64(byte[] qrBytes) {
+        return Base64.getEncoder().encodeToString(qrBytes);
     }
 
     public static byte[] generateQRCodeByte(String ticketInfo) throws WriterException, IOException {

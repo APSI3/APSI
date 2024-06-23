@@ -20,14 +20,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.google.zxing.WriterException;
 import java.io.IOException;
-import java.util.Map;
+import java.util.*;
+
 import org.springframework.data.domain.PageRequest;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static apsi.team3.backend.helpers.MailGenerator.getDateString;
+import static apsi.team3.backend.helpers.MailGenerator.getTimeString;
 import static apsi.team3.backend.helpers.PaginationValidator.validatePaginationArgs;
 
 @Service
@@ -74,27 +74,14 @@ public class TicketService implements ITicketService {
         saved.setTicketType(type.get());
         var dto = DTOMapper.toDTO(saved);
 
-        var QRCode = QRCodeGenerator.generateQRCodeBase64(dto.toJSON());
-        dto.setQRCode(QRCode);
+        var QRCode = QRCodeGenerator.generateQRCodeByte(dto.toJSON());
+        dto.setQRCode(QRCodeGenerator.convertQRCodeByteToBase64(QRCode));
 
-        var event = type.get().getEvent();
         var user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
+        var ticketData = mailService.getTicketContentParams(dto, section.get().getName());
         var mailSubject = "Twój bilet jest tutaj!";
-        var ticketData =  Map.of(
-            "eventName", event.getName(),
-            "date", MailGenerator.getDateString(event.getStartDate()) + " " + MailGenerator.getDateString(event.getEndDate()),
-            "ticketType", type.get().getName(),
-            "price", type.get().getPrice().toString(),
-            "holderName", user.getLogin(),
-            "sectionName", section.get().getName()
-        );
         
-        var mailStructure = new MailStructure(
-            mailSubject,
-            QRCodeGenerator.generateQRCodeByte(dto.toJSON()),
-            ticketData
-        );
+        var mailStructure = new MailStructure(mailSubject, QRCode, ticketData);
         mailService.sendTicketMail(user.getEmail(), mailStructure);
 
         return dto;
@@ -122,7 +109,8 @@ public class TicketService implements ITicketService {
 
     @Override
     public List<TicketDTO> getTicketsByEventId(Long id) throws ApsiValidationException {
-        return Arrays.stream(ticketRepository.getTicketsByEventId(id)).map(DTOMapper::toDTO).toList();
+        var tickets = ticketRepository.getTicketsByEventId(id);
+        return Arrays.stream(tickets).map(DTOMapper::toDTO).toList();
     }
 
     @Override
