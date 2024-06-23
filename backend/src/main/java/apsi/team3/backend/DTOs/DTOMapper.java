@@ -137,7 +137,8 @@ public class DTOMapper {
     }
 
     public static UserDTO toDTO(User user) {
-        return new UserDTO(user.getId(), user.getLogin(), user.getEmail(), user.getType().toString());
+        var role = user.getType() == null ? UserType.PERSON.toString() : user.getType().toString();
+        return new UserDTO(user.getId(), user.getLogin(), user.getEmail(), role);
     }
 
     public static LocationDTO toDTO(Location loc) {

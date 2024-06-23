@@ -1,6 +1,5 @@
 package apsi.team3.backend.DTOs;
 
-import apsi.team3.backend.model.UserType;
 import lombok.*;
 
 import java.io.Serializable;

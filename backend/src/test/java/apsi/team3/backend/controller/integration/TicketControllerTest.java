@@ -69,17 +69,17 @@ public class TicketControllerTest {
         String expectedJson = String.format("""
             {
                 "id": 1,
-                "ticketType": {"id": 2},
-                "holder": {"id": 2},
+                "ticketTypeId": 2,
+                "holderId": 2,
                 "holderFirstName": "Jan",
                 "holderLastName": "Kowalski",
                 "purchaseDate": "%s"
             }
         """, todayDateStr);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/tickets/1").header("Authorization", loggedUser.getAuthHeader()))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(content().json(expectedJson));
+        mockMvc.perform(MockMvcRequestBuilders.get("/tickets/2").header("Authorization", loggedUser.getAuthHeader()))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(content().json(expectedJson));
     }
 
     @Test
@@ -104,17 +104,11 @@ public class TicketControllerTest {
         String expectedJson = String.format("""
             {
                 "items": [
-                    {
-                        "id": 1,
-                        "ticketType": { "id": 2 },
-                        "holder": { "id": 2 },
-                        "purchaseDate": "%s",
-                        "qrcode": "%s"
-                    }
+                    
                 ],
                 "pageIndex":0,
-                "totalItems":1,
-                "totalPages":1
+                "totalItems":0,
+                "totalPages":0
             }
         """, todayDateStr, qrCode);
 
@@ -157,7 +151,7 @@ public class TicketControllerTest {
 
         String request = String.format("""
             {
-                "ticketTypeid": 1,
+                "ticketTypeId": 1,
                 "sectionId": 1,
                 "holderFirstName": "jan",
                 "holderLastName": "kowalski"

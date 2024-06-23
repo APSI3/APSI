@@ -9,7 +9,9 @@ import apsi.team3.backend.model.EventSection;
 import apsi.team3.backend.model.TicketType;
 import apsi.team3.backend.model.User;
 import apsi.team3.backend.model.UserType;
+import apsi.team3.backend.repository.EventImageRepository;
 import apsi.team3.backend.repository.EventRepository;
+import apsi.team3.backend.repository.EventSectionRepository;
 import apsi.team3.backend.repository.TicketTypeRepository;
 
 import org.junit.jupiter.api.Test;
@@ -24,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import org.springframework.data.domain.PageImpl;
@@ -45,6 +48,12 @@ public class EventServiceTest {
 
     @Mock
     private TicketTypeRepository ticketTypeRepository;
+
+    @Mock
+    private EventImageRepository eventImageRepository;
+
+    @Mock
+    private EventSectionRepository eventSectionRepository;
 
     @Test
     public void testGetEventByIdReturnsEvent() {
