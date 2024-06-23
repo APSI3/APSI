@@ -38,6 +38,11 @@ export const getLocationString = (loc: LocationDTO) => {
     return string;
 }
 
+export type Option = {
+    value: any,
+    label: string
+}
+
 export const getExtendedLocationString = (loc: LocationDTO) => {
     let string = getLocationString(loc) + " ";
     if (!!loc.zip_code)

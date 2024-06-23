@@ -5,10 +5,13 @@ import apsi.team3.backend.DTOs.EventDTO;
 import apsi.team3.backend.TestHelper;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.model.Event;
+import apsi.team3.backend.model.EventSection;
 import apsi.team3.backend.model.TicketType;
 import apsi.team3.backend.model.User;
 import apsi.team3.backend.model.UserType;
+import apsi.team3.backend.repository.EventImageRepository;
 import apsi.team3.backend.repository.EventRepository;
+import apsi.team3.backend.repository.EventSectionRepository;
 import apsi.team3.backend.repository.TicketTypeRepository;
 
 import org.junit.jupiter.api.Test;
@@ -23,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import org.springframework.data.domain.PageImpl;
@@ -44,6 +48,12 @@ public class EventServiceTest {
 
     @Mock
     private TicketTypeRepository ticketTypeRepository;
+
+    @Mock
+    private EventImageRepository eventImageRepository;
+
+    @Mock
+    private EventSectionRepository eventSectionRepository;
 
     @Test
     public void testGetEventByIdReturnsEvent() {
@@ -79,10 +89,10 @@ public class EventServiceTest {
     public void testCreateEventWithNullNameThrowsException() {
         mockAuthUser();
         EventDTO nullEventDto = DTOMapper.toDTO(TestHelper.getTestEvent(null, null));
-        assertThrows(ApsiValidationException.class, () -> eventService.create(nullEventDto, null));
+        assertThrows(ApsiValidationException.class, () -> eventService.create(nullEventDto, null, null));
     }
 
-    private User mockAuthUser(){
+    public static User mockAuthUser(){
         if (mockedUser != null)
             return mockedUser;
 
@@ -98,25 +108,23 @@ public class EventServiceTest {
     }
 
     @Test
-    public void testCreateReturnsCreatedEvent() {
+    public void testCreateReturnsCreatedEvent() throws ApsiValidationException {
         var event = TestHelper.getTestEvent(null);
         event.getTicketTypes().add(new TicketType(null, event, "type", BigDecimal.valueOf(50), 50));
+        event.getSections().add(new EventSection(null, event, "test", 1000));
         var eventDTO = DTOMapper.toDTO(event);
-        try {
-            var user = mockAuthUser();
-            when(eventRepository.save(any())).thenReturn(event);  
-            when(ticketTypeRepository.saveAll(any())).thenReturn(event.getTicketTypes());  
-            var result = eventService.create(eventDTO, null);
-            event.setOrganizer(user);
-            assertEquals(result.getDescription(), eventDTO.getDescription());
-            assertEquals(result.getEndDate(), eventDTO.getEndDate());
-            assertEquals(result.getStartDate(), eventDTO.getStartDate());
-            assertEquals(result.getTicketTypes(), eventDTO.getTicketTypes());
-            assertEquals(result.getLocation(), eventDTO.getLocation());
-            assertEquals(result.getName(), eventDTO.getName());
-        } catch (Exception e) {
-            fail();
-        }
+
+        var user = mockAuthUser();
+        when(eventRepository.save(any())).thenReturn(event);  
+        when(ticketTypeRepository.saveAll(any())).thenReturn(event.getTicketTypes());  
+        var result = eventService.create(eventDTO, null, null);
+        event.setOrganizer(user);
+        assertEquals(result.getDescription(), eventDTO.getDescription());
+        assertEquals(result.getEndDate(), eventDTO.getEndDate());
+        assertEquals(result.getStartDate(), eventDTO.getStartDate());
+        assertEquals(result.getTicketTypes(), eventDTO.getTicketTypes());
+        assertEquals(result.getLocation(), eventDTO.getLocation());
+        assertEquals(result.getName(), eventDTO.getName());
     }
 
     @Test
@@ -124,10 +132,11 @@ public class EventServiceTest {
         mockAuthUser();
         Event event = TestHelper.getTestEvent(1l, "changed name");
         event.getTicketTypes().add(new TicketType(null, event, "type", BigDecimal.valueOf(50), 50));
+        event.getSections().add(new EventSection(null, event, "test", 1000));
         EventDTO eventDTO = DTOMapper.toDTO(event);
         when(eventRepository.save(any())).thenReturn(event);
         when(eventRepository.findById(any())).thenReturn(Optional.of(event));
-        assertEquals(eventService.replace(eventDTO, null), eventDTO);
+        assertEquals(eventService.replace(eventDTO, null, null), eventDTO);
     }
 
     @Test

@@ -1,11 +1,12 @@
 import {useEffect, useState} from "react";
-import {CountryDTO, EventDTO} from "../api/DTOs";
+import {CountryDTO, EventDTO, TicketTypeDTO} from "../api/DTOs";
 import {Api} from "../api/Api";
 import {useParams} from "react-router-dom";
 import {Typography, Paper, Grid, IconButton, CardMedia} from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import TicketCard from "../components/TicketCard";
 import { toastError } from "../helpers/ToastHelpers";
+import EventSectionItem from "../components/EventSectionItem";
 import { getExtendedLocationString } from "../helpers/FormHelpers";
 import EditButton from "../components/EventCardButtons/EditButton";
 import {AuthHelpers, UserTypes} from "../helpers/AuthHelpers";
@@ -15,6 +16,8 @@ export default function EventPage() {
     const [ countries, setCountries ] = useState<CountryDTO[]>([]);
     const [ event, setEvent ] = useState<EventDTO | null>(null);
     const [ image, setImage ] = useState<string | null>(null);
+    const [ sectionMapImage, setSectionMapImage ] = useState<string | null>(null);
+    const [ ticketTypes, setTicketTypes ] = useState<TicketTypeDTO[]>([]);
 
     useEffect(() => {
         Api.GetCountries().then(res => {
@@ -29,6 +32,7 @@ export default function EventPage() {
         Api.GetEventById(eventId).then(res => {
             if (res.success && res.data) {
                 setEvent(res.data ?? null);
+                setTicketTypes(res.data.ticketTypes ?? null);
             }
             else toastError("Nie udało się pobrać danych wydarzenia")
         })
@@ -36,14 +40,31 @@ export default function EventPage() {
 
     useEffect(() => {
         if (event != null && event.imageIds.length > 0 && image == null) {
-            Api.GetEventImageByEventId(eventId!).then(res => {
-                if (res) setImage(`data:image/png;base64,${res}`);
+            Api.GetEventImagesByEventId(eventId!).then(res => {
+                if (res.success && res.data) {
+                    const imgToShow = res.data.find(i => !i.sectionMap)?.image;
+                    if (!!imgToShow)
+                        setImage(`data:image/png;base64,${imgToShow}`);
+
+                    const sectionMap = res.data.find(i => i.sectionMap)?.image;
+                    if (!!sectionMap)
+                        setSectionMapImage(`data:image/png;base64,${sectionMap}`);
+                }
                 else toastError("Nie udało się pobrać obrazów dla tego wydarzenia")
             })
         }
     }, [event, eventId, image])
 
+    const sectionOptions = event?.sections.map(s => ({ value: s.id, label: s.name })) ?? []
     const country = countries.find(c => c.id === event?.location?.country_id);
+
+    const handleDelete = (id: number) => {
+        const newTicketList = ticketTypes.filter(ticketType => ticketType.id !== id);
+        setTicketTypes(newTicketList);
+        if (event) {
+            setEvent({...event, ticketTypes: newTicketList});
+        }
+    }
 
     return event && <>
         <Paper style={{ padding: 20 }}>
@@ -89,11 +110,41 @@ export default function EventPage() {
                 <Grid item xs={12}>
                     <Typography variant="body1">{event.description}</Typography>
                 </Grid>
+                {/* Ticket types */}
                 <Grid container direction="column" alignItems="flex-center" gap={1}>
-                    {event.ticketTypes.map(ticket => <TicketCard event={event} key={event.id} ticket={ticket}/>)}
+                    <Typography variant="h5" className="mt-5" gutterBottom>
+                        Rodzaje biletów
+                    </Typography>
+                    {event.ticketTypes.map(ticket => <TicketCard sectionMap={sectionMapImage ?? undefined}
+                        key={ticket.id} ticket={ticket} sections={sectionOptions} onDelete={handleDelete}
+                        event={event}
+                    />)}
+                </Grid>
+                {/* Section Map */}
+                {!!sectionMapImage && <>
+                    <Grid container direction="column" alignItems="flex-center">
+                        <Typography variant="h5" className="mt-4" gutterBottom>
+                            Rozpiska miejsc
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={12} style={{ display: 'flex', justifyContent: 'center' }}>
+                        <CardMedia
+                            component="img"
+                            src={sectionMapImage}
+                            alt="Section Map Image"
+                            style={{ maxHeight: '15rem', width: 'auto' }}
+                        />
+                    </Grid>
+                </>}
+                {/* Sections */}
+                <Grid container direction="column" alignItems="flex-center" gap={1}>
+                    <Typography variant="h5" className="mt-5" gutterBottom>
+                        Rodzaje miejsc
+                    </Typography>
+                    {event.sections.map(s => <EventSectionItem key={s.id} section={s} />)}
                 </Grid>
                 {/*Edit button*/}
-                {AuthHelpers.getRole() !== UserTypes.PERSON && <Grid container xs={12} style={{ justifyContent: 'right' }}>
+                {AuthHelpers.getRole() !== UserTypes.PERSON && <Grid container className="mt-3" style={{ justifyContent: 'right' }}>
                     <EditButton event={event} />
                 </Grid>}
             </Grid>

@@ -38,10 +38,9 @@ public class EventControllerTest {
         LoginRequest loginRequest = new LoginRequest(LOGIN, PASSWORD);
         String stringLoginRequest = objectMapper.writeValueAsString(loginRequest);
         String responseContent = mockMvc.perform(MockMvcRequestBuilders.post("/user/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(stringLoginRequest)
-                )
-                .andReturn().getResponse().getContentAsString();
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(stringLoginRequest)
+        ).andReturn().getResponse().getContentAsString();
         return objectMapper.readValue(responseContent, LoggedUserDTO.class);
     }
 
@@ -53,8 +52,8 @@ public class EventControllerTest {
     @Test
     public void testGetAllEventsReturns401ForUnauthorizedUser() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/events"))
-                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
-                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+            .andExpect(MockMvcResultMatchers.status().is4xxClientError())
+            .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
     @Test
@@ -167,6 +166,12 @@ public class EventControllerTest {
                         "quantityAvailable": 1,
                         "price": 2
                     }
+                ],
+                "sections": [
+                    {
+                        "name": "test",
+                        "capacity": 1000
+                    }
                 ]
             }
         """;
@@ -181,6 +186,12 @@ public class EventControllerTest {
                         "name": "type 1",
                         "quantityAvailable": 1,
                         "price": 2
+                    }
+                ],
+                "sections": [
+                    {
+                        "name": "test",
+                        "capacity": 1000
                     }
                 ]
             }
@@ -224,6 +235,12 @@ public class EventControllerTest {
                         "quantityAvailable": 1,
                         "price": 2
                     }
+                ],
+                "sections": [
+                    {
+                        "name": "test",
+                        "capacity": 1000
+                    }
                 ]
             }
         """;
@@ -241,20 +258,26 @@ public class EventControllerTest {
                         "quantityAvailable": 1,
                         "price": 2
                     }
+                ],
+                "sections": [
+                    {
+                        "name": "test",
+                        "capacity": 1000
+                    }
                 ]
             }
         """;
 
         mockMvc.perform(MockMvcRequestBuilders.multipart("/events/2")
-                        .file(new MockMultipartFile("event", "", "application/json", request.getBytes(StandardCharsets.UTF_8)))
-                        .header("Authorization", loggedUser.getAuthHeader())
-                        .with(requestBuilder -> {
-                            requestBuilder.setMethod("PUT");
-                            return requestBuilder;
-                        })
-                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(expectedJson));
+            .file(new MockMultipartFile("event", "", "application/json", request.getBytes(StandardCharsets.UTF_8)))
+            .header("Authorization", loggedUser.getAuthHeader())
+            .with(requestBuilder -> {
+                requestBuilder.setMethod("PUT");
+                return requestBuilder;
+            })
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.content().json(expectedJson));
     }
 
     @Test

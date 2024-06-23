@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
+@Entity(name = "ticket")
 @Table(name = "tickets")
 public class Ticket {
     @Id
@@ -22,6 +22,10 @@ public class Ticket {
     @ManyToOne(optional = false)
     @JoinColumn(name = "holder_id", nullable = false)
     private User holder;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "section_id", nullable = false)
+    private EventSection section;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "ticket_type_id", nullable = false)

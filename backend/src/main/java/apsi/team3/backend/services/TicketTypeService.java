@@ -2,6 +2,7 @@ package apsi.team3.backend.services;
 
 import apsi.team3.backend.DTOs.DTOMapper;
 import apsi.team3.backend.DTOs.TicketTypeDTO;
+import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.ITicketTypeService;
 import apsi.team3.backend.repository.TicketTypeRepository;
@@ -17,7 +18,9 @@ public class TicketTypeService implements ITicketTypeService {
     private final TicketTypeRepository ticketTypeRepository;
 
     @Autowired
-    public TicketTypeService(TicketTypeRepository ticketTypeRepository) { this.ticketTypeRepository = ticketTypeRepository; }
+    public TicketTypeService(TicketTypeRepository ticketTypeRepository) {
+        this.ticketTypeRepository = ticketTypeRepository;
+    }
 
     @Override
     public Optional<TicketTypeDTO> getTicketTypeById(Long id) {
@@ -53,7 +56,15 @@ public class TicketTypeService implements ITicketTypeService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(Long id) throws ApsiException {
+        // we check in controller if ticketType exists
+        var ticketType = ticketTypeRepository.findById(id);
+        var event = ticketType.get().getEvent();
+        var eventTicketTypeCount = (long) event.getTicketTypes().size();
+
+        if (eventTicketTypeCount <= 1) {
+            throw new ApsiException("Nie można usunąć typu biletu, jeśli wydarzenie ma mniej niż dwa typy biletów");
+        }
         ticketTypeRepository.deleteById(id);
     }
 

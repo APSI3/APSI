@@ -1,6 +1,7 @@
 package apsi.team3.backend.interfaces;
 
 import apsi.team3.backend.DTOs.LoggedUserDTO;
+import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.DTOs.Requests.CreateUserRequest;
 import apsi.team3.backend.DTOs.Requests.LoginRequest;
 import apsi.team3.backend.DTOs.UserDTO;
@@ -18,6 +19,10 @@ public interface IUserService {
     String hashPassword(String password, String salt) throws ApsiException;
 
     LoggedUserDTO login(LoginRequest request) throws ApsiValidationException;
+
+    PaginatedList<UserDTO> getUsers(int pageIndex) throws ApsiValidationException;
+
+    Void deleteUser(Long id);
 
     UserDTO createUser(CreateUserRequest request) throws ApsiException;
 

@@ -1,8 +1,10 @@
 package apsi.team3.backend.controller;
 
 import apsi.team3.backend.DTOs.LoggedUserDTO;
+import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.DTOs.Requests.CreateUserRequest;
 import apsi.team3.backend.DTOs.Requests.LoginRequest;
+import apsi.team3.backend.DTOs.UserDTO;
 import apsi.team3.backend.DTOs.UserDTO;
 import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.exceptions.ApsiValidationException;
@@ -47,5 +49,17 @@ public class UserController {
             return ResponseEntity.ok(false);
         }
         return ResponseEntity.ok(true);
+    }
+
+    @GetMapping
+    public ResponseEntity<PaginatedList<UserDTO>> getUsers(@RequestParam int pageIndex) throws ApsiValidationException {
+        var allUsers = userService.getUsers(pageIndex);
+        return ResponseEntity.ok(allUsers);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -3,7 +3,7 @@ import { ApiResponse } from "./Responses";
 import {CreateEventRequest, CreateLocationRequest, LoginRequest, CreateTicketRequest, UpdateEventRequest, CreateUserRequest} from "./Requests";
 import { toastError } from "../helpers/ToastHelpers";
 import { AuthHelpers } from "../helpers/AuthHelpers";
-import {CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO, PaginatedList, TicketDTO, UserDTO} from "./DTOs";
+import { CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO, TicketDTO, PaginatedList, ImageDTO, UserDTO } from "./DTOs";
 
 axios.defaults.withCredentials = true;
 
@@ -62,20 +62,44 @@ export class Api {
         return await getApiResponse<CreateUserRequest, UserDTO>("post", this.url + "/user", request);
     }
 
+    static async GetUsers(pageIndex: number) {
+        return await getApiResponse<undefined, PaginatedList<UserDTO>>("get",
+            this.url + `/user?pageIndex=${pageIndex}`);
+    }
+
+    static async DeleteUser(id: string) {
+        return await getApiResponse<undefined, void>("delete", this.url + `/user/${id}`);
+    }
+
     static async CreateEvent(request: CreateEventRequest) {
-        const eventPart = { ...request, image: undefined }
+        const eventPart = {
+            ...request,
+            image: undefined,
+            sectionMap: undefined,
+            id: undefined,
+            hasSectionMap: false,
+            hasImage: false,
+        }
         const body = {
             event: JSON.stringify(eventPart),
-            image: request.image
+            image: request.image,
+            sectionMap: request.sectionMap,
         }
         return await getApiResponse<object, EventDTO>("post", this.url + "/events", body, true);
     }
 
     static async UpdateEvent(request: UpdateEventRequest) {
-        const eventPart = { ...request, image: undefined }
+        const eventPart = {
+            ...request,
+            image: undefined,
+            sectionMap: undefined,
+            hasSectionMap: false,
+            hasImage: false,
+        }
         const body = {
             event: JSON.stringify(eventPart),
-            image: request.image
+            image: request.image,
+            sectionMap: request.sectionMap
         }
         return await getApiResponse<object, EventDTO>("put", this.url + `/events/${request.id}`, body, true);
     }
@@ -100,6 +124,10 @@ export class Api {
 
     static async GetTicketTypeById(id: number | undefined) {
         return await getApiResponse<undefined, TicketTypeDTO>("get", this.url + `/ticket_types/${id}`);
+    }
+
+    static async DeleteTicketType(id: number | undefined) {
+        return await getApiResponse<undefined, number>("delete", this.url + `/ticket_types/${id}`);
     }
 
     static async GetSoldTicketsCount(id: number | undefined) {
@@ -127,17 +155,8 @@ export class Api {
         return await getApiResponse<undefined, LocationDTO[]>("get", this.url + "/locations");
     }
 
-    static async GetEventImageByEventId(id: string) {
-        const authKey = AuthHelpers.GetAuthKey();
-        const data = await axios.get(this.url + "/events/images/" + id, {
-            validateStatus: status => status <= 500,
-            responseType: "text",
-            headers: {
-                "Authorization": authKey
-            }
-        }).then(r => r.data)
-
-        return data;
+    static async GetEventImagesByEventId(id: string) {
+        return await getApiResponse<undefined, ImageDTO[]>("get", this.url + "/events/images/" + id)
     }
 
     static async GetUniqueLogin(login: string) {
