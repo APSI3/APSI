@@ -21,7 +21,7 @@ public class DTOMapper {
     public static Event toEntity(EventDTO event) {
         var organizer = User.builder().id(event.getOrganizerId()).build();
         var loc = event.getLocation() != null ? 
-            Location.builder().id(event.getLocation().getId()).build() :
+            toEntity(event.getLocation()) :
             null;
     
         return Event.builder()
@@ -62,6 +62,7 @@ public class DTOMapper {
                 .id(ticketHolder.getId())
                 .login(ticketHolder.getLogin())
                 .email(ticketHolder.getEmail())
+                .type(UserType.valueOf(ticketHolder.getType()))
                 .build();
         TicketType ticketType = DTOMapper.toEntity(ticket.getTicketType(), event);
         return Ticket.builder()
