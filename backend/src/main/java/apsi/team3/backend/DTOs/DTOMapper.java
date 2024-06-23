@@ -112,7 +112,7 @@ public class DTOMapper {
             event.getOrganizer().getId(),
             event.getLocation() != null ? DTOMapper.toDTO(event.getLocation()) : null,
             ticketTypes.stream().map(DTOMapper::toDTO).toList(),
-            images.stream().map(i -> i.getId()).toList()
+            images.stream().map(EventImage::getId).toList()
         );
     }
 

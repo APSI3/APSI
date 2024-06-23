@@ -13,4 +13,6 @@ public interface ITicketService {
     TicketDTO create(TicketDTO ticketDTO);
     PaginatedList<TicketDTO> getTicketsByUserId(Long id, LocalDate from, LocalDate to, int pageIndex) throws ApsiValidationException;
     List<TicketDTO> getTicketsByEventId(Long id) throws ApsiValidationException;
+    List<TicketDTO> getTicketsByTicketTypeId(Long id) throws ApsiValidationException;
+    void deleteByTicketTypeId(Long id);
 }

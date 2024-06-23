@@ -29,7 +29,7 @@ public class MailService {
     private String fromMail;
 
     @Async
-    public void sendMail(String mail, MailStructure mailStructure) throws MessagingException, IOException, WriterException {
+    public void sendTicketMail(String mail, MailStructure mailStructure) throws MessagingException, IOException, WriterException {
         var message = mailSender.createMimeMessage();
         var helper = new MimeMessageHelper(message, true, "UTF-8");
         helper.setFrom(fromMail);
@@ -51,6 +51,19 @@ public class MailService {
         helper.setText(htmlContent, true);
         helper.setTo(mail);
         helper.addAttachment("ticket.png", byteResource);
+
+        mailSender.send(message);
+    }
+
+    @Async
+    public void sendMail(String mail, String mailSubject, String mailMessage) throws MessagingException {
+        var message = mailSender.createMimeMessage();
+        var helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setFrom(fromMail);
+        helper.setSubject(mailSubject);
+        helper.setText(mailMessage);
+        helper.setTo(mail);
 
         mailSender.send(message);
     }
