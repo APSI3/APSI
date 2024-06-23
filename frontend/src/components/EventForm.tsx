@@ -78,7 +78,9 @@ const createEventValidationSchema = object<CreateEventRequest>().shape({
     }).nullable()
 })
 
-const EventForm: React.FC<{ onClose: () => void, initialValues?: Partial<UpdateEventRequest> }> = ({ onClose, initialValues }) => {
+const EventForm: React.FC<{ 
+    onClose: () => void, initialValues?: Partial<UpdateEventRequest>, hasImage?: boolean, hasSectionMap?: boolean
+}> = ({ onClose, initialValues, hasImage, hasSectionMap }) => {
     const [locations, setLocations] = useState<LocationDTO[]>([])
     const isUpdate = !!initialValues;
 
@@ -211,7 +213,7 @@ const EventForm: React.FC<{ onClose: () => void, initialValues?: Partial<UpdateE
                 </div>
                 <div className="mb-3">
                     <label htmlFor="image" className="form-label">Obraz</label>
-                    {mergedInitialValues.image && <span> (zastąpi istniejący obraz)</span>}
+                    {hasImage && <span> (zastąpi istniejący obraz)</span>}
                     <input className="form-control" type="file" accept="image/*" id="image" name="image" onChange={e => {
                         const reader = new FileReader();
                         reader.onload = () => {
@@ -316,6 +318,7 @@ const EventForm: React.FC<{ onClose: () => void, initialValues?: Partial<UpdateE
                 </div>
                 <div className="mb-3">
                     <label htmlFor="sectionMap" className="form-label">Obraz z rozpiską miejsc</label>
+                    {hasSectionMap && <span>(zastąpi istniejący obraz)</span>}
                     <input className="form-control" type="file" accept="image/*" id="sectionMap" name="sectionMap" onChange={e => {
                         const reader = new FileReader();
                         reader.onload = () => {

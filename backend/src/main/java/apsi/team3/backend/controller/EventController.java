@@ -96,7 +96,7 @@ public class EventController {
         @PathVariable("id") Long id,
         @RequestPart("event") String event,
         @RequestPart(name = "image", required = false) MultipartFile image,
-        @RequestPart(name = "image", required = false) MultipartFile sectionMap
+        @RequestPart(name = "sectionMap", required = false) MultipartFile sectionMap
     ) throws ApsiValidationException
     {
         if (image != null && image.getSize() > MAX_IMAGE_SIZE)

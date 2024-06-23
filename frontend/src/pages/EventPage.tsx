@@ -109,6 +109,22 @@ export default function EventPage() {
                         key={ticket.id} ticket={ticket} sections={sectionOptions}
                     />)}
                 </Grid>
+                {/* Section Map */}
+                {!!sectionMapImage && <>
+                    <Grid container direction="column" alignItems="flex-center">
+                        <Typography variant="h5" className="mt-4" gutterBottom>
+                            Rozpiska miejsc
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={12} style={{ display: 'flex', justifyContent: 'center' }}>
+                        <CardMedia
+                            component="img"
+                            src={sectionMapImage}
+                            alt="Section Map Image"
+                            style={{ maxHeight: '15rem', width: 'auto' }}
+                        />
+                    </Grid>
+                </>}
                 {/* Sections */}
                 <Grid container direction="column" alignItems="flex-center" gap={1}>
                     <Typography variant="h5" className="mt-5" gutterBottom>

@@ -9,6 +9,16 @@ import { modalStyle } from "../FormButton";
 import { Field, Form, Formik } from "formik";
 import { Option, ValidationMessage } from "../../helpers/FormHelpers";
 import { CreateTicketRequest } from "../../api/Requests";
+import { object, string } from "yup";
+
+const validationSchema = object<CreateTicketRequest>().shape({
+    holderFirstName: string()
+        .max(255, "Imię posiadacza jest zbyt długie")
+        .required("Należy podać imię posiadacza"),
+    holderLastName: string()
+        .max(255, "Nazwizko posiadacza jest zbyt długie")
+        .required("Należy podać nazwisko posiadacza"),
+});
 
 const BuyButton: React.FC<{ ticketTypeId: number, sectionMap?: string, ticketTypes: Option[], sections: Option[] }>= (
     { ticketTypeId, sectionMap, ticketTypes, sections }
@@ -40,6 +50,7 @@ const BuyButton: React.FC<{ ticketTypeId: number, sectionMap?: string, ticketTyp
                     <CloseIcon />
                 </IconButton>
                 <Formik
+                    validationSchema={validationSchema}
                     initialValues={initialValues}
                     onSubmit={async (values, fh) => {
                         Api.CreateTicket(values).then(res => {

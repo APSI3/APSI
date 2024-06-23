@@ -59,7 +59,7 @@ export class Api {
     }
 
     static async CreateEvent(request: CreateEventRequest) {
-        const eventPart = { ...request, image: undefined, sectionMap: undefined }
+        const eventPart = { ...request, image: undefined, sectionMap: undefined, id: undefined }
         const body = {
             event: JSON.stringify(eventPart),
             image: request.image,
@@ -69,10 +69,11 @@ export class Api {
     }
 
     static async UpdateEvent(request: UpdateEventRequest) {
-        const eventPart = { ...request, image: undefined }
+        const eventPart = { ...request, image: undefined, sectionMap: undefined }
         const body = {
             event: JSON.stringify(eventPart),
-            image: request.image
+            image: request.image,
+            sectionMap: request.sectionMap
         }
         return await getApiResponse<object, EventDTO>("put", this.url + `/events/${request.id}`, body, true);
     }

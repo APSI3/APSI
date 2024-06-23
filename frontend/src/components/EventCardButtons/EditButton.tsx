@@ -13,7 +13,8 @@ import { UpdateEventRequest } from "../../api/Requests";
 
 const EditButton: React.FC<{ event: EventDTO }> = ({ event }) => {
     const [ open, setOpen ] = useState<boolean>(false);
-    const [ image, setImage ] = useState<string>();
+    const [image, setImage] = useState<string>();
+    const [sectionMap, setSectionMap] = useState<string>();
     const handleOpen = () => setOpen(true);
     const handleClose = () => {
         setOpen(false)
@@ -21,15 +22,21 @@ const EditButton: React.FC<{ event: EventDTO }> = ({ event }) => {
     };
 
     useEffect(() => {
-        Api.GetEventImagesByEventId(event.id.toString()).then(res => {
-            if (res.success && res.data) {
-                const imgToShow = res.data.find(i => !i.sectionMap)?.image;
-                if (!!imgToShow)
-                    setImage(imgToShow);
-            }
-            else toastError("Nie udało się pobrać obrazów dla tego wydarzenia")
-        })
-    }, [event.id])
+        if (event.imageIds.length > 0) {
+            Api.GetEventImagesByEventId(event.id.toString()).then(res => {
+                if (res.success && res.data) {
+                    const imgToShow = res.data.find(i => !i.sectionMap)?.image;
+                    if (!!imgToShow)
+                        setImage(imgToShow);
+    
+                    const sectionMap = res.data.find(i => i.sectionMap)?.image;
+                    if (!!sectionMap)
+                        setSectionMap(sectionMap);
+                }
+                else toastError("Nie udało się pobrać obrazów dla tego wydarzenia")
+            })
+        }
+    }, [event.id, event.imageIds])
 
     const initialValues: UpdateEventRequest = {
         id: event.id,
@@ -42,7 +49,6 @@ const EditButton: React.FC<{ event: EventDTO }> = ({ event }) => {
         endTime: event.endTime?.substring(0, 5),
         location: event.location,
         sections: event.sections,
-        image: !!image ? new File([atob(image)], "") : undefined,
     }
 
     return <>
@@ -65,6 +71,8 @@ const EditButton: React.FC<{ event: EventDTO }> = ({ event }) => {
                 {<EventForm
                     onClose={handleClose}
                     initialValues={initialValues}
+                    hasImage={!!image}
+                    hasSectionMap={!!sectionMap}
                 />}
             </Box>
         </Modal>

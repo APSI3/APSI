@@ -140,12 +140,13 @@ public class EventService implements IEventService {
 
     @Override
     public EventDTO replace(EventDTO eventDTO, MultipartFile image, MultipartFile sectionMap) throws ApsiValidationException {
-        if (eventDTO.getId() == null) {
+        if (eventDTO.getId() == null)
             throw new ApsiValidationException("Identyfikator wydarzenia jest wymagany", "id");
-        }
 
         var existingEvent = eventRepository.findById(eventDTO.getId())
-                .orElseThrow(() -> new ApsiValidationException("Wydarzenie nie zostało znalezione", "id"));
+            .orElseThrow(() -> new ApsiValidationException("Wydarzenie nie zostało znalezione", "id"));
+        var existingImageId = existingEvent.getImages().stream().filter(i -> !i.isSection_map()).map(i -> i.getId()).findFirst();
+        var existingSectionMap = existingEvent.getImages().stream().filter(i -> i.isSection_map()).map(i -> i.getId()).findFirst();
 
         var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         validateEvent(eventDTO, loggedUser);
@@ -157,6 +158,18 @@ public class EventService implements IEventService {
         processRelatedEntities(eventDTO, entity);
         processEventImage(image, entity);
         processSectionMap(sectionMap, entity);
+
+        if (image != null && existingImageId.isPresent()){
+            existingEvent.getImages().removeIf(i -> i.getId() == existingImageId.get());
+            entity.getImages().removeIf(i -> i.getId() == existingImageId.get());    
+            eventImageRepository.deleteById(existingImageId.get());
+        }
+
+        if (sectionMap != null && existingSectionMap.isPresent()) {
+            existingEvent.getImages().removeIf(i -> i.getId() == existingSectionMap.get());
+            entity.getImages().removeIf(i -> i.getId() == existingSectionMap.get());
+            eventImageRepository.deleteById(existingSectionMap.get());
+        }
 
         var updatedEvent = eventRepository.save(entity);
 
@@ -172,8 +185,6 @@ public class EventService implements IEventService {
             e.printStackTrace();
             throw new ApsiValidationException("Uszkodzony plik obrazu", "image");
         }
-
-        updatedEvent.getImages().clear();
 
         var eventImage = EventImage.builder()
             .image(bytes)
@@ -195,8 +206,6 @@ public class EventService implements IEventService {
             e.printStackTrace();
             throw new ApsiValidationException("Uszkodzony plik obrazu", "sectionMap");
         }
-
-        updatedEvent.getImages().clear();
 
         var eventImage = EventImage.builder()
             .image(bytes)
