@@ -44,6 +44,7 @@ export default function EventsPage() {
 
     return (
         <>
+            <h2>Wydarzenia</h2>
             <DateRangePicker initialFrom={initialFrom} initialTo={toDate} onDateChange={handleDateChange} />
             <br />
             {events.map(event => (

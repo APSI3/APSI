@@ -5,7 +5,6 @@ import apsi.team3.backend.DTOs.TicketTypeDTO;
 import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.ITicketTypeService;
-import apsi.team3.backend.repository.EventRepository;
 import apsi.team3.backend.repository.TicketTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,12 +16,10 @@ import java.util.stream.Collectors;
 @Service
 public class TicketTypeService implements ITicketTypeService {
     private final TicketTypeRepository ticketTypeRepository;
-    private final EventRepository eventRepository;
 
     @Autowired
-    public TicketTypeService(TicketTypeRepository ticketTypeRepository, EventRepository eventRepository) {
+    public TicketTypeService(TicketTypeRepository ticketTypeRepository) {
         this.ticketTypeRepository = ticketTypeRepository;
-        this.eventRepository = eventRepository;
     }
 
     @Override
@@ -73,7 +70,6 @@ public class TicketTypeService implements ITicketTypeService {
 
     @Override
     public boolean notExists(Long id) {
-        var t = ticketTypeRepository.findById(id);
         return !ticketTypeRepository.existsById(id);
     }
 }

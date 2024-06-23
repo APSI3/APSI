@@ -21,7 +21,7 @@ export default function LocationsPage() {
 
     useEffect(() => {
         getLocations(currentIdx);
-    }, [currentIdx]);
+    }, [currentIdx, getLocations]);
 
     const handlePageChange = (index: number) => {
         setCurrentIdx(index);

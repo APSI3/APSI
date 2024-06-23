@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
-import static apsi.team3.backend.helpers.MailSender.sendTicketDeletedEmail;
-
 @RestController
 @RequestMapping("/ticket_types")
 @CrossOrigin(origins = {"http://localhost:3000"}, allowCredentials = "true")
@@ -75,7 +73,7 @@ public class TicketTypeController {
         ticketTypeService.delete(id);
 
         for (TicketDTO ticket : tickets) {
-            sendTicketDeletedEmail(mailService, ticket);
+            mailService.sendTicketDeletedEmail(ticket);
         }
         return ResponseEntity.noContent().build();
     }

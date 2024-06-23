@@ -1,7 +1,6 @@
 import {useCallback, useEffect, useState} from "react";
 import {UserDTO} from "../api/DTOs";
 import {Api} from "../api/Api";
-import {AuthHelpers} from "../helpers/AuthHelpers";
 import UserCard from "../components/UserCard";
 import Pages from "../components/Pages";
 
@@ -21,7 +20,7 @@ export default function UsersPage() {
 
     useEffect(() => {
         getUsers(currentIdx);
-    }, [currentIdx]);
+    }, [currentIdx, getUsers]);
 
     const handlePageChange = (index: number) => {
         setCurrentIdx(index);

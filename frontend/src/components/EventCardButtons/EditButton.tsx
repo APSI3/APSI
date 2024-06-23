@@ -1,28 +1,25 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {Fab, IconButton } from "@mui/material";
 import {Edit} from "@mui/icons-material";
 import {EventDTO} from "../../api/DTOs";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import CloseIcon from "@mui/icons-material/Close";
-import {ModalBoxStyle} from "../FormButton";
 import EventForm from "../EventForm";
-import {Api} from "../../api/Api";
+import { modalStyle } from "../FormButton";
+import { UpdateEventRequest } from "../../api/Requests";
 
-const EditButton: React.FC<{ event: EventDTO }> = ({ event }) => {
+const EditButton: React.FC<{ event: EventDTO }> = (
+    { event }
+) => {
     const [ open, setOpen ] = useState<boolean>(false);
-    const [ image, setImage ] = useState<any>();
     const handleOpen = () => setOpen(true);
     const handleClose = () => {
         setOpen(false)
         window.location.reload()
     };
 
-    useEffect(() => {
-        Api.GetEventImageByEventId(String(event.id)).then(res => setImage(res)).catch(err => console.log(err))
-    }, [])
-
-    const initialValues = {
+    const initialValues: UpdateEventRequest = {
         id: event.id,
         name: event.name,
         description: event.description,
@@ -32,7 +29,7 @@ const EditButton: React.FC<{ event: EventDTO }> = ({ event }) => {
         startTime: event.startTime?.substring(0, 5),
         endTime: event.endTime?.substring(0, 5),
         location: event.location,
-        image,
+        sections: event.sections,
     }
 
     return <>
@@ -48,13 +45,15 @@ const EditButton: React.FC<{ event: EventDTO }> = ({ event }) => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
-            <Box sx={ModalBoxStyle}>
+            <Box sx={modalStyle}>
                 <IconButton aria-label="close" onClick={handleClose} style={{ position: 'absolute', top: 10, right: 10 }}>
                     <CloseIcon />
                 </IconButton>
                 {<EventForm
                     onClose={handleClose}
                     initialValues={initialValues}
+                    hasImage={event.hasImage}
+                    hasSectionMap={event.hasSectionMap}
                 />}
             </Box>
         </Modal>

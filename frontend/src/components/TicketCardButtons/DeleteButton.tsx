@@ -33,7 +33,7 @@ const DeleteButton: React.FC<{ ticketType: TicketTypeDTO, event: EventDTO, onDel
         })
     }
 
-    return <Fab size="small" color="error" onClick={handleClick} disabled={disabled}><Delete /></Fab>
+    return <Fab size="small" color="error" onClick={handleClick} disabled={disabled} style={{zIndex: 10}}><Delete /></Fab>
 }
 
 export default DeleteButton;

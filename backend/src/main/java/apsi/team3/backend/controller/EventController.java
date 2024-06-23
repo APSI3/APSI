@@ -1,11 +1,15 @@
 package apsi.team3.backend.controller;
 
 import apsi.team3.backend.DTOs.EventDTO;
+import apsi.team3.backend.DTOs.ImageDTO;
 import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.DTOs.TicketDTO;
 import apsi.team3.backend.exceptions.ApsiValidationException;
+import apsi.team3.backend.helpers.QRCodeGenerator;
 import apsi.team3.backend.interfaces.IEventService;
 
+import apsi.team3.backend.model.MailStructure;
+import apsi.team3.backend.model.User;
 import apsi.team3.backend.services.MailService;
 import apsi.team3.backend.services.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +18,7 @@ import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,18 +27,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.time.LocalDate;
-import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
-import static apsi.team3.backend.helpers.MailSender.sendTicketByEmail;
 
 @RestController
 @RequestMapping("/events")
 @CrossOrigin(origins = {"http://localhost:3000"}, allowCredentials = "true")
 public class EventController {
     private final IEventService eventService;
+    private final static int MAX_IMAGE_SIZE = 500_000;
     private final MailService mailService;
     private final TicketService ticketService;
 
@@ -62,22 +65,27 @@ public class EventController {
     }
 
     @GetMapping("/images/{id}")
-    public ResponseEntity<byte[]> getEventImage(@PathVariable("id") Long eventId) {
-        var image = eventService.getImageByEventId(eventId);
-        var base64encodedData = Base64.getEncoder().encode(image);
-        return ResponseEntity.ok(base64encodedData);
+    public ResponseEntity<List<ImageDTO>> getEventImages(@PathVariable("id") Long eventId) {
+        var images = eventService.getImagesByEventId(eventId);
+        return ResponseEntity.ok(images);
     }
 
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<EventDTO> createEvent(@RequestParam(name = "image", required = false) MultipartFile image, @RequestParam("event") String event) throws ApsiValidationException {
-        if (image != null && image.getSize() > 500_000)
+    public ResponseEntity<EventDTO> createEvent(@RequestParam(name = "image", required = false) MultipartFile image,
+        @RequestParam(name = "sectionMap", required = false) MultipartFile sectionMap,
+        @RequestParam("event") String event
+    ) throws ApsiValidationException
+    {
+        if (image != null && image.getSize() > MAX_IMAGE_SIZE)
             throw new ApsiValidationException("Zbyt duży obraz. Maksymalna wielkość to 500 KB", "image");
+        if (sectionMap != null && sectionMap.getSize() > MAX_IMAGE_SIZE)
+            throw new ApsiValidationException("Zbyt duży obraz. Maksymalna wielkość to 500 KB", "sectionMap");
 
         try {
             var mapper = new ObjectMapper();
             mapper.registerModule(new JavaTimeModule());
             var dto = mapper.readValue(event, EventDTO.class);
-            var resp = eventService.create(dto, image);
+            var resp = eventService.create(dto, image, sectionMap);
             return ResponseEntity.status(HttpStatus.CREATED).body(resp);
         }
         catch (JsonProcessingException e){
@@ -87,12 +95,16 @@ public class EventController {
 
     @PutMapping(value="/{id}", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<EventDTO> replaceEvent(
-            @PathVariable("id") Long id,
-            @RequestPart("event") String event,
-            @RequestPart(name = "image", required = false) MultipartFile image
-    ) throws ApsiValidationException {
-        if (image != null && image.getSize() > 500_000)
+        @PathVariable("id") Long id,
+        @RequestPart("event") String event,
+        @RequestPart(name = "image", required = false) MultipartFile image,
+        @RequestPart(name = "sectionMap", required = false) MultipartFile sectionMap
+    ) throws ApsiValidationException
+    {
+        if (image != null && image.getSize() > MAX_IMAGE_SIZE)
             throw new ApsiValidationException("Zbyt duży obraz. Maksymalna wielkość to 500 KB", "image");
+        if (sectionMap != null && sectionMap.getSize() > MAX_IMAGE_SIZE)
+            throw new ApsiValidationException("Zbyt duży obraz. Maksymalna wielkość to 500 KB", "sectionMap");
 
         try {
             var mapper = new ObjectMapper();
@@ -105,23 +117,34 @@ public class EventController {
                 return ResponseEntity.notFound().build();
             }
 
-            var resp = eventService.replace(eventDTO, image);
+            var resp = eventService.replace(eventDTO, image, sectionMap);
 
             boolean timeChanged = !Objects.equals(eventDTO.getStartTime(), oldEvent.get().getStartTime())
                     || !Objects.equals(eventDTO.getEndTime(), oldEvent.get().getEndTime())
                     || !Objects.equals(eventDTO.getStartDate(), oldEvent.get().getStartDate())
                     || !Objects.equals(eventDTO.getEndDate(), oldEvent.get().getEndDate());
 
-            boolean locationChanged = eventDTO.getLocation() != oldEvent.get().getLocation();
+            boolean locationChanged = eventDTO.getLocation().getId() != oldEvent.get().getLocation().getId();
+            var sections = resp.getSections();
 
             if (timeChanged || locationChanged) {
                 try {
-                    List<TicketDTO> tickets = ticketService.getTicketsByEventId(resp.getId());
+                    List<TicketDTO> tickets = ticketService.getTicketsByEventId(oldEvent.get().getId());
                     for (TicketDTO ticket : tickets) {
                         ticket.setEvent(resp);
-                        sendTicketByEmail(mailService, "Szczegóły wydarzenia, w którym uczestniczysz uległy zmianie", ticket);
+                        var QRCode = QRCodeGenerator.generateQRCodeByte(ticket.toJSON());
+                        ticket.setQRCode(QRCodeGenerator.convertQRCodeByteToBase64(QRCode));
+
+                        var user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                        var section = sections.stream().filter(s -> s.getId().equals(ticket.getSectionId())).findFirst();
+                        var ticketData = mailService.getTicketContentParams(ticket, section.get().getName());
+                        var mailSubject = "Szczegóły wydarzenia, w którym uczestniczysz uległy zmianie";
+
+                        var mailStructure = new MailStructure(mailSubject, QRCode, ticketData);
+                        mailService.sendTicketMail(user.getEmail(), mailStructure);
                     }
                 } catch (Exception ignored) {
+                    var a = "test";
                     // we hope everyone gets an email but failing update when some got email and some didn't doesn't seem right
                 }
             }

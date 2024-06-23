@@ -5,7 +5,7 @@ import {UserDTO} from "../api/DTOs";
 import {Api} from "../api/Api";
 import {toastDefaultError, toastError, toastInfo} from "../helpers/ToastHelpers";
 import Modal from "@mui/material/Modal";
-import {ModalBoxStyle} from "./FormButton";
+import {modalStyle} from "./FormButton";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -39,7 +39,7 @@ const DeleteUserButton: React.FC<{ user: UserDTO, disabled: boolean, onDelete: (
             open={open}
             onClose={handleModal}
         >
-            <Box sx={{...ModalBoxStyle, '&::-webkit-scrollbar': {display: 'none'}}}>
+            <Box sx={{...modalStyle, '&::-webkit-scrollbar': {display: 'none'}}}>
                 <IconButton aria-label="close" onClick={handleModal} style={{ position: 'absolute', top: 10, right: 10 }}>
                     <CloseIcon/>
                 </IconButton>

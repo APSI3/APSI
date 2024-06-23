@@ -22,6 +22,9 @@ export interface EventDTO {
     location?: LocationDTO
     ticketTypes: TicketTypeDTO[]
     imageIds: number[]
+    sections: SectionDTO[]
+    hasImage: boolean
+    hasSectionMap: boolean
 }
 
 export interface TicketTypeDTO {
@@ -57,6 +60,7 @@ export interface TicketDTO {
     ticketType: TicketTypeDTO,
     holder: UserDTO,
     purchaseDate: Date,
+    sectionId: number
     holderFirstName: string,
     holderLastName: string,
     event: EventDTO,
@@ -67,4 +71,19 @@ export interface PaginatedList<T>{
     pageIndex: number,
     totalItems: number,
     totalPages: number,
+}
+
+export type SectionDTO = {
+    id: number,
+    eventId: number,
+    name: string,
+    capacity: number,
+    boughtTickets: number
+}
+
+export type ImageDTO = {
+    id: number,
+    eventId: number,
+    image: string,
+    sectionMap: boolean
 }
