@@ -71,9 +71,10 @@ public class TicketService implements ITicketService {
         
         var ticket = DTOMapper.toEntity(request);
         var saved = ticketRepository.save(ticket);
+        saved.setTicketType(type.get());
         var dto = DTOMapper.toDTO(saved);
 
-        var QRCode = QRCodeGenerator.generateQRCode(dto.toString());
+        var QRCode = QRCodeGenerator.generateQRCode(dto.toJSON());
         dto.setQRCode(QRCode);
 
         var event = type.get().getEvent();
@@ -105,16 +106,16 @@ public class TicketService implements ITicketService {
 
         var page = ticketRepository.getUsersTicketsWithDatesBetween(PageRequest.of(pageIndex, PAGE_SIZE), id, from, to);
         var items = page
-                .stream()
-                .map(ticket -> {
-                    TicketDTO ticketDTO = DTOMapper.toDTO(ticket);
-                    try {
-                        ticketDTO.setQRCode(QRCodeGenerator.generateQRCode(ticketDTO.toJSON()));
-                    } catch (WriterException | IOException e) {
-                        ticketDTO.setQRCode(null);
-                    }
-                    return ticketDTO;
-                }).collect(Collectors.toList());
+            .stream()
+            .map(ticket -> {
+                TicketDTO ticketDTO = DTOMapper.toDTO(ticket);
+                try {
+                    ticketDTO.setQRCode(QRCodeGenerator.generateQRCode(ticketDTO.toJSON()));
+                } catch (WriterException | IOException e) {
+                    ticketDTO.setQRCode(null);
+                }
+                return ticketDTO;
+            }).collect(Collectors.toList());
 
         return new PaginatedList<>(items, pageIndex, page.getTotalElements(), page.getTotalPages());
     }

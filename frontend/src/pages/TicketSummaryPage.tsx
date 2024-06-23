@@ -28,6 +28,7 @@ export default function TicketSummaryPage() {
     }
 
     const ticketType = event?.ticketTypes.find(tt => tt.id === ticketInfo.ticketType.id);
+    const section = event?.sections.find(s => s.id === ticketInfo.sectionId);
 
     return <div className="d-flex justify-content-center">
         <Paper elevation={3} style={{ padding: '20px', margin: '20px', maxWidth: '500px' }}>
@@ -59,9 +60,13 @@ export default function TicketSummaryPage() {
                     <span className="form-control">{event?.description}</span>
                 </Grid>}
                 <Grid item xs={12}>
-                    <label className="form-label">Rodzaj biletu:</label>
+                    <label className="form-label">Typ biletu:</label>
                     <span className="form-control">{ticketType?.name}</span>
                 </Grid>
+                {section?.name && <Grid item xs={12}>
+                    <label className="form-label">Rodzaj miejsca:</label>
+                    <span className="form-control">{section.name}</span>
+                </Grid>}
             </Grid>
         </Paper>
     </div>
