@@ -132,7 +132,9 @@ public class DTOMapper {
             event.getLocation() != null ? DTOMapper.toDTO(event.getLocation()) : null,
             ticketTypes.stream().map(DTOMapper::toDTO).toList(),
             images.stream().map(i -> i.getId()).toList(),
-            new ArrayList<>()
+            sections.stream().map(s -> DTOMapper.toDTO(s, 0)).toList(),
+            images.stream().anyMatch(i -> i.isSection_map()),
+            images.stream().anyMatch(i -> !i.isSection_map())
         );
     }
 

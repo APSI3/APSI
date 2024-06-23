@@ -84,7 +84,10 @@ const EventForm: React.FC<{
     const [locations, setLocations] = useState<LocationDTO[]>([])
     const isUpdate = !!initialValues;
 
-    const mergedInitialValues: UpdateEventRequest = {...defaultInitialValues, ...initialValues};
+    const mergedInitialValues: UpdateEventRequest = {
+        ...defaultInitialValues,
+        ...initialValues,
+    };
 
     useEffect(() => {
         Api.GetLocations().then(res => {

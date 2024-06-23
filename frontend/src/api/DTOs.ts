@@ -21,6 +21,8 @@ export interface EventDTO {
     ticketTypes: TicketTypeDTO[]
     imageIds: number[]
     sections: SectionDTO[]
+    hasImage: boolean
+    hasSectionMap: boolean
 }
 
 export interface TicketTypeDTO {
