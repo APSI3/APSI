@@ -1,9 +1,9 @@
 import axios from "axios";
 import { ApiResponse } from "./Responses";
-import { CreateEventRequest, CreateLocationRequest, LoginRequest, CreateTicketRequest, UpdateEventRequest } from "./Requests";
+import {CreateEventRequest, CreateLocationRequest, LoginRequest, CreateTicketRequest, UpdateEventRequest, CreateUserRequest} from "./Requests";
 import { toastError } from "../helpers/ToastHelpers";
 import { AuthHelpers } from "../helpers/AuthHelpers";
-import {CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO, PaginatedList, TicketDTO} from "./DTOs";
+import {CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO, PaginatedList, TicketDTO, UserDTO} from "./DTOs";
 
 axios.defaults.withCredentials = true;
 
@@ -56,6 +56,10 @@ export class Api {
 
     static async Login(request: LoginRequest) {
         return await getApiResponse<LoginRequest, LoggedUserDTO>("post", this.url + "/user/login", request);
+    }
+
+    static async CreateUser(request: CreateUserRequest) {
+        return await getApiResponse<CreateUserRequest, UserDTO>("post", this.url + "/user", request);
     }
 
     static async CreateEvent(request: CreateEventRequest) {
@@ -134,6 +138,10 @@ export class Api {
         }).then(r => r.data)
 
         return data;
+    }
+
+    static async GetUniqueLogin(login: string) {
+        return await getApiResponse<undefined, boolean>("get", this.url + `/user/check_login?login=${login}`);
     }
 
     static async Session() {

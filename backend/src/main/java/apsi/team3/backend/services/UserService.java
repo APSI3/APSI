@@ -2,11 +2,14 @@ package apsi.team3.backend.services;
 
 import apsi.team3.backend.DTOs.DTOMapper;
 import apsi.team3.backend.DTOs.LoggedUserDTO;
+import apsi.team3.backend.DTOs.Requests.CreateUserRequest;
 import apsi.team3.backend.DTOs.Requests.LoginRequest;
+import apsi.team3.backend.DTOs.UserDTO;
 import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IUserService;
 import apsi.team3.backend.model.User;
+import apsi.team3.backend.model.UserType;
 import apsi.team3.backend.repository.UserRepository;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 import java.util.Objects;
@@ -23,6 +27,9 @@ import java.util.Optional;
 
 @Service
 public class UserService implements IUserService {
+    private static int SALT_LENGTH = 16;
+    private static final SecureRandom secureRandom = new SecureRandom();
+
     private final UserRepository userRepository;
 
     @Autowired
@@ -53,6 +60,12 @@ public class UserService implements IUserService {
         }
     }
 
+    public static String generateSalt() {
+        byte[] salt = new byte[SALT_LENGTH];
+        secureRandom.nextBytes(salt);
+        return Hex.encodeHexString(salt);
+    }
+
     @Override
     public LoggedUserDTO login(LoginRequest request) throws ApsiValidationException {
         if (request.getLogin() == null || request.getLogin().isBlank())
@@ -77,5 +90,26 @@ public class UserService implements IUserService {
         }
 
         throw new ApsiValidationException("Niepoprawne hasło", "password");
+    }
+
+    @Override
+    public UserDTO createUser(CreateUserRequest request) throws ApsiException {
+        if (request.getLogin() == null || request.getLogin().isBlank())
+            throw new ApsiValidationException("Login jest wymagany", "login");
+        if (request.getPassword() == null || request.getPassword().isBlank())
+            throw new ApsiValidationException("Hasło jest wymagane", "password");
+        if (request.getEmail() == null || request.getEmail().isBlank())
+            throw new ApsiValidationException("Email jest wymagany", "email");
+
+        var salt = generateSalt();
+        var hash = hashPassword(request.getPassword(), salt);
+        var entity = new User(request.getLogin(), hash, salt, UserType.PERSON, request.getEmail());
+        var newUser = userRepository.save(entity);
+        return DTOMapper.toDTO(newUser);
+    }
+
+    @Override
+    public int getUserLoginCount(String login) {
+        return userRepository.getUserLoginCount(login);
     }
 }
