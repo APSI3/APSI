@@ -1,4 +1,4 @@
-import {Field, FieldArray, Form, Formik, FormikHelpers} from "formik";
+import {Field, FieldArray, Form, Formik, FormikHelpers, FormikValues} from "formik";
 import { Helmet } from "react-helmet";
 import { Api } from "../api/Api";
 import { toastDefaultError, toastError, toastInfo } from "../helpers/ToastHelpers";
@@ -78,6 +78,14 @@ const createEventValidationSchema = object<CreateEventRequest>().shape({
     }).nullable()
 })
 
+declare type SectionField = {
+    capacity: number,
+}
+
+declare type TicketTypeField = {
+    quantityAvailable : number,
+}
+
 const EventForm: React.FC<{ 
     onClose: () => void, initialValues?: Partial<UpdateEventRequest>, hasImage?: boolean, hasSectionMap?: boolean
 }> = ({ onClose, initialValues, hasImage, hasSectionMap }) => {
@@ -146,6 +154,22 @@ const EventForm: React.FC<{
         })
     }
 
+    const validateLocationCapacity = async (values: FormikValues, fh: FormikHelpers<any>): Promise<boolean> => {
+        const sectionsCount = values.sections.reduce((total: number, { capacity }: SectionField) => total + capacity, 0);
+        const typesCount = values.ticketTypes.reduce((total: number, { quantityAvailable }: TicketTypeField) => total + quantityAvailable, 0);
+        return Api.GetLocationById(values.location.id).then(res => {
+            if (res.success && res.data) {
+                const locationCapacity = res.data?.capacity;
+                if (locationCapacity && (locationCapacity < sectionsCount || locationCapacity < typesCount)) {
+                    fh.setFieldError(`location`,
+                        'Wybrana lokalizacja nie ma wystarczająco dużej pojemności na określoną dostępność biletów.');
+                    return false;
+                }
+            }
+            return true;
+        })
+    }
+
     return <>
         <Helmet>
             <title>APSI - Dodawanie wydarzenia</title>
@@ -157,6 +181,10 @@ const EventForm: React.FC<{
                 let newValues = values;
                 if (!values.location?.id)
                     newValues = { ...newValues, location: undefined}
+                else {
+                    const isValid = await validateLocationCapacity(values, fh);
+                    if (!isValid) return;
+                }
 
                 isUpdate ? handleUpdateEvent(newValues, fh) : handleCreateEvent(newValues, fh)
             }}
