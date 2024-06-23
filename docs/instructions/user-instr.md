@@ -1,3 +1,8 @@
+### Tworzenie konta
+![](../assets/user_instr_reg.png "Strona rejestracji")
+
+Aby korzystać z aplikacji, użytkownik musi założyć konto. W tym celu musi on wejść na stronę rejestracji (`/register`). Znajduje się na niej formularz, który musi zostać uzupełniony oraz wysłany. Formularz składa się z pól `Login`, `E-mail`, `Hasło` oraz `Powtórz hasło`. Aby formularz został zaakceptowany, użytkownik musi podać nieużyty wcześniej w systemie login, a wybrane przez niego hasła muszą być identyczne, spełniające wymagania dot. długości. Formularz wysyłany jest przy użyciu przycisku `Zarejestruj się`. Po udanej rejestracji użytkownik zostaje przekierowany na stronę logowania. Pod formularzem rejestracyjnym znajduje się także link prowadzący do strony logowania.
+
 ### Logowanie
 ![](../assets/instr_login.png "Strona logowania")
 
@@ -32,10 +37,7 @@ Użytkownik może dokonać zakupu na stronie danego wydarzenia (`/event/{id}`). 
 
 Użytkownik może sprawdzić listę posiadanych biletów na stronie `Twoje Bilety` (`/tickets`). Po wejściu na stronę automatycznie wyświetlane są bilety na wydarzenia zaplanowane na najbliższy tydzień. Elementy listy wyświetlane są jako niezależne karty zawierające informacje o bilecie, takie jak opis samego wydarzenia, rodzaj biletu oraz kod QR. Lista biletów może być filtrowana poprzez zmianę zakresu dat wydarzeń.
 
-<!-- ### Tworzenie konta
-![](../assets/user_instr_reg.png "Strona rejestracji")
 
-Aby korzystać z aplikacji, użytkownik musi założyć konto. W tym celu musi on wejść na stronę rejestracji (`/register`). Znajduje się na niej formularz, który musi zostać uzupełniony oraz wysłany. Formularz składa się z pól `Login`, `Adres e-mail`, `Hasło` oraz `Powtórz hasło`. Aby formularz został zaakceptowany, użytkownik musi podać nieużyty wcześniej w systemie login oraz e-mail, a wybrane przez niego hasła muszą być identyczne, spełniające wymagania dot. długości. Formularz wysyłany jest przy użyciu przycisku `Zarejestruj`. Po udanej rejestracji użytkownik zostaje przekierowany na stronę logowania. Pod formularzem rejestracyjnym znajduje się także link prowadzący do strony logowania.
 
 <span style="color:red">** TODO APSI-34**</span> 
 
