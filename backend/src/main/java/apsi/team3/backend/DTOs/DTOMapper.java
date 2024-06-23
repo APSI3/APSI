@@ -37,8 +37,8 @@ public class DTOMapper {
             .description(event.getDescription())
             .organizer(organizer)
             .location(loc)
-            .ticketTypes(null)
-            .sections(null)
+            .ticketTypes(event.getTicketTypes().stream().map(tt -> DTOMapper.toEntity(tt, null)).toList())
+            .sections(event.getSections().stream().map(s -> DTOMapper.toEntity(s, null)).toList())
             .images(null)
             .build();
     }

@@ -123,13 +123,12 @@ const EventForm: React.FC<{
             const oldTicket = mergedInitialValues.ticketTypes[idx];
 
             if (oldTicket?.quantityAvailable !== ticket?.quantityAvailable) {
-                await Api.GetSoldTicketsCount(ticket.id).then(res => {
-                    if (res.data && ticket.quantityAvailable - res.data < 0) {
-                        fh.setFieldError(`ticketTypes.${idx}.quantityAvailable`, 
-                            'Nie można zmienić liczby biletów poniżej dostępnej wartości');
-                        return;
-                    }
-                });
+                const resp = await Api.GetSoldTicketsCount(ticket.id);
+                if (resp.success && resp.data && resp.data > ticket.quantityAvailable){
+                    fh.setFieldError(`ticketTypes.${idx}.quantityAvailable`, 
+                        'Nie można zmienić liczby biletów poniżej dostępnej wartości');
+                    return;
+                }
             }
         }
 

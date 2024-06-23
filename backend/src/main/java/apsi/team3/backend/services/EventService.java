@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -42,6 +43,8 @@ public class EventService implements IEventService {
     private final EventImageRepository eventImageRepository;
     private final EventSectionRepository eventSectionRepository;
     private final TicketRepository ticketRepository;
+    private final TicketService ticketService;
+    private final MailService mailService;
 
     @Autowired
     public EventService(
@@ -50,7 +53,9 @@ public class EventService implements IEventService {
         TicketTypeRepository ticketTypeRepository,
         EventImageRepository eventImageRepository,
         EventSectionRepository eventSectionRepository,
-        TicketRepository ticketRepository
+        TicketRepository ticketRepository,
+        TicketService ticketService,
+        MailService mailService
     ) {
         this.eventRepository = eventRepository;
         this.locationRepository = locationRepository;
@@ -58,6 +63,8 @@ public class EventService implements IEventService {
         this.eventImageRepository = eventImageRepository;
         this.eventSectionRepository = eventSectionRepository;
         this.ticketRepository = ticketRepository;
+        this.ticketService = ticketService;
+        this.mailService = mailService;
     }
 
     private void validateEvent(EventDTO eventDTO, User loggedUser) throws ApsiValidationException {
@@ -231,7 +238,20 @@ public class EventService implements IEventService {
         var savedEvent = eventRepository.save(entity);
         savedEvent.setImages(new ArrayList<>());
 
-        processRelatedEntities(eventDTO, savedEvent);
+        if (!eventDTO.getTicketTypes().isEmpty()) {
+            var entities = eventDTO.getTicketTypes().stream()
+                .map(e -> DTOMapper.toEntity(e, savedEvent))
+                .toList();
+            var savedTickets = ticketTypeRepository.saveAll(entities);
+            savedEvent.setTicketTypes(savedTickets);
+        }
+
+        if (!eventDTO.getSections().isEmpty()) {
+            var entities = eventDTO.getSections().stream().map(e -> DTOMapper.toEntity(e, savedEvent)).toList();
+            var sections = eventSectionRepository.saveAll(entities);
+            savedEvent.setSections(sections);
+        }
+
         processEventImage(image, savedEvent);
         processSectionMap(sectionMap, savedEvent);
 
@@ -250,20 +270,67 @@ public class EventService implements IEventService {
         return entity;
     }
 
-    private void processRelatedEntities(EventDTO eventDTO, Event updatedEvent) {
-        if (!eventDTO.getTicketTypes().isEmpty()) {
-            var entities = eventDTO.getTicketTypes().stream()
-                .map(e -> DTOMapper.toEntity(e, updatedEvent))
-                .toList();
-            var savedTickets = ticketTypeRepository.saveAll(entities);
-            updatedEvent.setTicketTypes(savedTickets);
+    private void processRelatedEntities(EventDTO eventDTO, Event updatedEvent) throws ApsiValidationException {
+        List<Long> newTTIds = eventDTO.getTicketTypes().stream().map(tt -> tt.getId()).toList();
+        var ticketTypesToDelete = updatedEvent.getTicketTypes().stream().filter(s -> !newTTIds.contains(s.getId())).toList();
+
+        for (var tt : ticketTypesToDelete) {
+            var tickets = ticketService.getTicketsByTicketTypeId(tt.getId());
+            ticketService.deleteByTicketTypeId(tt.getId());
+            ticketTypeRepository.deleteById(tt.getId());
+    
+            for (var ticket : tickets) {
+                try {
+                    mailService.sendEmailTicketTypeDeleted(ticket);
+                }
+                catch (Exception e) { }
+            }
         }
 
-        if (!eventDTO.getSections().isEmpty()) {
-            var entities = eventDTO.getSections().stream().map(e -> DTOMapper.toEntity(e, updatedEvent)).toList();
-            var sections = eventSectionRepository.saveAll(entities);
-            updatedEvent.setSections(sections);
+        Integer i = 0;
+        for (var tt : eventDTO.getTicketTypes()){
+            var count = ticketTypeRepository.findTicketCount(tt.getId());
+            if (tt.getQuantityAvailable() < count){
+                throw new ApsiValidationException("Nie można zmniejszyć liczby dostępnych biletów poniżej kupionej liczby",
+                    "ticketTypes");
+            }
+            i++;
         }
+
+        var newTTs = eventDTO.getTicketTypes().stream().map(e -> DTOMapper.toEntity(e, updatedEvent)).toList();
+        var savedTicketTypes = ticketTypeRepository.saveAll(newTTs);
+        updatedEvent.setTicketTypes(savedTicketTypes);
+
+        List<Long> newSectionIds = eventDTO.getSections().stream().map(s -> s.getId()).toList();
+        var sectionToDelete = updatedEvent.getSections().stream().filter(s -> !newSectionIds.contains(s.getId())).toList();
+
+        for (var s : sectionToDelete) {
+            var tickets = Arrays.stream(ticketRepository.getBySectionId(s.getId())).map(DTOMapper::toDTO).toList();
+            ticketRepository.deleteAllById(tickets.stream().map(t -> t.getId()).toList());
+            eventSectionRepository.deleteById(s.getId());
+
+            for (var ticket : tickets) {
+                try {
+                    mailService.sendEmailSectionDeleted(ticket);
+                }
+                catch (Exception e) { }
+            }
+        }
+
+        i = 0;
+        for (var s : eventDTO.getSections()) {
+            var count = ticketRepository.countTicketsForSectionId(s.getId());
+            if (s.getCapacity() < count) {
+                throw new ApsiValidationException(
+                    "Nie można zmniejszyć liczby dostępnych biletów poniżej kupionej liczby",
+                    "sections");
+            }
+            i++;
+        }
+
+        var newSections = eventDTO.getSections().stream().map(e -> DTOMapper.toEntity(e, updatedEvent)).toList();
+        var savedSections = eventSectionRepository.saveAll(newSections);
+        updatedEvent.setSections(savedSections);
     }
 
     @Override

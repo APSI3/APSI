@@ -106,53 +106,53 @@ public class EventController {
         if (sectionMap != null && sectionMap.getSize() > MAX_IMAGE_SIZE)
             throw new ApsiValidationException("Zbyt duży obraz. Maksymalna wielkość to 500 KB", "sectionMap");
 
+        EventDTO eventDTO;
         try {
             var mapper = new ObjectMapper();
             mapper.registerModule(new JavaTimeModule());
-            var eventDTO = mapper.readValue(event, EventDTO.class);
-
-            validateSameId(id, eventDTO);
-            var oldEvent = eventService.getEventById(id);
-            if (oldEvent.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
-
-            var resp = eventService.replace(eventDTO, image, sectionMap);
-
-            boolean timeChanged = !Objects.equals(eventDTO.getStartTime(), oldEvent.get().getStartTime())
-                    || !Objects.equals(eventDTO.getEndTime(), oldEvent.get().getEndTime())
-                    || !Objects.equals(eventDTO.getStartDate(), oldEvent.get().getStartDate())
-                    || !Objects.equals(eventDTO.getEndDate(), oldEvent.get().getEndDate());
-
-            boolean locationChanged = eventDTO.getLocation().getId() != oldEvent.get().getLocation().getId();
-            var sections = resp.getSections();
-
-            if (timeChanged || locationChanged) {
-                try {
-                    List<TicketDTO> tickets = ticketService.getTicketsByEventId(oldEvent.get().getId());
-                    for (TicketDTO ticket : tickets) {
-                        ticket.setEvent(resp);
-                        var QRCode = QRCodeGenerator.generateQRCodeByte(ticket.toJSON());
-                        ticket.setQRCode(QRCodeGenerator.convertQRCodeByteToBase64(QRCode));
-
-                        var user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                        var section = sections.stream().filter(s -> s.getId().equals(ticket.getSectionId())).findFirst();
-                        var ticketData = mailService.getTicketContentParams(ticket, section.get().getName());
-                        var mailSubject = "Szczegóły wydarzenia, w którym uczestniczysz uległy zmianie";
-
-                        var mailStructure = new MailStructure(mailSubject, QRCode, ticketData);
-                        mailService.sendTicketMail(user.getEmail(), mailStructure);
-                    }
-                } catch (Exception ignored) {
-                    var a = "test";
-                    // we hope everyone gets an email but failing update when some got email and some didn't doesn't seem right
-                }
-            }
-
-            return ResponseEntity.ok(resp);
-        } catch (JsonProcessingException e){
+            eventDTO = mapper.readValue(event, EventDTO.class);
+        } catch (JsonProcessingException e) {
             throw new ApsiValidationException("Niepoprawne żądanie", "id");
         }
+
+        validateSameId(id, eventDTO);
+        var oldEvent = eventService.getEventById(id);
+        if (oldEvent.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        var resp = eventService.replace(eventDTO, image, sectionMap);
+
+        boolean timeChanged = !Objects.equals(eventDTO.getStartTime(), oldEvent.get().getStartTime())
+            || !Objects.equals(eventDTO.getEndTime(), oldEvent.get().getEndTime())
+            || !Objects.equals(eventDTO.getStartDate(), oldEvent.get().getStartDate())
+            || !Objects.equals(eventDTO.getEndDate(), oldEvent.get().getEndDate());
+
+        boolean locationChanged = eventDTO.getLocation().getId() != oldEvent.get().getLocation().getId();
+        var sections = resp.getSections();
+
+        if (timeChanged || locationChanged) {
+            try {
+                List<TicketDTO> tickets = ticketService.getTicketsByEventId(oldEvent.get().getId());
+                for (TicketDTO ticket : tickets) {
+                    ticket.setEvent(resp);
+                    var QRCode = QRCodeGenerator.generateQRCodeByte(ticket.toJSON());
+                    ticket.setQRCode(QRCodeGenerator.convertQRCodeByteToBase64(QRCode));
+
+                    var user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                    var section = sections.stream().filter(s -> s.getId().equals(ticket.getSectionId())).findFirst();
+                    var ticketData = mailService.getTicketContentParams(ticket, section.get().getName());
+                    var mailSubject = "Szczegóły wydarzenia, w którym uczestniczysz uległy zmianie";
+
+                    var mailStructure = new MailStructure(mailSubject, QRCode, ticketData);
+                    mailService.sendTicketMail(user.getEmail(), mailStructure);
+                }
+            } catch (Exception ignored) {
+                // we hope everyone gets an email but failing update when some got email and some didn't doesn't seem right
+            }
+        }
+
+        return ResponseEntity.ok(resp);
     }
 
     @DeleteMapping("/{id}")

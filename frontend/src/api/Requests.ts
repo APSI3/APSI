@@ -31,6 +31,7 @@ export type SimpleTicketTypeDTO = {
 }
 
 export type SimpleSectionDTO = {
+    id?: number, 
     name: string,
     capacity: number
 }
