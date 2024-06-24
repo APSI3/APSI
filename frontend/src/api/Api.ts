@@ -171,6 +171,11 @@ export class Api {
         return await getApiResponse<CreateFormRequest, FormDTO>("post", this.url + "/forms", request)
     }
 
+    static async GetForms(pageIndex: number) {
+        return await getApiResponse<undefined, PaginatedList<FormDTO>>("get",
+            this.url + `/forms?pageIndex=${pageIndex}`);
+    }
+
     static async Session() {
         const authKey = AuthHelpers.GetAuthKey();
         const isLoggedIn = await axios.post(this.url + "/user/session", {}, {

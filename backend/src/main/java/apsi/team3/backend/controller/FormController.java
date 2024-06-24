@@ -1,8 +1,10 @@
 package apsi.team3.backend.controller;
 
 import apsi.team3.backend.DTOs.FormDTO;
+import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.DTOs.Requests.CreateFormRequest;
 import apsi.team3.backend.exceptions.ApsiException;
+import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IFormService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,5 +23,13 @@ public class FormController {
     public ResponseEntity<FormDTO> create(@RequestBody CreateFormRequest request) throws ApsiException {
         var newForm = formService.create(request);
         return ResponseEntity.ok(newForm);
+    }
+
+    @GetMapping()
+    public ResponseEntity<PaginatedList<FormDTO>> getForms(
+            @RequestParam int pageIndex
+    ) throws ApsiValidationException {
+        var resp = formService.getForms(pageIndex);
+        return ResponseEntity.ok(resp);
     }
 }
