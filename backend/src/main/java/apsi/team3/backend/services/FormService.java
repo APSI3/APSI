@@ -11,13 +11,10 @@ import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IFormService;
 import apsi.team3.backend.model.Form;
 import apsi.team3.backend.model.FormStatus;
-import apsi.team3.backend.model.User;
-import apsi.team3.backend.model.UserType;
 import apsi.team3.backend.repository.FormRepository;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
@@ -83,7 +80,7 @@ public class FormService implements IFormService {
         mailService.sendMail(
             form.get().getEmail(),
             "Twoje zgłoszenie zostało zaakceptowane",
-            String.format("Admin pozytywnie rozpatrzył Twoje zgłoszenie i założył Ci konto na login %s", form.get().getLogin())
+            String.format("Administrator pozytywnie rozpatrzył Twoje zgłoszenie i założył Twoje konto na login %s", form.get().getLogin())
         );
 
         return user;
@@ -101,7 +98,7 @@ public class FormService implements IFormService {
         mailService.sendMail(
             form.get().getEmail(),
             "Twoje zgłoszenie zostało odrzucone",
-            String.format("Admin odrzucił Twoje zgłoszenie.\n\nPowód odrzucenia:\n%s", rejectionRequest.getCause())
+            String.format("Administrator odrzucił Twoje zgłoszenie.\n\nPowód odrzucenia:\n%s", rejectionRequest.getCause())
         );
     }
 }

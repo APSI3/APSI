@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import { FormDTO } from "../api/DTOs";
 import {Box, Fab, IconButton, Paper, Typography, Modal, Grid} from "@mui/material";
-import {RateReview, Close, Check} from "@mui/icons-material";
+import {Close, Check} from "@mui/icons-material";
 import CloseIcon from '@mui/icons-material/Close';
 import {modalStyle} from "./FormButton";
 import {Field, Form, Formik} from "formik";

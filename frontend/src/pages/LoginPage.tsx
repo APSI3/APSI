@@ -10,6 +10,7 @@ export default function LoginPage() {
     const [open, setOpen] = useState<boolean>(false);
     return <>
         <LoginForm/>
+        <br/>
         <p className="justify-content-center">Nie masz jeszcze konta? <a href={Paths.register}>Zarejestruj się</a></p>
         <>
             <p className="justify-content-center">Chesz założyć konto organizatora? <a href='#' onClick={() => setOpen(true)}>Złóż wniosek</a></p>

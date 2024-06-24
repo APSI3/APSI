@@ -56,7 +56,7 @@ const CreateOrganizerForm: React.FC<{ onClose: () => void }> = ({ onClose }) => 
 
             await Api.CreateForm(values as CreateFormRequest).then(res => {
                 if (res.success && res.data) {
-                    toastInfo("Udało się stworzyć wniosek. Wyślemy Ci maila, gdy admin rozpatrzy twoje zgłoszenie");
+                    toastInfo("Udało się stworzyć wniosek. Otrzymasz maila, gdy administrator rozpatrzy Twoje zgłoszenie");
                     onClose()
                 } else {
                     if (res.errors) {
