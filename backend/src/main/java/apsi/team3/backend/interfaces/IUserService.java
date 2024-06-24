@@ -7,6 +7,7 @@ import apsi.team3.backend.DTOs.Requests.LoginRequest;
 import apsi.team3.backend.DTOs.UserDTO;
 import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.exceptions.ApsiValidationException;
+import apsi.team3.backend.model.Form;
 import apsi.team3.backend.model.User;
 
 import java.util.Optional;
@@ -25,4 +26,6 @@ public interface IUserService {
     UserDTO createUser(CreateUserRequest request) throws ApsiException;
 
     int getUserLoginCount(String login);
+
+    UserDTO createOrganizer(Form form);
 }

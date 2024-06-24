@@ -9,6 +9,7 @@ import apsi.team3.backend.DTOs.UserDTO;
 import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IUserService;
+import apsi.team3.backend.model.Form;
 import apsi.team3.backend.model.User;
 import apsi.team3.backend.model.UserType;
 import apsi.team3.backend.repository.UserRepository;
@@ -113,6 +114,13 @@ public class UserService implements IUserService {
     @Override
     public int getUserLoginCount(String login) {
         return userRepository.getUserLoginCount(login);
+    }
+
+    @Override
+    public UserDTO createOrganizer(Form form) {
+        var entity = new User(form.getLogin(), form.getHash(), form.getSalt(), UserType.ORGANIZER, form.getEmail());
+        var newUser = userRepository.save(entity);
+        return DTOMapper.toDTO(newUser);
     }
 
     @Override

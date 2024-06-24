@@ -27,10 +27,11 @@ export default function ApplicationsPage() {
         setCurrentIdx(index);
         getApplications(index);
     }
+
     return <>
         <h2>Wnioski</h2>
         {applications.map(application => (
-            <ApplicationCard application={application} key={`application-${application.id}`} />
+            <ApplicationCard application={application} key={`application-${application.id}`}/>
         ))}
         <br />
         <Pages initialIndex={currentIdx} maxIndex={maxIdx} onPageChange={handlePageChange} />

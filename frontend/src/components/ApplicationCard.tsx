@@ -5,7 +5,7 @@ import {RateReview, Close, Check} from "@mui/icons-material";
 import CloseIcon from '@mui/icons-material/Close';
 import {modalStyle} from "./FormButton";
 import {Field, Form, Formik} from "formik";
-import {ValidationMessage} from "../helpers/FormHelpers";
+import {FormStatus, ValidationMessage} from "../helpers/FormHelpers";
 import { object, string } from "yup";
 import {toastDefaultError, toastInfo} from "../helpers/ToastHelpers";
 import {Api} from "../api/Api";
@@ -21,6 +21,7 @@ const ApplicationCard: React.FC<{ application: FormDTO }> = ({ application }) =>
         Api.AcceptApplication(application.id).then(res => {
             if (res.success && res.data) {
                 toastInfo("Udało się stworzyć organizatora " + res.data.login);
+                application.status = FormStatus.ACCEPTED;
                 setOpen(false);
             } else {
                 toastDefaultError();
@@ -37,6 +38,7 @@ const ApplicationCard: React.FC<{ application: FormDTO }> = ({ application }) =>
         Api.RejectApplication(rejectionRequest).then(res => {
             if (res.success && res.data) {
                 toastInfo("Wniosek został pomyślnie odrzucony");
+                application.status = FormStatus.REJECTED;
                 setOpen(false);
             } else {
                 toastDefaultError();
@@ -56,6 +58,7 @@ const ApplicationCard: React.FC<{ application: FormDTO }> = ({ application }) =>
                     <Typography variant="body1" >{application.email}</Typography>
                 </Grid>
             </Box>
+            {application.status === FormStatus.PENDING ? (
             <div style={{display: 'flex', justifyContent: 'center'}}>
                 <Fab size="small" style={{ marginRight: '1rem' }} color={"success"} onClick={handleAccept}><Check/></Fab>
                 <Fab size="small" style={{ marginRight: '1rem' }} color={"error"} onClick={() => setOpen(true)}><Close/></Fab>
@@ -91,7 +94,7 @@ const ApplicationCard: React.FC<{ application: FormDTO }> = ({ application }) =>
                             </Formik>
                         </Box>
                     </Modal>
-            </div>
+            </div>) : <Typography marginRight={'1rem'} color={application.status === FormStatus.ACCEPTED ? 'green' : 'red'}>{application.status}</Typography>}
         </Paper>
     );
 }

@@ -4,6 +4,7 @@ import apsi.team3.backend.DTOs.DTOMapper;
 import apsi.team3.backend.DTOs.FormDTO;
 import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.DTOs.Requests.CreateFormRequest;
+import apsi.team3.backend.DTOs.Requests.FormRejectionRequest;
 import apsi.team3.backend.DTOs.UserDTO;
 import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.exceptions.ApsiValidationException;
@@ -13,6 +14,7 @@ import apsi.team3.backend.model.FormStatus;
 import apsi.team3.backend.model.User;
 import apsi.team3.backend.model.UserType;
 import apsi.team3.backend.repository.FormRepository;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,10 +25,16 @@ import java.util.stream.Collectors;
 @Service
 public class FormService implements IFormService {
     private final FormRepository formRepository;
+    private final UserService userService;
+    private final MailService mailService;
     private final int PAGE_SIZE = 10;
 
     @Autowired
-    public FormService(FormRepository formRepository) { this.formRepository = formRepository; }
+    public FormService(FormRepository formRepository, UserService userService, MailService mailService) {
+        this.formRepository = formRepository;
+        this.userService = userService;
+        this.mailService = mailService;
+    }
 
     @Override
     public FormDTO create(CreateFormRequest request) throws ApsiException {
@@ -58,8 +66,42 @@ public class FormService implements IFormService {
     }
 
     @Override
-    public UserDTO accept(Long formId) {
+    public UserDTO accept(Long formId) throws ApsiValidationException, MessagingException {
         var form = formRepository.findById(formId);
-        return null;
+        if (!form.get().getStatus().equals(FormStatus.PENDING.toString())){
+            throw new ApsiValidationException("Wniosek został już przetworzony", "status");
+        }
+        var loginCount = userService.getUserLoginCount(form.get().getLogin());
+        if (loginCount > 0) {
+            throw new ApsiValidationException("Użytkownik o takim loginie już istnieje", "login");
+        }
+
+        form.get().setStatus(FormStatus.ACCEPTED.toString());
+        formRepository.save(form.get());
+        var user = userService.createOrganizer(form.get());
+
+        mailService.sendMail(
+            form.get().getEmail(),
+            "Twoje zgłoszenie zostało zaakceptowane",
+            String.format("Admin pozytywnie rozpatrzył Twoje zgłoszenie i założył Ci konto na login %s", form.get().getLogin())
+        );
+
+        return user;
+    }
+
+    @Override
+    public void reject(FormRejectionRequest rejectionRequest) throws MessagingException, ApsiValidationException {
+        var form = formRepository.findById(rejectionRequest.getId());
+        if (!form.get().getStatus().equals(FormStatus.PENDING.toString())){
+            throw new ApsiValidationException("Wniosek został już przetworzony", "status");
+        }
+        form.get().setStatus(FormStatus.REJECTED.toString());
+        formRepository.save(form.get());
+
+        mailService.sendMail(
+            form.get().getEmail(),
+            "Twoje zgłoszenie zostało odrzucone",
+            String.format("Admin odrzucił Twoje zgłoszenie.\n\nPowód odrzucenia:\n%s", rejectionRequest.getCause())
+        );
     }
 }

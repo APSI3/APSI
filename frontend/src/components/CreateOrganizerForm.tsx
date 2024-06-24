@@ -22,10 +22,8 @@ const initialValues: FormValues = {
 
 const checkLogin = async (value: string) => {
     if (!value) return false;
-    return true;
-    // todo: uncomment after APSI-34 is merged
-    // const response = await Api.GetUniqueLogin(value);
-    // return response.success && response.data;
+    const response = await Api.GetUniqueLogin(value);
+    return response.success && response.data;
 }
 
 const validationSchema = Yup.object({
@@ -107,7 +105,7 @@ const CreateOrganizerForm: React.FC<{ onClose: () => void }> = ({ onClose }) => 
                 <div className="form-group row justify-content-center">
                     <label className="col-6 col-md-3 col-form-label" />
                     <div className="col-6 col-md-6">
-                        <button className="btn btn-primary form-control" type="submit" disabled={isSubmitting}>Zarejestruj się</button>
+                        <button className="btn btn-primary form-control" type="submit" disabled={isSubmitting}>Złóż wniosek</button>
                     </div>
                 </div>
             </Form>

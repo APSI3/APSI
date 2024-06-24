@@ -181,7 +181,7 @@ export class Api {
     }
 
     static async RejectApplication(request: RejectionRequest) {
-        return await getApiResponse<RejectionRequest, boolean>("post", this.url + `/forms/reject`)
+        return await getApiResponse<RejectionRequest, boolean>("post", this.url + `/forms/reject`, request)
     }
 
     static async Session() {

@@ -279,12 +279,6 @@ public class EventService implements IEventService {
     @Override
     public List<ImageDTO> getImagesByEventId(Long id) {
         var images = eventImageRepository.findByEventId(id);
-
-        if (images.size() == 0)
-            return new byte[0];
-
-        // na razie spodziewamy się 1 obrazka per event
-        return images.get(0).getImage();
         return images.stream().map(i -> DTOMapper.toDTO(i)).toList();
     }
 }
