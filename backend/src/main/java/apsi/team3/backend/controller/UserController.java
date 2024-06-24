@@ -5,7 +5,6 @@ import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.DTOs.Requests.CreateUserRequest;
 import apsi.team3.backend.DTOs.Requests.LoginRequest;
 import apsi.team3.backend.DTOs.UserDTO;
-import apsi.team3.backend.DTOs.UserDTO;
 import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IUserService;
