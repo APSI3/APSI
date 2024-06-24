@@ -15,6 +15,28 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ initialFrom, initialT
         onDateChange(from, to);
     }, [from, onDateChange, to]);
 
+    const normalizeDate = (date: Date): Date => {
+        const normalizedDate = new Date(date);
+        normalizedDate.setHours(0, 0, 0, 0);
+        return normalizedDate;
+    };
+
+    const handleFromDateChange = (date: Date) => {
+        if (normalizeDate(date) <= normalizeDate(to)) {
+            setFrom(date);
+        } else {
+            alert("Data początkowa nie może być późniejsza niż końcowa.");
+        }
+    };
+
+    const handleToDateChange = (date: Date) => {
+        if (normalizeDate(date) >= normalizeDate(from)) {
+            setTo(date);
+        } else {
+            alert("Data końcowa nie może być wcześniejsza niż początkowa.");
+        }
+    };
+
     return (
         <>
             <h4>Data wydarzenia</h4>
@@ -25,7 +47,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ initialFrom, initialT
                         className="datepicker"
                         dateFormat={"dd/MM/yyyy"}
                         selected={from}
-                        onChange={date => setFrom(date ?? new Date())}
+                        onChange={date => handleFromDateChange(date ?? new Date())}
                     />
                 </div>
                 <label className="m-2">Do:</label>
@@ -34,7 +56,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ initialFrom, initialT
                         className="datepicker"
                         dateFormat={"dd/MM/yyyy"}
                         selected={to}
-                        onChange={date => setTo(date ?? new Date())}
+                        onChange={date => handleToDateChange(date ?? new Date())}
                     />
                 </div>
             </span>
