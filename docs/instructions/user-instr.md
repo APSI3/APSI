@@ -36,13 +36,3 @@ Użytkownik może dokonać zakupu na stronie danego wydarzenia (`/event/{id}`). 
 ![](../assets/user_instr_mytickets.png "Strona Twoje Bilety")
 
 Użytkownik może sprawdzić listę posiadanych biletów na stronie `Twoje Bilety` (`/tickets`). Po wejściu na stronę automatycznie wyświetlane są bilety na wydarzenia zaplanowane na najbliższy tydzień. Elementy listy wyświetlane są jako niezależne karty zawierające informacje o bilecie, takie jak opis samego wydarzenia, rodzaj biletu oraz kod QR. Lista biletów może być filtrowana poprzez zmianę zakresu dat wydarzeń.
-
-
-
-<span style="color:red">** TODO APSI-34**</span> 
-
-### Anulowanie biletu
-
-<span style="color:red">** TODO APSI-38**</span>
-
--->

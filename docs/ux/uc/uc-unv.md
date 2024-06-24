@@ -6,7 +6,7 @@ Przypisane przypadki użycia:
 
 | __Nazwa__              | Zalogowanie się na konto
 | :----------------------| :--------------------------  
-| __ID__                 | UC17                       
+| __ID__                 | UC15                       
 | __Aktor główny__       | Dowolny użytkownik systemu        
 | __Aktorzy__            | Dowolny użytkownik systemu      
 | __Priorytet__          | Główne                       

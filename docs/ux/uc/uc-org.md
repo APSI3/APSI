@@ -5,8 +5,7 @@ Przypisane przypadki użycia:
 - UC10: Edycja danych wydarzenia
 - UC11: Anulowanie wydarzenia
 - UC12: Przeglądanie statystyk wydarzenia
-- UC13: Stworzenie wniosku o usunięcie profilu
-- UC14: Dodanie lokalizacji
+- UC13: Dodanie lokalizacji
 
 <br>
 
@@ -100,26 +99,9 @@ Przypisane przypadki użycia:
 
 <br>
 
-| __Nazwa__              | Stworzenie wniosku o usunięcie profilu
-| :----------------------| :--------------------------  
-| __ID__                 | UC13                       
-| __Aktor główny__       | Organizator         
-| __Aktorzy__            | Organizator        
-| __Priorytet__          | Główne                       
-| __Opis__               | Podmiot składa wniosek o usunięcie konta z uprawnieniami organizatora wydarzeń                                   
-| __Cel__                | Złożenie wniosku o usunięcie konta                    
-| __Wyzwalanie__         | Organizator postanawia złożyć wniosek usunięcie konta w systemie                                              
-| __War. początkowe__    | <ul><li> Organizator posiada konto w systemie (UC15) </li><li> Organizator jest zalogowany (UC17) </li> </ul> 
-| __War. końcowe__       | <ul><li> Powstanie wniosku </li></ul>                                         
-| __W. funkcjonalne__    | <ul><li> System pozwala na utworzenie nowego wniosku </li></ul>    
-| __W. niefunkcjonalne__ | <ul><li> Proces składania wniosku musi być intuicyjny </li></ul>                                       
-| __Scenariusz__         | 1. Organizator przechodzi do widoku tworzenie wniosku, przy użyciu przycisku `Nowy wniosek` na pasku nawigacyjnym <br> 2. Użytkownik wybiera typ wniosku `Wniosek o usunięcie konta` i zatwierdza go. <br> 3. System wyświetla zapytanie o potwierdzenie intencji złożenia wniosku <br> 4. Organizator potwierdza intencję złożenia wniosku <br> 5. System rejestruje wniosek <br> 6. System informuje o złożeniu wniosku 
-
-<br>
-
 | __Nazwa__              |  Dodanie lokalizacji
 | :----------------------| :--------------------------  
-| __ID__                 | UC14                       
+| __ID__                 | UC13                       
 | __Aktor główny__       | Organizator         
 | __Aktorzy__            | Organizator        
 | __Priorytet__          | Główne                       

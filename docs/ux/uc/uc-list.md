@@ -15,14 +15,12 @@
 - UC10: Edycja danych wydarzenia
 - UC11: Anulowanie wydarzenia
 - UC12: Przeglądanie statystyk wydarzenia
-- UC13: Stworzenie wniosku o usunięcie profilu.
-- UC14: Dodanie lokalizacji
+- UC13: Dodanie lokalizacji
 
 **Administrator**
 
-- UC15: Rejestrowanie organizatora
-- UC16: Usuwanie organizatora
+- UC14: Rejestrowanie organizatora
 
 **Uniwersalne**
 
-- UC17: Zalogowanie się na konto
+- UC15: Zalogowanie się na konto
