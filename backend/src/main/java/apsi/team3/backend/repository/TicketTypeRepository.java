@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface TicketTypeRepository extends JpaRepository<TicketType, Long> {
@@ -14,5 +13,5 @@ public interface TicketTypeRepository extends JpaRepository<TicketType, Long> {
     List<TicketType> findByEventId(Long eventId);
 
     @Query(value = "SELECT COUNT(*) FROM tickets WHERE ticket_type_id=?", nativeQuery = true)
-    Optional<Long> findTicketCount(Long ticketTypeId);
+    Long findTicketCount(Long ticketTypeId);
 }

@@ -21,12 +21,10 @@ public class DTOMapper {
                 .build();
     }
 
-    public static Event toEntity(EventDTO event) {
+    public static Event toEntityWithNullCollections(EventDTO event) {
         var organizer = User.builder().id(event.getOrganizerId()).build();
-        var loc = event.getLocation() != null ? 
-            toEntity(event.getLocation()) :
-            null;
-    
+        var loc = event.getLocation() != null ? toEntity(event.getLocation()) : null;
+
         return Event.builder()
             .id(event.getId())
             .name(event.getName())
@@ -39,6 +37,28 @@ public class DTOMapper {
             .location(loc)
             .ticketTypes(null)
             .sections(null)
+            .images(null)
+            .build();
+    }
+
+    public static Event toEntity(EventDTO event) {
+        var organizer = User.builder().id(event.getOrganizerId()).build();
+        var loc = event.getLocation() != null ? 
+            toEntity(event.getLocation()) :
+            null;
+
+        return Event.builder()
+            .id(event.getId())
+            .name(event.getName())
+            .startDate(event.getStartDate())
+            .startTime(event.getStartTime())
+            .endDate(event.getEndDate())
+            .endTime(event.getEndTime())
+            .description(event.getDescription())
+            .organizer(organizer)
+            .location(loc)
+            .ticketTypes(event.getTicketTypes().stream().map(tt -> DTOMapper.toEntity(tt, null)).toList())
+            .sections(event.getSections().stream().map(s -> DTOMapper.toEntity(s, null)).toList())
             .images(null)
             .build();
     }
@@ -220,5 +240,9 @@ public class DTOMapper {
             .holderFirstName(ticketDTO.getHolderFirstName())
             .holderLastName(ticketDTO.getHolderLastName())
             .build();
+    }
+
+    public static FormDTO toDTO(Form form) {
+        return new FormDTO(form.getId(), form.getLogin(), form.getEmail(), form.getSalt(), form.getStatus());
     }
 }

@@ -30,7 +30,8 @@ const EventCard: React.FC<{ event: EventDTO, deleteEvent: () => void}> = ({ even
                     {getActionButtonsBasedOnRole(event, deleteEvent).map((button, index) =>
                         <React.Fragment key={index}>
                             {button}
-                        </React.Fragment>)}
+                        </React.Fragment>)
+                    }
                 </div>
             </div>
         </div>

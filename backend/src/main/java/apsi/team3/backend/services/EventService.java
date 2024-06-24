@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -43,17 +44,19 @@ public class EventService implements IEventService {
     private final EventImageRepository eventImageRepository;
     private final EventSectionRepository eventSectionRepository;
     private final TicketRepository ticketRepository;
+    private final TicketService ticketService;
     private final MailService mailService;
 
     @Autowired
     public EventService(
-            EventRepository eventRepository,
-            LocationRepository locationRepository,
-            TicketTypeRepository ticketTypeRepository,
-            EventImageRepository eventImageRepository,
-            EventSectionRepository eventSectionRepository,
-            TicketRepository ticketRepository,
-            MailService mailService
+        EventRepository eventRepository,
+        LocationRepository locationRepository,
+        TicketTypeRepository ticketTypeRepository,
+        EventImageRepository eventImageRepository,
+        EventSectionRepository eventSectionRepository,
+        TicketRepository ticketRepository,
+        TicketService ticketService,
+        MailService mailService
     ) {
         this.eventRepository = eventRepository;
         this.locationRepository = locationRepository;
@@ -61,6 +64,7 @@ public class EventService implements IEventService {
         this.eventImageRepository = eventImageRepository;
         this.eventSectionRepository = eventSectionRepository;
         this.ticketRepository = ticketRepository;
+        this.ticketService = ticketService;
         this.mailService = mailService;
     }
 
@@ -80,18 +84,23 @@ public class EventService implements IEventService {
                 throw new ApsiValidationException("Data początkowa nie może być wcześniejsza niż data końcowa", "startDate");
 
         if (eventDTO.getLocation() != null && eventDTO.getLocation().getId() != null) {
-            var location = locationRepository.findById(eventDTO.getLocation().getId());
-            if (location.isEmpty())
-                throw new ApsiValidationException("Wybrana lokalizacja nie istnieje", "location");
+            if (eventDTO.getLocation().getId() == 0){
+                eventDTO.setLocation(null);
+            }
+            else {
+                var location = locationRepository.findById(eventDTO.getLocation().getId());
+                if (location.isEmpty())
+                    throw new ApsiValidationException("Wybrana lokalizacja nie istnieje", "location");
 
-            if (eventDTO.getTicketTypes().size() > 0 &&
-                location.get().getCapacity() != 0 &&
-                location.get().getCapacity() < eventDTO.getTicketTypes().stream().mapToInt(TicketTypeDTO::getQuantityAvailable).sum()
-            )
-                throw new ApsiValidationException("Ilość biletów większa niż dopuszczalna w danej lokalizacji", "tickets");
+                if (eventDTO.getTicketTypes().size() > 0 &&
+                    location.get().getCapacity() != 0 &&
+                    location.get().getCapacity() < eventDTO.getTicketTypes().stream().mapToInt(TicketTypeDTO::getQuantityAvailable).sum()
+                )
+                    throw new ApsiValidationException("Ilość biletów większa niż dopuszczalna w danej lokalizacji", "tickets");
 
-            if (!Objects.equals(location.get().getCreator().getId(), loggedUser.getId()))
-                throw new ApsiValidationException("Lokalizacja niedostępna", "location");
+                if (!Objects.equals(location.get().getCreator().getId(), loggedUser.getId()))
+                    throw new ApsiValidationException("Lokalizacja niedostępna", "location");
+            }
         }
 
         if (eventDTO.getTicketTypes().size() < 1)
@@ -156,11 +165,12 @@ public class EventService implements IEventService {
         var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         validateEvent(eventDTO, loggedUser);
 
-        var entity = prepareEventEntity(eventDTO, loggedUser);
+        var entity = DTOMapper.toEntity(eventDTO);
+        entity = prepareEventEntity(entity, loggedUser);
         entity.setId(existingEvent.getId());  // Ensure the ID is retained
         entity.setImages(existingEvent.getImages()); // Retain existing images list
 
-        processRelatedEntities(eventDTO, entity);
+        processRelatedEntities(eventDTO, entity, existingEvent);
         processEventImage(image, entity);
         processSectionMap(sectionMap, entity);
 
@@ -231,20 +241,33 @@ public class EventService implements IEventService {
         var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         validateEvent(eventDTO, loggedUser);
 
-        var entity = prepareEventEntity(eventDTO, loggedUser);
+        var entity = DTOMapper.toEntityWithNullCollections(eventDTO);
+        entity = prepareEventEntity(entity, loggedUser);
 
         var savedEvent = eventRepository.save(entity);
         savedEvent.setImages(new ArrayList<>());
 
-        processRelatedEntities(eventDTO, savedEvent);
+        if (!eventDTO.getTicketTypes().isEmpty()) {
+            var entities = eventDTO.getTicketTypes().stream()
+                .map(e -> DTOMapper.toEntity(e, savedEvent))
+                .toList();
+            var savedTickets = ticketTypeRepository.saveAll(entities);
+            savedEvent.setTicketTypes(savedTickets);
+        }
+
+        if (!eventDTO.getSections().isEmpty()) {
+            var entities = eventDTO.getSections().stream().map(e -> DTOMapper.toEntity(e, savedEvent)).toList();
+            var sections = eventSectionRepository.saveAll(entities);
+            savedEvent.setSections(sections);
+        }
+
         processEventImage(image, savedEvent);
         processSectionMap(sectionMap, savedEvent);
 
         return DTOMapper.toDTO(savedEvent);
     }
 
-    private Event prepareEventEntity(EventDTO eventDTO, User loggedUser) throws ApsiValidationException {
-        var entity = DTOMapper.toEntity(eventDTO);
+    private Event prepareEventEntity(Event entity, User loggedUser) throws ApsiValidationException {
         entity.setOrganizer(loggedUser);
 
         if (entity.getLocation() != null) {
@@ -255,20 +278,66 @@ public class EventService implements IEventService {
         return entity;
     }
 
-    private void processRelatedEntities(EventDTO eventDTO, Event updatedEvent) {
-        if (!eventDTO.getTicketTypes().isEmpty()) {
-            var entities = eventDTO.getTicketTypes().stream()
-                .map(e -> DTOMapper.toEntity(e, updatedEvent))
-                .toList();
-            var savedTickets = ticketTypeRepository.saveAll(entities);
-            updatedEvent.setTicketTypes(savedTickets);
+    private void processRelatedEntities(EventDTO eventDTO, Event newEvent, Event oldEvent) throws ApsiValidationException {
+        List<Long> newTTIds = eventDTO.getTicketTypes().stream().map(tt -> tt.getId()).toList();
+        var ticketTypesToDelete = oldEvent.getTicketTypes().stream().filter(s -> !newTTIds.contains(s.getId())).toList();
+
+        for (var tt : ticketTypesToDelete) {
+            var tickets = ticketService.getTicketsByTicketTypeId(tt.getId());
+            ticketService.deleteByTicketTypeId(tt.getId());
+            ticketTypeRepository.deleteById(tt.getId());
+    
+            for (var ticket : tickets) {
+                try {
+                    mailService.sendEmailTicketTypeDeleted(ticket);
+                }
+                catch (Exception e) { }
+            }
         }
 
-        if (!eventDTO.getSections().isEmpty()) {
-            var entities = eventDTO.getSections().stream().map(e -> DTOMapper.toEntity(e, updatedEvent)).toList();
-            var sections = eventSectionRepository.saveAll(entities);
-            updatedEvent.setSections(sections);
+        for (var tt : eventDTO.getTicketTypes()){
+            if (tt.getId() == null) continue;
+
+            var count = ticketTypeRepository.findTicketCount(tt.getId());
+            if (tt.getQuantityAvailable() < count){
+                throw new ApsiValidationException("Nie można zmniejszyć liczby dostępnych biletów poniżej kupionej liczby",
+                    "ticketTypes");
+            }
         }
+
+        var newTTs = eventDTO.getTicketTypes().stream().map(e -> DTOMapper.toEntity(e, newEvent)).toList();
+        var savedTicketTypes = ticketTypeRepository.saveAll(newTTs);
+        newEvent.setTicketTypes(savedTicketTypes);
+
+        List<Long> newSectionIds = eventDTO.getSections().stream().map(s -> s.getId()).toList();
+        var sectionToDelete = oldEvent.getSections().stream().filter(s -> !newSectionIds.contains(s.getId())).toList();
+
+        for (var s : sectionToDelete) {
+            var tickets = Arrays.stream(ticketRepository.getBySectionId(s.getId())).map(DTOMapper::toDTO).toList();
+            ticketRepository.deleteAllById(tickets.stream().map(t -> t.getId()).toList());
+            eventSectionRepository.deleteById(s.getId());
+
+            for (var ticket : tickets) {
+                try {
+                    mailService.sendEmailSectionDeleted(ticket);
+                }
+                catch (Exception e) { }
+            }
+        }
+
+        for (var s : eventDTO.getSections()) {
+            if (s.getId() == null) continue;
+            var count = ticketRepository.countTicketsForSectionId(s.getId());
+            if (s.getCapacity() < count) {
+                throw new ApsiValidationException(
+                    "Nie można zmniejszyć liczby dostępnych biletów poniżej kupionej liczby",
+                    "sections");
+            }
+        }
+
+        var newSections = eventDTO.getSections().stream().map(e -> DTOMapper.toEntity(e, newEvent)).toList();
+        var savedSections = eventSectionRepository.saveAll(newSections);
+        newEvent.setSections(savedSections);
     }
 
     @Override

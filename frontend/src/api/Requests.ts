@@ -31,6 +31,7 @@ export type SimpleTicketTypeDTO = {
 }
 
 export type SimpleSectionDTO = {
+    id?: number, 
     name: string,
     capacity: number
 }
@@ -57,4 +58,15 @@ export type CreateUserRequest = {
     login: string,
     email: string,
     password: string,
+}
+
+export type CreateFormRequest = {
+    login: string,
+    email: string,
+    password: string
+}
+
+export type RejectionRequest = {
+    id: number,
+    cause: string,
 }

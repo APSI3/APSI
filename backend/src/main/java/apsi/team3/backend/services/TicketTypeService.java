@@ -28,7 +28,7 @@ public class TicketTypeService implements ITicketTypeService {
     }
 
     @Override
-    public Optional<Long> getTicketCountByTypeId(Long id) {
+    public Long getTicketCountByTypeId(Long id) {
         return ticketTypeRepository.findTicketCount(id);
     }
 
@@ -44,14 +44,6 @@ public class TicketTypeService implements ITicketTypeService {
     public TicketTypeDTO create(TicketTypeDTO ticketTypeDTO) throws ApsiValidationException {
         var ticketType = DTOMapper.toEntity(ticketTypeDTO, null);
         var saved = ticketTypeRepository.save(ticketType);
-        return DTOMapper.toDTO(saved);
-    }
-
-    @Override
-    public TicketTypeDTO replace(TicketTypeDTO ticketType) {
-        var entity = DTOMapper.toEntity(ticketType, null);
-        var saved = ticketTypeRepository.save(entity);
-
         return DTOMapper.toDTO(saved);
     }
 

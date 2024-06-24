@@ -7,11 +7,13 @@ import {useEffect} from "react";
 export default function MainPage() {
     const navigate = useNavigate();
     useEffect(() => {
-        const isPerson = AuthHelpers.getRole() === UserTypes.PERSON;
-        if (isPerson) {
-            return navigate(Paths.tickets);
-        } else {
-            return navigate(Paths.events)
+        switch (AuthHelpers.getRole()) {
+            case UserTypes.PERSON:
+                return navigate(Paths.tickets);
+            case UserTypes.ORGANIZER:
+                return navigate(Paths.events);
+            case UserTypes.SUPERADMIN:
+                return navigate(Paths.applications);
         }
     }, [navigate]);
     return <></>
