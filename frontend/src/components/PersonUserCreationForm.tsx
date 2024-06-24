@@ -28,11 +28,15 @@ const checkLogin = async (value: string) => {
 
 const validationSchema = Yup.object({
     login: Yup.string()
-        .required('Należy podać login'),
+        .required('Należy podać login')
+        .max(64, "Zbyt długi login")
+        .min(4, "Zbyt krótki login"),
     email: Yup.string()
         .email('Niepoprawny format adresu email')
+        .max(255, "Zbyt długi email")
         .required('Należy podać email'),
     password: Yup.string()
+        .max(128, "Zbyt długie hasło")
         .required('Należy podać hasło'),
     repeatedPassword: Yup.string()
         .oneOf([Yup.ref('password')], 'Hasła muszą być identyczne')
