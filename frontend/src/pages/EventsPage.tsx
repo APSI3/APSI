@@ -48,7 +48,7 @@ export default function EventsPage() {
             <DateRangePicker initialFrom={initialFrom} initialTo={toDate} onDateChange={handleDateChange} />
             <br />
             {events.map(event => (
-                <EventCard key={`event-${event.id}`} event={event} />
+                <EventCard key={`event-${event.id}`} event={event} deleteEvent={() => { getEvents(initialFrom, toDate, currentIdx) }}/>
             ))}
             <br />
             <Pages initialIndex={currentIdx} maxIndex={maxIdx} onPageChange={handlePageChange} />

@@ -5,6 +5,7 @@ import apsi.team3.backend.DTOs.EventDTO;
 import apsi.team3.backend.DTOs.ImageDTO;
 import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.DTOs.TicketTypeDTO;
+import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IEventService;
 import apsi.team3.backend.model.Event;
@@ -42,15 +43,17 @@ public class EventService implements IEventService {
     private final EventImageRepository eventImageRepository;
     private final EventSectionRepository eventSectionRepository;
     private final TicketRepository ticketRepository;
+    private final MailService mailService;
 
     @Autowired
     public EventService(
-        EventRepository eventRepository,
-        LocationRepository locationRepository,
-        TicketTypeRepository ticketTypeRepository,
-        EventImageRepository eventImageRepository,
-        EventSectionRepository eventSectionRepository,
-        TicketRepository ticketRepository
+            EventRepository eventRepository,
+            LocationRepository locationRepository,
+            TicketTypeRepository ticketTypeRepository,
+            EventImageRepository eventImageRepository,
+            EventSectionRepository eventSectionRepository,
+            TicketRepository ticketRepository,
+            MailService mailService
     ) {
         this.eventRepository = eventRepository;
         this.locationRepository = locationRepository;
@@ -58,6 +61,7 @@ public class EventService implements IEventService {
         this.eventImageRepository = eventImageRepository;
         this.eventSectionRepository = eventSectionRepository;
         this.ticketRepository = ticketRepository;
+        this.mailService = mailService;
     }
 
     private void validateEvent(EventDTO eventDTO, User loggedUser) throws ApsiValidationException {
@@ -132,6 +136,7 @@ public class EventService implements IEventService {
 
         var items = page
             .stream()
+            .filter(e -> !e.isCanceled())
             .map(DTOMapper::toDTO)
             .collect(Collectors.toList());
 
@@ -279,12 +284,22 @@ public class EventService implements IEventService {
     @Override
     public List<ImageDTO> getImagesByEventId(Long id) {
         var images = eventImageRepository.findByEventId(id);
-
-        if (images.size() == 0)
-            return new byte[0];
-
-        // na razie spodziewamy się 1 obrazka per event
-        return images.get(0).getImage();
         return images.stream().map(i -> DTOMapper.toDTO(i)).toList();
+    }
+
+    @Override
+    public Optional<EventDTO> cancel(Long id) throws ApsiException {
+        var eventOptional = eventRepository.findById(id);
+        if (eventOptional.isEmpty()) {
+            return Optional.empty();
+        }
+        var event = eventOptional.get();
+        event.setCanceled(true);
+        eventRepository.save(event);
+        var tickets = ticketRepository.getTicketsByEventId(event.getId());
+        for (var ticket : tickets) {
+            mailService.sendEventDeletedEmail(DTOMapper.toDTO(ticket));
+        }
+        return Optional.of(DTOMapper.toDTO(event));
     }
 }

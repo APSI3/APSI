@@ -99,7 +99,24 @@ public class MailService {
                 """, event.getName(), ticket.getTicketType().getPrice(), eventUrl);
         try {
             sendMail(user.getEmail(), mailSubject, message);
-        } catch (MessagingException  e) {
+        } catch (MessagingException e) {
+            throw new ApsiException("Nie udało się wysłać maila ze zwrotem pieniędzy");
+        }
+    }
+
+    public void sendEventDeletedEmail(TicketDTO ticket) throws ApsiException {
+        var user = ticket.getHolder();
+        var event = ticket.getEvent();
+        String eventUrl = String.format("localhost:3000/event/%s", event.getId());
+        String mailSubject = "Wydarzenie, na które kupiłeś bilet zostało anulowane";
+        String message = String.format("""
+                Przepraszamy,
+                Organizator wydarzenia %s postanowił je anulować. Wysłaliśmy %s zł na Twoje konto.
+                Za utrudnienia przepraszamy.
+                """, event.getName(), ticket.getTicketType().getPrice());
+        try {
+            sendMail(user.getEmail(), mailSubject, message);
+        } catch (MessagingException e) {
             throw new ApsiException("Nie udało się wysłać maila ze zwrotem pieniędzy");
         }
     }

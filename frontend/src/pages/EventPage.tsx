@@ -9,6 +9,7 @@ import { toastError } from "../helpers/ToastHelpers";
 import EventSectionItem from "../components/EventSectionItem";
 import { getExtendedLocationString } from "../helpers/FormHelpers";
 import EditButton from "../components/EventCardButtons/EditButton";
+import DeleteButton from "../components/EventCardButtons/DeleteButton";
 import {AuthHelpers, UserTypes} from "../helpers/AuthHelpers";
 
 export default function EventPage() {
@@ -143,9 +144,12 @@ export default function EventPage() {
                     </Typography>
                     {event.sections.map(s => <EventSectionItem key={s.id} section={s} />)}
                 </Grid>
-                {/*Edit button*/}
-                {AuthHelpers.getRole() !== UserTypes.PERSON && <Grid container className="mt-3" style={{ justifyContent: 'right' }}>
-                    <EditButton event={event} />
+                {/*Edit & delete buttons*/}
+                    {AuthHelpers.getRole() !== UserTypes.PERSON && <Grid container className="mt-3" style={{ justifyContent: 'right' }}>
+                    <div className="d-flex justify-content-end gap-1">
+                        <EditButton event={event} />
+                        <DeleteButton event={event} callback={() => {}}/>
+                    </div>
                 </Grid>}
             </Grid>
         </Paper>
