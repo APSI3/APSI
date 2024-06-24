@@ -42,6 +42,8 @@ public class Config {
         return http.csrf(AbstractHttpConfigurer::disable)
             .cors(Customizer.withDefaults())
             .authorizeHttpRequests(r -> r.requestMatchers("/user/login").anonymous())
+            .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.GET, "/user/check_login").anonymous())
+            .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.POST, "/user").anonymous())
             .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.POST, "/events").hasAnyAuthority(UserType.SUPERADMIN.toString(), UserType.ORGANIZER.toString()))
             .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.PUT, "/events**").hasAnyAuthority(UserType.SUPERADMIN.toString(), UserType.ORGANIZER.toString()))
             .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.DELETE, "/events**").hasAnyAuthority(UserType.SUPERADMIN.toString(), UserType.ORGANIZER.toString()))

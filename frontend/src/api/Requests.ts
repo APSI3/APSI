@@ -53,3 +53,9 @@ export type CreateTicketRequest = {
     holderFirstName: string,
     holderLastName: string,
 }
+
+export type CreateUserRequest = {
+    login: string,
+    email: string,
+    password: string,
+}
