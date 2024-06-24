@@ -163,7 +163,8 @@ public class EventService implements IEventService {
         var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         validateEvent(eventDTO, loggedUser);
 
-        var entity = prepareEventEntity(eventDTO, loggedUser);
+        var entity = DTOMapper.toEntity(eventDTO);
+        entity = prepareEventEntity(entity, loggedUser);
         entity.setId(existingEvent.getId());  // Ensure the ID is retained
         entity.setImages(existingEvent.getImages()); // Retain existing images list
 
@@ -238,7 +239,8 @@ public class EventService implements IEventService {
         var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         validateEvent(eventDTO, loggedUser);
 
-        var entity = prepareEventEntity(eventDTO, loggedUser);
+        var entity = DTOMapper.toEntityWithNullCollections(eventDTO);
+        entity = prepareEventEntity(entity, loggedUser);
 
         var savedEvent = eventRepository.save(entity);
         savedEvent.setImages(new ArrayList<>());
@@ -263,8 +265,7 @@ public class EventService implements IEventService {
         return DTOMapper.toDTO(savedEvent);
     }
 
-    private Event prepareEventEntity(EventDTO eventDTO, User loggedUser) throws ApsiValidationException {
-        var entity = DTOMapper.toEntity(eventDTO);
+    private Event prepareEventEntity(Event entity, User loggedUser) throws ApsiValidationException {
         entity.setOrganizer(loggedUser);
 
         if (entity.getLocation() != null) {

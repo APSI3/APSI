@@ -21,12 +21,32 @@ public class DTOMapper {
                 .build();
     }
 
+    public static Event toEntityWithNullCollections(EventDTO event) {
+        var organizer = User.builder().id(event.getOrganizerId()).build();
+        var loc = event.getLocation() != null ? toEntity(event.getLocation()) : null;
+
+        return Event.builder()
+            .id(event.getId())
+            .name(event.getName())
+            .startDate(event.getStartDate())
+            .startTime(event.getStartTime())
+            .endDate(event.getEndDate())
+            .endTime(event.getEndTime())
+            .description(event.getDescription())
+            .organizer(organizer)
+            .location(loc)
+            .ticketTypes(null)
+            .sections(null)
+            .images(null)
+            .build();
+    }
+
     public static Event toEntity(EventDTO event) {
         var organizer = User.builder().id(event.getOrganizerId()).build();
         var loc = event.getLocation() != null ? 
             toEntity(event.getLocation()) :
             null;
-    
+
         return Event.builder()
             .id(event.getId())
             .name(event.getName())

@@ -5,21 +5,24 @@ import {EventDTO, TicketTypeDTO} from "../../api/DTOs";
 import {Api} from "../../api/Api";
 import {toastDefaultError, toastInfo} from "../../helpers/ToastHelpers";
 
+export const isTTDeletionEnabledForEvent = (event: EventDTO) => isTTDeletionEnabled(event.startDate, event.ticketTypes.length);
+
+export const isTTDeletionEnabled = (date: Date, ttLength: number) => {
+    // we don't allow to delete ticket types for the events that have already started (on the date of the start of the event) and if this is the only type of ticket
+    const currentDate = new Date();
+    const eventStartDate = new Date(date);
+
+    currentDate.setHours(0, 0, 0, 0);
+    eventStartDate.setHours(0, 0, 0, 0);
+
+    return eventStartDate <= currentDate || ttLength <= 1
+}
+
 const DeleteButton: React.FC<{ ticketType: TicketTypeDTO, event: EventDTO, onDelete: (id: number) => void }> = ({ ticketType, event, onDelete })  => {
-    const shouldBeDisabled = (ev: EventDTO) => {
-        // we don't allow to delete ticket types for the events that have already started (on the date of the start of the event) and if this is the only type of ticket
-        const currentDate = new Date();
-        const eventStartDate = new Date(ev.startDate);
-
-        currentDate.setHours(0, 0, 0, 0);
-        eventStartDate.setHours(0, 0, 0, 0);
-
-        return eventStartDate <= currentDate || ev.ticketTypes.length <= 1
-    }
-    const [disabled, setDisabled] = useState(shouldBeDisabled(event));
+    const [disabled, setDisabled] = useState(isTTDeletionEnabledForEvent(event));
 
     useEffect(() => {
-        setDisabled(shouldBeDisabled(event));
+        setDisabled(isTTDeletionEnabledForEvent(event));
     }, [event])
 
     const handleClick = async () => {

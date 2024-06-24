@@ -9,6 +9,7 @@ import { Grid, Paper } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { LocationDTO } from "../api/DTOs";
 import {CreateEventRequest, UpdateEventRequest} from "../api/Requests";
+import { isTTDeletionEnabled } from "./TicketCardButtons/DeleteButton";
 
 const defaultInitialValues: UpdateEventRequest = {
     id: 0,
@@ -295,7 +296,9 @@ const EventForm: React.FC<{
                                             <ValidationMessage fieldName={name + ".quantityAvailable"} />
                                         </Grid>
                                     </Grid>
-                                    <button className="btn btn-danger" type="button" onClick={() => helpers.remove(idx)}>
+                                    <button disabled={isTTDeletionEnabled(values.startDate, values.ticketTypes.length) && !!tt.id}
+                                        className="btn btn-danger" type="button" onClick={() => helpers.remove(idx)}
+                                    >
                                         Usuń
                                     </button>
                                 </Paper>}
