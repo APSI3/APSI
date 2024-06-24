@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import apsi.team3.backend.model.Ticket;
 
 import java.util.List;
-import java.util.Optional;
 import java.time.LocalDate;
 
 import org.springframework.data.domain.Pageable;
@@ -22,8 +21,8 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     @Query("SELECT new apsi.team3.backend.model.SectionCountResult(section.id section_id, COUNT(*) count) FROM ticket WHERE ticketType.event.Id = :eventId GROUP BY section.id")
     public List<SectionCountResult> countTicketsBySectionForEvent(@Param("eventId") long eventId);
 
-    @Query("SELECT COUNT(*) FROM ticket WHERE section.id = :sectionId")
-    public Optional<Long> countTicketsForSectionId(@Param("sectionId") long sectionId);
+    @Query(value = "SELECT COUNT(*) FROM tickets WHERE section_id = :sectionId", nativeQuery = true)
+    public Long countTicketsForSectionId(@Param("sectionId") long sectionId);
 
     @Query(value = "SELECT t.id as id, ticket_type_id, holder_id, holder_first_name, holder_last_name, purchase_date, e.id as eventId, e.name as eventName, e.start_date as eventStartDate, e.start_time as eventStartTime, e.end_date as eventEndDate, e.end_time as eventEndTime, tt.name as ticketTypeName, price, section_id " +
             "FROM tickets t " +
@@ -39,6 +38,9 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     @Query(value = "SELECT t.id as id, ticket_type_id, holder_id, holder_first_name, holder_last_name, purchase_date, tt.name as ticketTypeName, price, section_id FROM tickets t LEFT JOIN ticket_types tt ON (t.ticket_type_id=tt.id) WHERE ticket_type_id = :ticketTypeId", nativeQuery = true)
     Ticket[] getByTicketTypeId(Long ticketTypeId);
+
+    @Query(value = "SELECT t.id as id, ticket_type_id, holder_id, holder_first_name, holder_last_name, purchase_date, tt.name as ticketTypeName, price, section_id FROM tickets t LEFT JOIN ticket_types tt ON (t.ticket_type_id=tt.id) WHERE section_id = :sectionId", nativeQuery = true)
+    Ticket[] getBySectionId(Long sectionId);
 
     @Modifying
     @Transactional

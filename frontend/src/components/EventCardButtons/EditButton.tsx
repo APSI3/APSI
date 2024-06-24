@@ -41,12 +41,12 @@ const EditButton: React.FC<{ event: EventDTO }> = (
         </Fab>
         <Modal
             open={open}
-            onClose={handleClose}
+            onClose={() => setOpen(false)}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
             <Box sx={modalStyle}>
-                <IconButton aria-label="close" onClick={handleClose} style={{ position: 'absolute', top: 10, right: 10 }}>
+                <IconButton aria-label="close" onClick={() => setOpen(false)} style={{ position: 'absolute', top: 10, right: 10 }}>
                     <CloseIcon />
                 </IconButton>
                 {<EventForm

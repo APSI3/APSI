@@ -30,7 +30,8 @@ const EventCard: React.FC<{ event: EventDTO }> = ({ event }) => {
                     {getActionButtonsBasedOnRole(event).map((button, index) =>
                         <React.Fragment key={index}>
                             {button}
-                        </React.Fragment>)}
+                        </React.Fragment>)
+                    }
                 </div>
             </div>
         </div>

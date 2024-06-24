@@ -37,8 +37,8 @@ public class TicketTypeController {
 
     @GetMapping("/{id}/count")
     public ResponseEntity<Long> getTicketCountByTypeId(@PathVariable("id") Long id) {
-        Optional<Long> ticketCount = ticketTypeService.getTicketCountByTypeId(id);
-        return ticketCount.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        var ticketCount = ticketTypeService.getTicketCountByTypeId(id);
+        return ResponseEntity.ok(ticketCount);
     }
 
     @GetMapping("/event/{id}")
@@ -53,15 +53,6 @@ public class TicketTypeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(resp);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<TicketTypeDTO> replaceTicketType(@PathVariable("id") Long id, @RequestBody TicketTypeDTO ticketTypeDTO) throws ApsiValidationException {
-        if (ticketTypeService.notExists(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        var resp = ticketTypeService.replace(ticketTypeDTO);
-        return ResponseEntity.ok(resp);
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTicketType(@PathVariable("id") Long id) throws ApsiException {
         var ticketType = ticketTypeService.getTicketTypeById(id);
@@ -73,7 +64,7 @@ public class TicketTypeController {
         ticketTypeService.delete(id);
 
         for (TicketDTO ticket : tickets) {
-            mailService.sendTicketDeletedEmail(ticket);
+            mailService.sendEmailTicketTypeDeleted(ticket);
         }
         return ResponseEntity.noContent().build();
     }

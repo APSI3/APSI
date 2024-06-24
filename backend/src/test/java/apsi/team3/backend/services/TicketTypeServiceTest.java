@@ -61,15 +61,6 @@ public class TicketTypeServiceTest {
     }
 
     @Test
-    public void testReplaceReturnsReplacedTicketTypeObject() {
-        TicketTypeDTO ticketTypeDTO = new TicketTypeDTO(1L, 1L, "name", BigDecimal.valueOf(100L), 10);
-        TicketType ticketType = DTOMapper.toEntity(ticketTypeDTO, null);
-        when(ticketTypeRepository.save(any())).thenReturn(ticketType);
-        assertEquals(ticketTypeService.replace(ticketTypeDTO), ticketTypeDTO);
-        verify(ticketTypeRepository).save(ArgumentMatchers.refEq(ticketType));
-    }
-
-    @Test
     public void testDeleteCallsDeleteByIdRepositoryMethod() throws ApsiException {
         Event event = new Event();
         TicketType ticketType = new TicketType();
