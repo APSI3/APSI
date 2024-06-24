@@ -1,10 +1,13 @@
 package apsi.team3.backend.controller;
 
 import apsi.team3.backend.DTOs.LoggedUserDTO;
+import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.DTOs.Requests.LoginRequest;
+import apsi.team3.backend.DTOs.UserDTO;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,5 +31,17 @@ public class UserController {
     @PostMapping("/login")
     public LoggedUserDTO Login(@RequestBody LoginRequest request) throws ApsiValidationException {
         return userService.login(request);
+    }
+
+    @GetMapping
+    public ResponseEntity<PaginatedList<UserDTO>> getUsers(@RequestParam int pageIndex) throws ApsiValidationException {
+        var allUsers = userService.getUsers(pageIndex);
+        return ResponseEntity.ok(allUsers);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 }

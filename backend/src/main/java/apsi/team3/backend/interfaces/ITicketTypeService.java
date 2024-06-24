@@ -1,6 +1,7 @@
 package apsi.team3.backend.interfaces;
 
 import apsi.team3.backend.DTOs.TicketTypeDTO;
+import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 
 import java.util.List;
@@ -12,6 +13,6 @@ public interface ITicketTypeService {
     List<TicketTypeDTO> getTicketTypesByEventId(Long eventId);
     TicketTypeDTO create(TicketTypeDTO ticketType) throws ApsiValidationException;
     TicketTypeDTO replace(TicketTypeDTO ticketType) throws ApsiValidationException;
-    void delete(Long id);
+    void delete(Long id) throws ApsiException;
     boolean notExists(Long id);
 }

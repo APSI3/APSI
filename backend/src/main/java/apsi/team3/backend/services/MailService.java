@@ -1,5 +1,7 @@
 package apsi.team3.backend.services;
 
+import apsi.team3.backend.DTOs.TicketDTO;
+import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.model.MailStructure;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,19 +11,17 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
-import com.google.zxing.client.j2se.MatrixToImageWriter;
-import com.google.zxing.qrcode.QRCodeWriter;
-
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static apsi.team3.backend.helpers.MailGenerator.generateTicket;
+import static apsi.team3.backend.helpers.MailGenerator.getDateString;
+import static apsi.team3.backend.helpers.MailGenerator.getTimeString;
 
 @Service
 public class MailService {
-
     @Autowired
     private JavaMailSender mailSender;
 
@@ -29,23 +29,13 @@ public class MailService {
     private String fromMail;
 
     @Async
-    public void sendMail(String mail, MailStructure mailStructure) throws MessagingException, IOException, WriterException {
+    public void sendTicketMail(String mail, MailStructure mailStructure) throws MessagingException, IOException, WriterException {
         var message = mailSender.createMimeMessage();
         var helper = new MimeMessageHelper(message, true, "UTF-8");
         helper.setFrom(fromMail);
         helper.setSubject(mailStructure.getSubject());
 
-        var width = 300;
-        var height = 300;
-        var format = "png";
-        var outputStream = new ByteArrayOutputStream();
-
-        // Configure QR code parameters
-        var qrWriter = new QRCodeWriter();
-        var bitMatrix = qrWriter.encode(mailStructure.getQRCodeContent(), BarcodeFormat.QR_CODE, width, height);
-        // Write QR code to output stream
-        MatrixToImageWriter.writeToStream(bitMatrix, format, outputStream);
-        var byteResource = new ByteArrayResource(outputStream.toByteArray());
+        var byteResource = new ByteArrayResource(mailStructure.getQRCodeContent());
 
         var htmlContent = generateTicket(mailStructure.getMailContentParameters());
         helper.setText(htmlContent, true);
@@ -53,5 +43,64 @@ public class MailService {
         helper.addAttachment("ticket.png", byteResource);
 
         mailSender.send(message);
+    }
+
+    public Map<String, String> getTicketContentParams(TicketDTO ticket, String section) {
+        var event = ticket.getEvent();
+        var location = event.getLocation();
+        var ticketType = ticket.getTicketType();
+        Map<String, String> ticketData = new HashMap<>();
+
+        ticketData.put("eventName", event.getName());
+        ticketData.put("dateFrom", getDateString(event.getStartDate()));
+        ticketData.put("dateTo", getDateString(event.getEndDate()));
+        ticketData.put("timeFrom", event.getStartTime() != null ? getTimeString(event.getStartTime()) : "");
+        ticketData.put("timeTo", event.getEndTime() != null ? getTimeString(event.getEndTime()) : "");
+
+        if (location != null) {
+            ticketData.put("description", location.getDescription());
+            ticketData.put("street", location.getStreet());
+            ticketData.put("number", "");
+            ticketData.put("zipCode", location.getZip_code());
+            ticketData.put("city", location.getCity());
+        }
+
+        ticketData.put("ticketType", ticketType.getName());
+        ticketData.put("sectionName", section);
+        ticketData.put("price", ticketType.getPrice().toString());
+        ticketData.put("holderFirstName", ticket.getHolderFirstName());
+        ticketData.put("holderLastName", ticket.getHolderLastName());
+
+        return ticketData;
+    }
+
+    @Async
+    public void sendMail(String mail, String mailSubject, String mailMessage) throws MessagingException {
+        var message = mailSender.createMimeMessage();
+        var helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setFrom(fromMail);
+        helper.setSubject(mailSubject);
+        helper.setText(mailMessage);
+        helper.setTo(mail);
+
+        mailSender.send(message);
+    }
+
+    public void sendTicketDeletedEmail(TicketDTO ticket) throws ApsiException {
+        var user = ticket.getHolder();
+        var event = ticket.getEvent();
+        String eventUrl = String.format("localhost:3000/event/%s", event.getId());
+        String mailSubject = "Kupiony przez Ciebie bilet został anulowany";
+        String message = String.format("""
+                Przepraszamy,
+                Organizator wydarzenia %s anulował twój typ biletu. Wysłaliśmy %s zł na Twoje konto.
+                Aby wziąć udział w wydarzeniu, sprawdź czy dostępne są inne bilety na stronie: %s.
+                """, event.getName(), ticket.getTicketType().getPrice(), eventUrl);
+        try {
+            sendMail(user.getEmail(), mailSubject, message);
+        } catch (MessagingException  e) {
+            throw new ApsiException("Nie udało się wysłać maila ze zwrotem pieniędzy");
+        }
     }
 }

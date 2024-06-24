@@ -2,6 +2,7 @@ package apsi.team3.backend.services;
 
 import apsi.team3.backend.DTOs.DTOMapper;
 import apsi.team3.backend.DTOs.EventDTO;
+import apsi.team3.backend.DTOs.ImageDTO;
 import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.DTOs.TicketTypeDTO;
 import apsi.team3.backend.exceptions.ApsiValidationException;
@@ -11,7 +12,9 @@ import apsi.team3.backend.model.EventImage;
 import apsi.team3.backend.model.User;
 import apsi.team3.backend.repository.EventImageRepository;
 import apsi.team3.backend.repository.EventRepository;
+import apsi.team3.backend.repository.EventSectionRepository;
 import apsi.team3.backend.repository.LocationRepository;
+import apsi.team3.backend.repository.TicketRepository;
 import apsi.team3.backend.repository.TicketTypeRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -36,18 +40,24 @@ public class EventService implements IEventService {
     private final EventRepository eventRepository;
     private final TicketTypeRepository ticketTypeRepository;
     private final EventImageRepository eventImageRepository;
+    private final EventSectionRepository eventSectionRepository;
+    private final TicketRepository ticketRepository;
 
     @Autowired
     public EventService(
         EventRepository eventRepository,
         LocationRepository locationRepository,
         TicketTypeRepository ticketTypeRepository,
-        EventImageRepository eventImageRepository
+        EventImageRepository eventImageRepository,
+        EventSectionRepository eventSectionRepository,
+        TicketRepository ticketRepository
     ) {
         this.eventRepository = eventRepository;
         this.locationRepository = locationRepository;
         this.ticketTypeRepository = ticketTypeRepository;
         this.eventImageRepository = eventImageRepository;
+        this.eventSectionRepository = eventSectionRepository;
+        this.ticketRepository = ticketRepository;
     }
 
     private void validateEvent(EventDTO eventDTO, User loggedUser) throws ApsiValidationException {
@@ -86,11 +96,32 @@ public class EventService implements IEventService {
             throw new ApsiValidationException("Można stworzyć maksymalnie 16 typów biletów", "tickets");
         if (!eventDTO.getTicketTypes().stream().allMatch(x -> x.getName() != null && !x.getName().isEmpty() && x.getName().length() < 100))
             throw new ApsiValidationException("Dla każdego typu biletów należy podać maksymalnie 100-znakową nazwę", "tickets");
+        if (eventDTO.getSections().size() < 1)
+            throw new ApsiValidationException("Należy stworzyć przynajmniej jedną sekcję z miejscami", "sections");
+        if (!eventDTO.getSections().stream().allMatch(x -> x.getName() != null && !x.getName().isEmpty() && x.getName().length() < 64))
+            throw new ApsiValidationException("Nazwa sekcji nie może być dłuższa niż 64 znaki", "sections");
+        if (!eventDTO.getSections().stream().allMatch(x -> x.getCapacity() >= 1))
+            throw new ApsiValidationException("Sekcja musi mieć przynajmniej jedno dostępne miejsce", "sections");
+
+        var ttSum = eventDTO.getTicketTypes().stream().mapToInt(tt -> tt.getQuantityAvailable()).sum();
+        var sectionSum = eventDTO.getSections().stream().mapToInt(tt -> tt.getCapacity()).sum();
+        if (ttSum > sectionSum)
+            throw new ApsiValidationException("Nie można sprzedać więcej biletów niż dostępnych miejsc", "sections");
     }
 
     @Override
     public Optional<EventDTO> getEventById(Long id) {
-        return eventRepository.findById(id).map(DTOMapper::toDTO);
+        var event = eventRepository.findById(id);
+        Optional<EventDTO> dto = event.map(e -> DTOMapper.toDTO(e));
+
+        if (event.isPresent() && dto.isPresent() && event.get().getSections().size() > 0){
+            var ticketsPerSection = ticketRepository.countTicketsBySectionForEvent(event.get().getId());
+            var dict = ticketsPerSection.stream().collect(Collectors.toMap(a -> a.section_id, b -> b.count));
+            var sectionDtos = event.get().getSections().stream().map(s -> DTOMapper.toDTO(s, dict.getOrDefault(s.getId(), 0l))).toList();
+            dto.get().setSections(sectionDtos);
+        }
+
+        return dto;
     }
 
     @Override
@@ -108,13 +139,14 @@ public class EventService implements IEventService {
     }
 
     @Override
-    public EventDTO replace(EventDTO eventDTO, MultipartFile image) throws ApsiValidationException {
-        if (eventDTO.getId() == null) {
+    public EventDTO replace(EventDTO eventDTO, MultipartFile image, MultipartFile sectionMap) throws ApsiValidationException {
+        if (eventDTO.getId() == null)
             throw new ApsiValidationException("Identyfikator wydarzenia jest wymagany", "id");
-        }
 
         var existingEvent = eventRepository.findById(eventDTO.getId())
-                .orElseThrow(() -> new ApsiValidationException("Wydarzenie nie zostało znalezione", "id"));
+            .orElseThrow(() -> new ApsiValidationException("Wydarzenie nie zostało znalezione", "id"));
+        var existingImageId = existingEvent.getImages().stream().filter(i -> !i.isSection_map()).map(i -> i.getId()).findFirst();
+        var existingSectionMap = existingEvent.getImages().stream().filter(i -> i.isSection_map()).map(i -> i.getId()).findFirst();
 
         var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         validateEvent(eventDTO, loggedUser);
@@ -123,8 +155,21 @@ public class EventService implements IEventService {
         entity.setId(existingEvent.getId());  // Ensure the ID is retained
         entity.setImages(existingEvent.getImages()); // Retain existing images list
 
-        processTicketTypes(eventDTO, entity);
+        processRelatedEntities(eventDTO, entity);
         processEventImage(image, entity);
+        processSectionMap(sectionMap, entity);
+
+        if (image != null && existingImageId.isPresent()){
+            existingEvent.getImages().removeIf(i -> i.getId() == existingImageId.get());
+            entity.getImages().removeIf(i -> i.getId() == existingImageId.get());
+            eventImageRepository.deleteById(existingImageId.get());
+        }
+
+        if (sectionMap != null && existingSectionMap.isPresent()) {
+            existingEvent.getImages().removeIf(i -> i.getId() == existingSectionMap.get());
+            entity.getImages().removeIf(i -> i.getId() == existingSectionMap.get());
+            eventImageRepository.deleteById(existingSectionMap.get());
+        }
 
         var updatedEvent = eventRepository.save(entity);
 
@@ -132,7 +177,7 @@ public class EventService implements IEventService {
     }
 
     private void processEventImage(MultipartFile image, Event updatedEvent) throws ApsiValidationException {
-        if (image == null) { return; }
+        if (image == null) return;
         byte[] bytes;
         try {
             bytes = image.getBytes();
@@ -141,20 +186,40 @@ public class EventService implements IEventService {
             throw new ApsiValidationException("Uszkodzony plik obrazu", "image");
         }
 
-        updatedEvent.getImages().clear();
+        var eventImage = EventImage.builder()
+            .image(bytes)
+            .event(updatedEvent)
+            .section_map(false)
+            .build();
+        eventImageRepository.save(eventImage);
+
+        updatedEvent.getImages().add(eventImage);
+    }
+
+    private void processSectionMap(MultipartFile sectionMap, Event updatedEvent) throws ApsiValidationException {
+        if (sectionMap == null)
+            return;
+        byte[] bytes;
+        try {
+            bytes = sectionMap.getBytes();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ApsiValidationException("Uszkodzony plik obrazu", "sectionMap");
+        }
 
         var eventImage = EventImage.builder()
-                .image(bytes)
-                .event(updatedEvent)
-                .build();
+            .image(bytes)
+            .event(updatedEvent)
+            .section_map(true)
+            .build();
         eventImageRepository.save(eventImage);
 
         updatedEvent.getImages().add(eventImage);
     }
 
     @Override
-    public EventDTO create(EventDTO eventDTO, MultipartFile image) throws ApsiValidationException {
-        if (eventDTO.getId() != null) {
+    public EventDTO create(EventDTO eventDTO, MultipartFile image, MultipartFile sectionMap) throws ApsiValidationException {
+        if (eventDTO.getId() != null){
             throw new ApsiValidationException("Podano niedozwolony identyfikator wydarzenia", "id");
         }
 
@@ -164,20 +229,16 @@ public class EventService implements IEventService {
         var entity = prepareEventEntity(eventDTO, loggedUser);
 
         var savedEvent = eventRepository.save(entity);
+        savedEvent.setImages(new ArrayList<>());
 
-        processTicketTypes(eventDTO, savedEvent);
+        processRelatedEntities(eventDTO, savedEvent);
         processEventImage(image, savedEvent);
+        processSectionMap(sectionMap, savedEvent);
 
         return DTOMapper.toDTO(savedEvent);
     }
 
-    private void validateImage(MultipartFile image) throws ApsiValidationException {
-        if (image != null && image.getSize() > 500_000) {
-            throw new ApsiValidationException("Zbyt duży obraz. Maksymalna wielkość to 500 KB", "image");
-        }
-    }
-
-    private Event prepareEventEntity(EventDTO eventDTO, User loggedUser) {
+    private Event prepareEventEntity(EventDTO eventDTO, User loggedUser) throws ApsiValidationException {
         var entity = DTOMapper.toEntity(eventDTO);
         entity.setOrganizer(loggedUser);
 
@@ -189,13 +250,19 @@ public class EventService implements IEventService {
         return entity;
     }
 
-    private void processTicketTypes(EventDTO eventDTO, Event updatedEvent) {
+    private void processRelatedEntities(EventDTO eventDTO, Event updatedEvent) {
         if (!eventDTO.getTicketTypes().isEmpty()) {
             var entities = eventDTO.getTicketTypes().stream()
-                    .map(e -> DTOMapper.toEntity(e, updatedEvent))
-                    .toList();
+                .map(e -> DTOMapper.toEntity(e, updatedEvent))
+                .toList();
             var savedTickets = ticketTypeRepository.saveAll(entities);
             updatedEvent.setTicketTypes(savedTickets);
+        }
+
+        if (!eventDTO.getSections().isEmpty()) {
+            var entities = eventDTO.getSections().stream().map(e -> DTOMapper.toEntity(e, updatedEvent)).toList();
+            var sections = eventSectionRepository.saveAll(entities);
+            updatedEvent.setSections(sections);
         }
     }
 
@@ -210,7 +277,7 @@ public class EventService implements IEventService {
     }
 
     @Override
-    public byte[] getImageByEventId(Long id) {
+    public List<ImageDTO> getImagesByEventId(Long id) {
         var images = eventImageRepository.findByEventId(id);
 
         if (images.size() == 0)
@@ -218,5 +285,6 @@ public class EventService implements IEventService {
 
         // na razie spodziewamy się 1 obrazka per event
         return images.get(0).getImage();
+        return images.stream().map(i -> DTOMapper.toDTO(i)).toList();
     }
 }

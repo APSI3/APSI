@@ -41,6 +41,7 @@ export default function TicketsPage() {
     }, []);
 
     return <>
+        <h2>Twoje bilety</h2>
         <DateRangePicker initialFrom={fromDate} initialTo={toDate} onDateChange={handleDateChange} />
         {tickets.map(ticket => <UserTicketCard ticket={ticket} key={ticket.id}/>)}
         <br/>

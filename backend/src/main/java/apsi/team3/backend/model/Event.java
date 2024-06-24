@@ -57,6 +57,10 @@ public class Event {
     @ToString.Exclude
     private List<EventImage> images;
 
+    @OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @ToString.Exclude
+    private List<EventSection> sections;
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

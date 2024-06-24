@@ -1,15 +1,13 @@
 package apsi.team3.backend.DTOs;
 
-import apsi.team3.backend.model.Country;
-import apsi.team3.backend.model.Event;
-import apsi.team3.backend.model.Location;
-import apsi.team3.backend.model.Ticket;
-import apsi.team3.backend.model.TicketType;
-import apsi.team3.backend.model.User;
+import apsi.team3.backend.DTOs.Requests.CreateTicketRequest;
+import apsi.team3.backend.model.*;
 
-import java.util.ArrayList;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Base64;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -19,13 +17,14 @@ public class DTOMapper {
                 .id(user.getId())
                 .login(user.getLogin())
                 .email(user.getEmail())
+                .type(UserType.valueOf(user.getType()))
                 .build();
     }
 
     public static Event toEntity(EventDTO event) {
         var organizer = User.builder().id(event.getOrganizerId()).build();
         var loc = event.getLocation() != null ? 
-            Location.builder().id(event.getLocation().getId()).build() :
+            toEntity(event.getLocation()) :
             null;
     
         return Event.builder()
@@ -39,6 +38,8 @@ public class DTOMapper {
             .organizer(organizer)
             .location(loc)
             .ticketTypes(null)
+            .sections(null)
+            .images(null)
             .build();
     }
 
@@ -56,25 +57,30 @@ public class DTOMapper {
                 .build();
     }
 
-    public static Ticket toEntity(TicketDTO ticket) {
-        var ticketHolder = ticket.getHolder();
-        if (ticket.getEvent() == null) {
-            return null;
-        }
-        var event = toEntity(ticket.getEvent());
-        User user = User.builder()
-                .id(ticketHolder.getId())
-                .login(ticketHolder.getLogin())
-                .email(ticketHolder.getEmail())
-                .build();
-        TicketType ticketType = DTOMapper.toEntity(ticket.getTicketType(), event);
+    public static EventSection toEntity(SectionDTO sectionDTO, Event existingEvent) {
+        var event = existingEvent == null ? Event.builder().id(sectionDTO.getEventId()).build() : existingEvent;
+
+        return EventSection.builder()
+            .id(sectionDTO.getId())
+            .event(event)
+            .name(sectionDTO.getName())
+            .capacity(sectionDTO.getCapacity())
+            .build();
+    }
+
+    public static Ticket toEntity(CreateTicketRequest req) {
+        var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var user = User.builder().id(loggedUser.getId()).build();
+        var ticketType = TicketType.builder().id(req.getTicketTypeId()).build();
+        var section = EventSection.builder().id(req.getSectionId()).build();
         return Ticket.builder()
-            .id(ticket.getId())
+            .id(null)
             .holder(user)
+            .section(section)
             .purchaseDate(LocalDate.now())
             .ticketType(ticketType)
-            .holderFirstName(ticket.getHolderFirstName())
-            .holderLastName(ticket.getHolderLastName())
+            .holderFirstName(req.getHolderFirstName())
+            .holderLastName(req.getHolderLastName())
             .build();
     }
 
@@ -104,6 +110,10 @@ public class DTOMapper {
         if (ticketTypes == null)
             ticketTypes = new ArrayList<>();
 
+        var sections = event.getSections();
+        if (sections == null)
+            sections = new ArrayList<>();
+
         return new EventDTO(
             event.getId(),
             event.getName(),
@@ -115,7 +125,10 @@ public class DTOMapper {
             event.getOrganizer().getId(),
             event.getLocation() != null ? DTOMapper.toDTO(event.getLocation()) : null,
             ticketTypes.stream().map(DTOMapper::toDTO).toList(),
-            images.stream().map(i -> i.getId()).toList()
+            images.stream().map(i -> i.getId()).toList(),
+            sections.stream().map(s -> DTOMapper.toDTO(s, 0)).toList(),
+            images.stream().anyMatch(i -> i.isSection_map()),
+            images.stream().anyMatch(i -> !i.isSection_map())
         );
     }
 
@@ -124,7 +137,8 @@ public class DTOMapper {
     }
 
     public static UserDTO toDTO(User user) {
-        return new UserDTO(user.getId(), user.getLogin(), user.getEmail());
+        var role = user.getType() == null ? UserType.PERSON.toString() : user.getType().toString();
+        return new UserDTO(user.getId(), user.getLogin(), user.getEmail(), role);
     }
 
     public static LocationDTO toDTO(Location loc) {
@@ -156,6 +170,27 @@ public class DTOMapper {
         );
     }
 
+
+    public static ImageDTO toDTO(EventImage image) {
+        var encoder = Base64.getEncoder();
+
+        return new ImageDTO(
+            image.getId(),
+            image.getEvent().getId(),
+            encoder.encodeToString(image.getImage()),
+            image.isSection_map()
+        );
+    }
+
+    public static SectionDTO toDTO(EventSection section, long ticketsBought) {
+        return new SectionDTO(
+            section.getId(),
+            section.getEvent().getId(),
+            section.getName(),
+            section.getCapacity(),
+            ticketsBought);
+    }
+
     public static TicketDTO toDTO(Ticket ticket) {
         var event = ticket.getTicketType().getEvent();
         return new TicketDTO(
@@ -165,8 +200,25 @@ public class DTOMapper {
             DTOMapper.toDTO(event),
             ticket.getPurchaseDate(),
             null,
+            ticket.getSection().getId(),
             ticket.getHolderFirstName(),
             ticket.getHolderLastName()
         );
+    }
+
+    public static Ticket toEntity(TicketDTO ticketDTO) {
+        var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var user = User.builder().id(loggedUser.getId()).build();
+        var ticketType = TicketType.builder().id(ticketDTO.getTicketType().getId()).build();
+        var section = EventSection.builder().id(ticketDTO.getSectionId()).build();
+        return Ticket.builder()
+            .id(null)
+            .holder(user)
+            .section(section)
+            .purchaseDate(LocalDate.now())
+            .ticketType(ticketType)
+            .holderFirstName(ticketDTO.getHolderFirstName())
+            .holderLastName(ticketDTO.getHolderLastName())
+            .build();
     }
 }

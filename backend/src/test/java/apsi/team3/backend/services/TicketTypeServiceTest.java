@@ -2,6 +2,7 @@ package apsi.team3.backend.services;
 
 import apsi.team3.backend.DTOs.DTOMapper;
 import apsi.team3.backend.DTOs.TicketTypeDTO;
+import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.model.*;
 import apsi.team3.backend.repository.TicketTypeRepository;
 import org.junit.jupiter.api.Test;
@@ -69,10 +70,26 @@ public class TicketTypeServiceTest {
     }
 
     @Test
-    public void testDeleteCallsDeleteByIdRepositoryMethod() {
-        Long ticketTypeId = 2L;
-        ticketTypeService.delete(ticketTypeId);
-        verify(ticketTypeRepository).deleteById(ticketTypeId);
+    public void testDeleteCallsDeleteByIdRepositoryMethod() throws ApsiException {
+        Event event = new Event();
+        TicketType ticketType = new TicketType();
+        ticketType.setId(1L);
+        ticketType.setEvent(event);
+        event.setTicketTypes(List.of(ticketType, new TicketType()));
+        when(ticketTypeRepository.findById(anyLong())).thenReturn(Optional.of(ticketType));
+        ticketTypeService.delete(1L);
+        verify(ticketTypeRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    public void testDeleteDoesNotCallDeleteByIdRepositoryMethodIfEventHasOnlyOneTicketType() throws ApsiException {
+        Event event = new Event();
+        TicketType ticketType = new TicketType();
+        ticketType.setId(1L);
+        ticketType.setEvent(event);
+        event.setTicketTypes(List.of(ticketType));
+        when(ticketTypeRepository.findById(anyLong())).thenReturn(Optional.of(ticketType));
+        assertThrows(ApsiException.class, () -> ticketTypeService.delete(1L));
     }
 
     @Test

@@ -1,4 +1,4 @@
-import {Field, FieldArray, Form, Formik, FormikHelpers} from "formik";
+import {Field, FieldArray, Form, Formik, FormikHelpers, FormikValues} from "formik";
 import { Helmet } from "react-helmet";
 import { Api } from "../api/Api";
 import { toastDefaultError, toastError, toastInfo } from "../helpers/ToastHelpers";
@@ -10,7 +10,8 @@ import React, { useEffect, useState } from "react";
 import { LocationDTO } from "../api/DTOs";
 import {CreateEventRequest, UpdateEventRequest} from "../api/Requests";
 
-const createInitialValues: CreateEventRequest = {
+const defaultInitialValues: UpdateEventRequest = {
+    id: 0,
     name: "",
     description: "",
     startDate: new Date(),
@@ -24,6 +25,12 @@ const createInitialValues: CreateEventRequest = {
     ],
     startTime: "",
     endTime: "",
+    sections: [
+        {
+            name: "Nowy rodzaj miejsc",
+            capacity: 0
+        }
+    ]
 }
 
 const timeRegex = new RegExp("^[0-9]{2}:[0-9]{2}$");
@@ -56,19 +63,39 @@ const createEventValidationSchema = object<CreateEventRequest>().shape({
                 .max(100000, "Zbyt wysoka cena za bilet"),
         })
     ).min(1, "Należy dodać przynajmniej jeden typ biletów"),
+    sections: array().of(
+        object().shape({
+            name: string()
+                .max(64, "Zbyt długa nazwa rodzaju miejsc")
+                .required("Należy podać nazwę rodzaju miejsc"),
+            capacity: number()
+                .max(1000000, "Zbyt duża pojemność")
+                .min(1, "Minimalna wartość wynosi 1"),
+        })
+    ).min(1, "Należy dodać przynajmniej jeden rodzaj miejsc"),
     location: object().shape({
         id: number()
     }).nullable()
 })
 
-const isUpdateRequest = (values: Object): values is UpdateEventRequest => {
-    return (values as UpdateEventRequest).id !== undefined;
-};
+declare type SectionField = {
+    capacity: number,
+}
 
-const EventForm: React.FC<{ onClose: () => void, initialValues?: Object }> = ({ onClose, initialValues = createInitialValues }) => {
+declare type TicketTypeField = {
+    quantityAvailable : number,
+}
+
+const EventForm: React.FC<{ 
+    onClose: () => void, initialValues?: Partial<UpdateEventRequest>, hasImage?: boolean, hasSectionMap?: boolean
+}> = ({ onClose, initialValues, hasImage, hasSectionMap }) => {
     const [locations, setLocations] = useState<LocationDTO[]>([])
-    const isUpdate = isUpdateRequest(initialValues);
-    console.log(initialValues);
+    const isUpdate = !!initialValues;
+
+    const mergedInitialValues: UpdateEventRequest = {
+        ...defaultInitialValues,
+        ...initialValues,
+    };
 
     useEffect(() => {
         Api.GetLocations().then(res => {
@@ -99,28 +126,24 @@ const EventForm: React.FC<{ onClose: () => void, initialValues?: Object }> = ({ 
     }
 
     const handleUpdateEvent = async (newValues: UpdateEventRequest, fh: FormikHelpers<any>) => {
-        let hasErrors = false;
-
         for (let idx = 0; idx < newValues.ticketTypes.length; idx++) {
             const ticket = newValues.ticketTypes[idx];
-            const oldTicket = (initialValues as UpdateEventRequest).ticketTypes[idx];
+            const oldTicket = mergedInitialValues.ticketTypes[idx];
 
             if (oldTicket?.quantityAvailable !== ticket?.quantityAvailable) {
                 await Api.GetSoldTicketsCount(ticket.id).then(res => {
                     if (res.data && ticket.quantityAvailable - res.data < 0) {
-                        fh.setFieldError(`ticketTypes.${idx}.quantityAvailable`, 'Nie można zmienić liczby biletów poniżej dostępnej wartości');
-                        hasErrors = true;
+                        fh.setFieldError(`ticketTypes.${idx}.quantityAvailable`, 
+                            'Nie można zmienić liczby biletów poniżej dostępnej wartości');
+                        return;
                     }
                 });
             }
         }
 
-        if (hasErrors) {
-            return;
-        }
-        await Api.UpdateEvent({...newValues, id : (initialValues as UpdateEventRequest).id }).then(res => {
+        await Api.UpdateEvent({...newValues, id: mergedInitialValues.id }).then(res => {
             if (res.success && res.data) {
-                toastInfo("Udało się zaktualizować wydarzenie" + (initialValues as UpdateEventRequest).name);
+                toastInfo("Udało się zaktualizować wydarzenie" + mergedInitialValues.name);
                 onClose();
             } else {
                 if (res.errors)
@@ -131,19 +154,39 @@ const EventForm: React.FC<{ onClose: () => void, initialValues?: Object }> = ({ 
         })
     }
 
+    const validateLocationCapacity = async (values: FormikValues, fh: FormikHelpers<any>): Promise<boolean> => {
+        const sectionsCount = values.sections.reduce((total: number, { capacity }: SectionField) => total + capacity, 0);
+        const typesCount = values.ticketTypes.reduce((total: number, { quantityAvailable }: TicketTypeField) => total + quantityAvailable, 0);
+        return Api.GetLocationById(values.location.id).then(res => {
+            if (res.success && res.data) {
+                const locationCapacity = res.data?.capacity;
+                if (locationCapacity && (locationCapacity < sectionsCount || locationCapacity < typesCount)) {
+                    fh.setFieldError(`location`,
+                        'Wybrana lokalizacja nie ma wystarczająco dużej pojemności na określoną dostępność biletów.');
+                    return false;
+                }
+            }
+            return true;
+        })
+    }
+
     return <>
         <Helmet>
             <title>APSI - Dodawanie wydarzenia</title>
         </Helmet>
         <Formik
-            initialValues={initialValues}
+            initialValues={mergedInitialValues}
             validationSchema={createEventValidationSchema}
             onSubmit={async (values, fh) => {
                 let newValues = values;
-                if ((values as UpdateEventRequest).location?.id == 0) // location id can come to us as string - soft compare
+                if (!values.location?.id)
                     newValues = { ...newValues, location: undefined}
+                else {
+                    const isValid = await validateLocationCapacity(values, fh);
+                    if (!isValid) return;
+                }
 
-                isUpdate ? handleUpdateEvent((newValues as UpdateEventRequest), fh) : handleCreateEvent((newValues as CreateEventRequest), fh)
+                isUpdate ? handleUpdateEvent(newValues, fh) : handleCreateEvent(newValues, fh)
             }}
         >
             {({ isSubmitting, values, setFieldValue, setFieldError }) => <Form className="form">
@@ -165,7 +208,7 @@ const EventForm: React.FC<{ onClose: () => void, initialValues?: Object }> = ({ 
                     <label htmlFor="startDate" className="form-label">Od</label><br />
                     <DatePicker className="form-control"
                         dateFormat={"dd/MM/yyyy"}
-                        selected={(values as CreateEventRequest).startDate}
+                        selected={values.startDate}
                         onChange={e => setFieldValue("startDate", e ?? new Date())}
                         id="startDate"
                     />
@@ -180,7 +223,7 @@ const EventForm: React.FC<{ onClose: () => void, initialValues?: Object }> = ({ 
                     <label htmlFor="endDate" className="form-label">Do</label><br/>
                     <DatePicker className="form-control"
                         dateFormat={"dd/MM/yyyy"}
-                        selected={(values as CreateEventRequest).endDate}
+                        selected={values.endDate}
                         onChange={e => setFieldValue("endDate", e ?? new Date())}
                         id="endDate"
                     />
@@ -201,8 +244,7 @@ const EventForm: React.FC<{ onClose: () => void, initialValues?: Object }> = ({ 
                 </div>
                 <div className="mb-3">
                     <label htmlFor="image" className="form-label">Obraz</label>
-                    {/* couldn't get the initial image to load to the loader */}
-                    {(initialValues as CreateEventRequest)?.image && <span> (zastąpi istniejący obraz)</span>}
+                    {hasImage && <span> (zastąpi istniejący obraz)</span>}
                     <input className="form-control" type="file" accept="image/*" id="image" name="image" onChange={e => {
                         const reader = new FileReader();
                         reader.onload = () => {
@@ -225,7 +267,7 @@ const EventForm: React.FC<{ onClose: () => void, initialValues?: Object }> = ({ 
                     <label htmlFor="ticketTypes" className="form-label">Typy biletów</label>
                     <FieldArray name="ticketTypes"
                         render={helpers => <div className="p-1">
-                            {(values as CreateEventRequest).ticketTypes.map((tt, idx) => {
+                            {values.ticketTypes.map((tt, idx) => {
                                 const name = `ticketTypes.${idx}`;
                                 return <Paper key={idx} className="m-1" style={{ padding: 20 }}>
                                     <Grid container spacing={1} alignItems="center">
@@ -267,6 +309,64 @@ const EventForm: React.FC<{ onClose: () => void, initialValues?: Object }> = ({ 
                     />
                     <ValidationMessage fieldName="tickets" />
                     <ValidationMessage fieldName="ticketTypes" />
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="sections" className="form-label">Rodzaje miejsc</label>
+                    <FieldArray name="sections"
+                        render={helpers => <div className="p-1" style={{ justifyContent: 'center' }}>
+                            {values.sections.map((s, idx) => {
+                                const name = `sections.${idx}`;
+                                return <Paper key={idx} className="m-1">
+                                    <Grid item xs={3} style={{ justifyContent: 'center', display: 'flex' }}>
+                                        <div className="m-1">
+                                            <label htmlFor={name + ".name"} className="form-label">Nazwa</label>
+                                            <Field type="string" name={name + ".name"}
+                                                id={name + ".name"} className="form-control"
+                                            />
+                                            <ValidationMessage fieldName={name + ".name"} />
+                                        </div>
+                                        <div className="m-1">
+                                            <label htmlFor={name + ".capacity"} className="form-label">Pojemność</label>
+                                            <Field type="number" name={name + ".capacity"}
+                                                id={name + ".capacity"} className="form-control"
+                                            />
+                                            <ValidationMessage fieldName={name + ".capacity"} />
+                                        </div>
+                                    </Grid>
+                                    <button className="btn btn-danger" type="button" onClick={() => helpers.remove(idx)}>
+                                        Usuń
+                                    </button>
+                                </Paper>
+                            })}
+                            <button className="btn btn-primary" type="button"
+                                onClick={e => helpers.push({ name: "", capacity: 0 })}
+                            >
+                                Dodaj rodzaj miejsc
+                            </button>
+                        </div>}
+                    />
+                    <ValidationMessage fieldName="sections" />
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="sectionMap" className="form-label">Obraz z rozpiską miejsc</label>
+                    {hasSectionMap && <span>(zastąpi istniejący obraz)</span>}
+                    <input className="form-control" type="file" accept="image/*" id="sectionMap" name="sectionMap" onChange={e => {
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                            if (reader.readyState === 2)
+                                setFieldValue("sectionMap", reader.result)
+                            else
+                                setFieldError("sectionMap", "Nie udało się wczytać obrazu")
+                        }
+
+                        if (!!e.target.files) {
+                            if (e.target.files[0].size > 500_000)
+                                setFieldError("sectionMap", "Maksymalna wielkość pliku to 500 KB")
+                            else
+                                reader.readAsArrayBuffer(e.target.files[0])
+                        }
+                    }} />
+                    <ValidationMessage fieldName="sectionMap" />
                 </div>
                 <div className="mb-3 text-center">
                     <button className="btn btn-primary" type="submit" disabled={isSubmitting}>{isUpdate ? 'Aktualizuj' : 'Dodaj'}</button>

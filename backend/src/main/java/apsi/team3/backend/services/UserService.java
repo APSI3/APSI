@@ -2,7 +2,9 @@ package apsi.team3.backend.services;
 
 import apsi.team3.backend.DTOs.DTOMapper;
 import apsi.team3.backend.DTOs.LoggedUserDTO;
+import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.DTOs.Requests.LoginRequest;
+import apsi.team3.backend.DTOs.UserDTO;
 import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IUserService;
@@ -11,6 +13,7 @@ import apsi.team3.backend.repository.UserRepository;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKeyFactory;
@@ -20,9 +23,11 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements IUserService {
+    private final int PAGE_SIZE = 10;
     private final UserRepository userRepository;
 
     @Autowired
@@ -77,5 +82,22 @@ public class UserService implements IUserService {
         }
 
         throw new ApsiValidationException("Niepoprawny login lub hasło", "password");
+    }
+
+    @Override
+    public PaginatedList<UserDTO> getUsers(int pageIndex) throws ApsiValidationException {
+        if (pageIndex < 0)
+            throw new ApsiValidationException("Indeks strony nie może być ujemny", "pageIndex");
+        var page = userRepository.getUsers(PageRequest.of(pageIndex, PAGE_SIZE));
+
+        var items = page.stream().map(DTOMapper::toDTO).collect(Collectors.toList());
+
+        return new PaginatedList<>(items, pageIndex, page.getTotalElements(), page.getTotalPages());
+    }
+
+    @Override
+    public Void deleteUser(Long id) {
+        userRepository.deleteById(id);
+        return null;
     }
 }

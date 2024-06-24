@@ -2,10 +2,14 @@ import React, {useEffect, useState} from "react";
 import { EventDTO, TicketTypeDTO} from "../api/DTOs";
 import { Grid, Paper, Typography} from "@mui/material";
 import {Api} from "../api/Api";
-import BuyButton from "./EventCardButtons/BuyButton";
+import { Option } from "../helpers/FormHelpers";
 import { AuthHelpers, UserTypes } from "../helpers/AuthHelpers";
+import DeleteButton from "./TicketCardButtons/DeleteButton";
+import BuyButton from "./TicketCardButtons/BuyButton";
 
-const TicketCard: React.FC<{ ticket: TicketTypeDTO, skipApiCheck?: boolean, event: EventDTO }> = ({ ticket, skipApiCheck, event }) => {
+const TicketCard: React.FC<{ ticket: TicketTypeDTO, skipApiCheck?: boolean, sectionMap?: string, sections: Option[], event: EventDTO, onDelete: (id: number) => void }> = (
+    { ticket, skipApiCheck, sectionMap, sections, event, onDelete }
+) => {
     const [soldCount, setSoldCount] = useState(0);
     
     useEffect(() => {
@@ -19,6 +23,7 @@ const TicketCard: React.FC<{ ticket: TicketTypeDTO, skipApiCheck?: boolean, even
     }, [ticket.id, skipApiCheck]);
 
     const canBuyTickets = AuthHelpers.HasAnyRole([ UserTypes.PERSON ]);
+    const canDeleteTicket = AuthHelpers.HasAnyRole([ UserTypes.ORGANIZER ]);
 
     return (
         <Paper style={{ alignItems: 'center', display: 'flex', justifyContent: 'space-evenly', margin: '0.5rem', background: '#dee2e6' }}  elevation={3} >
@@ -27,8 +32,10 @@ const TicketCard: React.FC<{ ticket: TicketTypeDTO, skipApiCheck?: boolean, even
                     {ticket.name}
                 </Typography>
             </Grid>
-            <Grid item container direction="row" justifyContent="flex-end" padding='1rem' style={{background: '#ffffff', height: '100%'}}>
-                {canBuyTickets && (ticket.quantityAvailable - soldCount) > 0 && <BuyButton ticketType={ticket} event={event}/>}
+            <Grid item container direction="row" justifyContent="flex-end" padding='1rem' style={{background: '#ffffff'}}>
+                {(ticket.quantityAvailable - soldCount) > 0 && canBuyTickets && <BuyButton ticketTypes={[ { value: ticket.id, label: ticket.name }]}
+                    ticketTypeId={ticket.id} sectionMap={sectionMap} sections={sections}
+                />}
                 <Grid item container direction="column" alignItems="flex-end">
                     <Typography variant="body1" color="textSecondary" style={{ marginTop: '1rem' }}>
                         <strong>{ticket.price.toFixed(2)} zł</strong>
@@ -37,6 +44,7 @@ const TicketCard: React.FC<{ ticket: TicketTypeDTO, skipApiCheck?: boolean, even
                         Dostępność: {ticket.quantityAvailable - soldCount}/{ticket.quantityAvailable}
                     </Typography>
                 </Grid>
+                {canDeleteTicket && <Grid paddingTop='1rem'><DeleteButton ticketType={ticket} event={event} onDelete={onDelete} /></Grid>}
             </Grid>
         </Paper>
     );

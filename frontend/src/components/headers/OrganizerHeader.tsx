@@ -2,7 +2,7 @@ import {Paths} from "../../App";
 
 
 export default function PersonHeader() {
-    return <div className="collapse navbar-collapse">
+    return <div className="collapse navbar-collapse" style={{ zIndex: 10000 }}>
         <ul className="navbar-nav mr-auto">
             <li className="nav-item">
                 <a className="nav-link" href={Paths.events}>Twoje wydarzenia</a>
