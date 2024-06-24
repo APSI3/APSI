@@ -1,3 +1,8 @@
+### Tworzenie konta
+![](../assets/org_instr_reg.png "Strona rejestracji")
+
+Aby korzystać z aplikacji organizator musi posiadać specjalne konto. W tym celu musi on wejść na stronę rejestracji poprzez przycisk `Złóż wniosek` na pod formularzem logowania. Znajduje się na niej link prowadzący do dedykowanego formularza dla organizatorów. Formularz składa się z pól danych konta (`Login`,`Adres e-mail`, `Hasło`, `Powtórz hasło`). Aby formularz został zaakceptowany, użytkownik musi uzupełnić wszystkie wymagane pola oraz podać nieużyty wcześniej w systemie login oraz e-mail, a wybrane przez niego hasła muszą być identyczne, spełniające wymagania dot. długości. Formularz wysyłany jest przy użyciu przycisku `Wyślij wniosek`. Złożony wniosek musi być następnie zaakceptowany przez administratora. Decyzja dot. wniosku zostaje przesłana w wiadomości na podany wcześniej adres e-mail. Pod formularzem rejestracyjnym znajduje się także link prowadzący do strony logowania.
+
 ### Logowanie
 ![](../assets/instr_login.png "Strona logowania")
 
@@ -43,23 +48,6 @@ W celu dodania nowej lokalizacji organizator musi użyć dedykowanego przycisku 
 
 W celu edycji wydarzenia organizator musi użyć przycisku z ikoną ołówka zlokalizowanego na stronie wydarzenia. Może wtedy dokonać różnego rodzaju modyfikacji wydarzenia. W przypadku usunięcia jednego z typów biletów lub rodzajów miejsc dochodzi do zwrotu pieniędzy dla posiadaczy biletów. Po dokonaniu edycji użytkownicy otrzymują specjalne wiadomości e-mail.
 
-<!-- ### Tworzenie konta
-![](../assets/org_instr_reg.png "Strona rejestracji")
 
-Aby korzystać z aplikacji organizator musi posiadać specjalne konto. W tym celu musi on wejść na stronę rejestracji (`/register`). Znajduje się na niej link prowadzący do dedykowanego formularza dla organizatorów. Formularz składa się z pól danych konta (`Login`,`Adres e-mail`, `Hasło`, `Powtórz hasło`) oraz pól przeznaczonych dla danych organizatora/organizacji (`Nazwa organizatora`). Aby formularz został zaakceptowany, użytkownik musi uzupełnić wszystkie wymagane pola oraz podać nieużyty wcześniej w systemie login oraz e-mail, a wybrane przez niego hasła muszą być identyczne, spełniające wymagania dot. długości. Formularz wysyłany jest przy użyciu przycisku `Wyślij wniosek`. Złożony wniosek musi być następnie zaakceptowany przez administratora. Decyzja dot. wniosku zostaje przesłana w wiadomości na podany wcześniej adres e-mail. Pod formularzem rejestracyjnym znajduje się także link prowadzący do strony logowania.
 
 <span style="color:red">** TODO APSI-34**</span> -->
-
-<!-- ### Edycja lokalizacji
-
-<span style="color:red">** TODO APSI-31**</span>
-
-### Usunięcie lokalizacji
-
-<span style="color:red">** TODO APSI-30**</span> -->
-
-<!-- 
-
-### Usunięcie wydarzenia
-
-<span style="color:red">** TODO APSI-27**</span> -->

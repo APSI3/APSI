@@ -39,24 +39,8 @@ W celu dodania nowej lokalizacji administrator musi użyć dedykowanego przycisk
 
 Administrator może przejrzeć listę wszystkich użytkowników na dedykowanej stronie `Lista użytkowników`. Z tego miejsca możliwe jest usuwanie kont innych użytkowników, przy pomocy przycisków z ikonami śmietnika.
 
-<!-- ### Lista wniosków
-![](../assets/adm_instr_appl_list.png "Strona listy wniosków")
+### Lista wniosków
+![](../assets/adm_instr_requests.png "Strona listy wniosków")
+![](../assets/adm_instr_requests2.png "Strona listy wniosków")
 
-<span style="color:red">** TODO APSI-50 **</span>
-
-### Rozstrzyganie wniosku
-
-<span style="color:red">** TODO APSI-50 **</span>
-
-
-
-
-<span style="color:red">** TODO APSI-49 **</span> -->
-
-<!-- ### Edycja wydarzenia
-
-<span style="color:red">** TODO APSI-26 **</span>
-
-### Usunięcie wydarzenia
-
-<span style="color:red">** TODO APSI-27**</span> -->
+Administrator może przejrzeć listę wniosków na dydykowanej stronie `Wnioski`. W tym miejscu administrator może akceptować lub odrzucać wnioski o utworzenie konta organizatora przy postaci odpowiednich przycisków. Administrator odrzucając wniosek musi wypełnić krótki formularz poprzez podanie powodu odrzucenia wniosku. Niedoszły organizator otrzyma wiadomośc e-mail informującą o odrzuceniu wniosku.
