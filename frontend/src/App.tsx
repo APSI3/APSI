@@ -12,6 +12,7 @@ import TicketsPage from "./pages/TicketsPage";
 import UsersPage from "./pages/UsersPage";
 import ApplicationsPage from "./pages/ApplicationsPage";
 import TicketSummaryPage from "./pages/TicketSummaryPage";
+import EventReportPage from "./pages/EventReportPage";
 
 
 export const Paths = {
@@ -26,6 +27,7 @@ export const Paths = {
     applications: "/applications",
     users: "/users",
     ticketSummary: "/ticketSummary/:ticketId",
+    eventReport: "/events/reports/:eventId",
 }
 
 const router = createBrowserRouter(
@@ -41,6 +43,7 @@ const router = createBrowserRouter(
             <Route path={Paths.applications} element={<AuthorizedPage page={<ApplicationsPage />} />} />
             <Route path={Paths.users} element={<AuthorizedPage page={<UsersPage />} />} />
             <Route path={Paths.ticketSummary} element={<AuthorizedPage page={<TicketSummaryPage />} />} />
+            <Route path={Paths.eventReport} element={<AuthorizedPage page={<EventReportPage />} />} />
         </Route>
     )
 )

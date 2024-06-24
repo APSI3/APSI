@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {CountryDTO, EventDTO, TicketTypeDTO} from "../api/DTOs";
 import {Api} from "../api/Api";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {Typography, Paper, Grid, IconButton, CardMedia} from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import TicketCard from "../components/TicketCard";
@@ -10,9 +10,11 @@ import EventSectionItem from "../components/EventSectionItem";
 import { getExtendedLocationString } from "../helpers/FormHelpers";
 import EditButton from "../components/EventCardButtons/EditButton";
 import {AuthHelpers, UserTypes} from "../helpers/AuthHelpers";
+import { Paths } from "../App";
 
 export default function EventPage() {
     const { eventId } = useParams();
+    const nav = useNavigate();
     const [ countries, setCountries ] = useState<CountryDTO[]>([]);
     const [ event, setEvent ] = useState<EventDTO | null>(null);
     const [ image, setImage ] = useState<string | null>(null);
@@ -74,6 +76,13 @@ export default function EventPage() {
                     <IconButton onClick={() => window.history.back()} color="info">
                         <ArrowBack />
                     </IconButton>
+                    {AuthHelpers.HasAnyRole([UserTypes.ORGANIZER, UserTypes.SUPERADMIN]) && !!eventId &&
+                        <div className="d-flex justify-content-end" style={{ minHeight: "initial", marginTop: "-20px" }}>
+                            <div className="btn btn-outline-primary" onClick={() => nav(Paths.eventReport.replace(":eventId", eventId))}>
+                                Raport kupionych biletów
+                            </div>
+                        </div>
+                    }
                 </Grid>
                 {/* Title */}
                 <Grid item xs={12}>

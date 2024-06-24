@@ -88,6 +88,11 @@ export type ImageDTO = {
     sectionMap: boolean
 }
 
+export type EventReportDTO = {
+    event: EventDTO,
+    tickets: TicketDTO[]
+}
+
 export type FormDTO = {
     id: number,
     login: string,
