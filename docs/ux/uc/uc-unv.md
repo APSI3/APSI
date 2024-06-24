@@ -1,12 +1,12 @@
 Przypisane przypadki użycia:
 
-- UC17: Zalogowanie się na konto
+- UC14: Zalogowanie się na konto
 
 <br>
 
 | __Nazwa__              | Zalogowanie się na konto
 | :----------------------| :--------------------------  
-| __ID__                 | UC15                       
+| __ID__                 | UC14                      
 | __Aktor główny__       | Dowolny użytkownik systemu        
 | __Aktorzy__            | Dowolny użytkownik systemu      
 | __Priorytet__          | Główne                       

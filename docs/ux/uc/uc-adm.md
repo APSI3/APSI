@@ -1,12 +1,12 @@
 Przypisane przypadki użycia:
 
-- UC14: Rejestrowanie organizatora
+- UC13: Rejestrowanie organizatora
 
 <br>
 
 | __Nazwa__              | Rejestrowanie organizatora
 | :----------------------| :--------------------------  
-| __ID__                 | UC14                       
+| __ID__                 | UC13                       
 | __Aktor główny__       | Administrator        
 | __Aktorzy__            | Administrator, organizator      
 | __Priorytet__          | Główne                       

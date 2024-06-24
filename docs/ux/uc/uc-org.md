@@ -1,17 +1,17 @@
 Przypisane przypadki użycia:
 
-- UC8: Stworzenie wniosku o utworzenie profilu
-- UC9: Stworzenie wydarzenia
-- UC10: Edycja danych wydarzenia
-- UC11: Anulowanie wydarzenia
-- UC12: Przeglądanie statystyk wydarzenia
-- UC13: Dodanie lokalizacji
+- UC7: Stworzenie wniosku o utworzenie profilu
+- UC8: Stworzenie wydarzenia
+- UC9: Edycja danych wydarzenia
+- UC10: Anulowanie wydarzenia
+- UC11: Przeglądanie statystyk wydarzenia
+- UC12: Dodanie lokalizacji
 
 <br>
 
 | __Nazwa__              |  Stworzenie wniosku o utworzenie profilu
 | :----------------------| :--------------------------  
-| __ID__                 | UC8                       
+| __ID__                 | UC7                       
 | __Aktor główny__       | Organizator         
 | __Aktorzy__            | Organizator        
 | __Priorytet__          | Główne                       
@@ -29,7 +29,7 @@ Przypisane przypadki użycia:
 
 | __Nazwa__              |  Stworzenie wydarzenia
 | :----------------------| :--------------------------  
-| __ID__                 | UC9                       
+| __ID__                 | UC8                       
 | __Aktor główny__       | Organizator         
 | __Aktorzy__            | Organizator        
 | __Priorytet__          | Główne                       
@@ -47,7 +47,7 @@ Przypisane przypadki użycia:
 
 | __Nazwa__              | Edycja danych wydarzenia
 | :----------------------| :--------------------------  
-| __ID__                 | UC10                       
+| __ID__                 | UC9                       
 | __Aktor główny__       | Organizator         
 | __Aktorzy__            | Organizator        
 | __Priorytet__          | Drugorzędne                      
@@ -65,7 +65,7 @@ Przypisane przypadki użycia:
 
 | __Nazwa__              |  Anulowanie wydarzenia
 | :----------------------| :--------------------------  
-| __ID__                 | UC11                       
+| __ID__                 | UC10                       
 | __Aktor główny__       | Organizator         
 | __Aktorzy__            | Organizator, Użytkownik prywatny        
 | __Priorytet__          | Drugorzędne                      
@@ -83,7 +83,7 @@ Przypisane przypadki użycia:
 
 | __Nazwa__              |  Przeglądanie statystyk wydarzenia
 | :----------------------| :--------------------------  
-| __ID__                 | UC12                       
+| __ID__                 | UC11                       
 | __Aktor główny__       | Organizator         
 | __Aktorzy__            | Organizator        
 | __Priorytet__          | Drugorzędne                      
@@ -101,7 +101,7 @@ Przypisane przypadki użycia:
 
 | __Nazwa__              |  Dodanie lokalizacji
 | :----------------------| :--------------------------  
-| __ID__                 | UC13                       
+| __ID__                 | UC12                       
 | __Aktor główny__       | Organizator         
 | __Aktorzy__            | Organizator        
 | __Priorytet__          | Główne                       
