@@ -5,8 +5,7 @@ Przypisane przypadki użycia:
 - UC3: Wyświetlenie strony wydarzenia
 - UC4: Stworzenie prywatnego konta 
 - UC5: Zakup biletu
-- UC6: Zwrot biletu
-- UC7: Wyświetlanie historii zakupionych biletów
+- UC6: Wyświetlanie historii zakupionych biletów
 
 <br>
 
@@ -99,27 +98,9 @@ Przypisane przypadki użycia:
 
 <br>
 
-| __Nazwa__              |  Zwrot biletu
-| :----------------------| :--------------------------  
-| __ID__                 | UC6                        
-| __Aktor główny__       | Użytkownik prywatny         
-| __Aktorzy__            | Użytkownik prywatny         
-| __Priorytet__          | Drugorzędne                      
-| __Opis__               | Użytkownik anuluje swoją rezerwację biletu i otrzymuje zwrot pieniędzy                                  
-| __Cel__                | Umożliwienie użytkownikowi sposobu na zwrot biletu                    
-| __Wyzwalanie__         | Użytkownik postanawia zwrócić zakupiony w systemie bilet                                              
-| __War. początkowe__    | <ul><li> Użytkownik posiada konto (UC4) </li><li> Użytkownik jest zalogowany (UC17) </li> <li> Użytkownik zakupił bilet na wydarzenie (UC5) </li><li> Wydarzenie jeszcze nie odbyło się </li><li> Wydarzenie nie zostało anulowane </li></ul> 
-| __War. końcowe__       | <ul><li> Pomyślnie zwrócono bilet </li><li> Następuje zwrot pieniędzy do użytkownika </li></ul>                                         
-| __W. funkcjonalne__    | <ul><li> System pozwala na usuwanie rezerwacji i zwrot pieniędzy </li></ul>    
-| __W. niefunkcjonalne__ | <ul><li> Zwrot pieniędzy powinien być bezpieczny </li><li> Interfejs zwrotu powinien być prosty </li></ul>                                       
-| __Scenariusz__         | 1. Użytkownik przechodzi do strony z listą zakupionych biletów używając przycisku `Twoje bilety` na pasku nawigacyjnym <br> 2. Użytkownik wybiera bilet do usunięcia spośród swoich rezerwacji <br> 3. Użytkownik potwierdza intencję zwrotu <span style="color:red"> [E1: Anulowanie] </span> <br> 4. System rejestruje prośbę <br> 5. System potwierdza zwrot biletu <br> 6. System zleca zwrot pieniędzy
-| __Scenariusz wyjątku__ | E1: Anulowanie  <br> &nbsp;&nbsp;&nbsp;a.  Użytkownik postanawia nie zwracać biletu
-
-<br>
-
 | __Nazwa__              |  Wyświetlanie historii zakupionych biletów
 | :----------------------| :--------------------------  
-| __ID__                 | UC7                        
+| __ID__                 | UC6                        
 | __Aktor główny__       | Użytkownik prywatny         
 | __Aktorzy__            | Użytkownik prywatny         
 | __Priorytet__          | Główne                       
