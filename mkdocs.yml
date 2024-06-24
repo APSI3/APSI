@@ -18,6 +18,7 @@ nav:
       - Słownik pojęć: ux/ux-dict.md
   - Projekt systemu:
       - Ogólny model architektury: proj/arch-general.md
+      - Model danych: proj/model.md
       - Technologie: proj/tech.md
   - Instrukcja użytkowania:
       - Instrukcja użytkownika: instructions/user-instr.md
