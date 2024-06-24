@@ -25,6 +25,7 @@ nav:
       - Instrukcja organizatora: instructions/org-instr.md
       - Instrukcja administratora: instructions/admin-instr.md
   - Dokumentacja administratorska: admin_docs/adm_docs.md
+  - Scenariusze testów manualnych: tests/manual-scenarios.md
 
 theme:
   name: material
@@ -81,7 +82,6 @@ plugins:
   #     toc_title: Spis treści
   #     toc_level: 3
   #     output_path: ../docs/dokumentacja.pdf
-      
+
   # odkomentować with-pdf, żeby tworzyć PDFa
-      
-      
+

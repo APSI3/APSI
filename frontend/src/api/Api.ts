@@ -151,6 +151,10 @@ export class Api {
         return await getApiResponse<undefined, LocationDTO[]>("get", this.url + "/locations");
     }
 
+    static async GetLocationById(id: string) {
+        return await getApiResponse<undefined, LocationDTO>("get", this.url + `/locations/${id}`);
+    }
+
     static async GetEventImagesByEventId(id: string) {
         return await getApiResponse<undefined, ImageDTO[]>("get", this.url + "/events/images/" + id)
     }

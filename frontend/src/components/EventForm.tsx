@@ -1,4 +1,4 @@
-import {Field, FieldArray, Form, Formik, FormikHelpers} from "formik";
+import {Field, FieldArray, Form, Formik, FormikHelpers, FormikValues} from "formik";
 import { Helmet } from "react-helmet";
 import { Api } from "../api/Api";
 import { toastDefaultError, toastError, toastInfo } from "../helpers/ToastHelpers";
@@ -78,6 +78,14 @@ const createEventValidationSchema = object<CreateEventRequest>().shape({
     }).nullable()
 })
 
+declare type SectionField = {
+    capacity: number,
+}
+
+declare type TicketTypeField = {
+    quantityAvailable : number,
+}
+
 const EventForm: React.FC<{ 
     onClose: () => void, initialValues?: Partial<UpdateEventRequest>, hasImage?: boolean, hasSectionMap?: boolean
 }> = ({ onClose, initialValues, hasImage, hasSectionMap }) => {
@@ -146,6 +154,22 @@ const EventForm: React.FC<{
         })
     }
 
+    const validateLocationCapacity = async (values: FormikValues, fh: FormikHelpers<any>): Promise<boolean> => {
+        const sectionsCount = values.sections.reduce((total: number, { capacity }: SectionField) => total + capacity, 0);
+        const typesCount = values.ticketTypes.reduce((total: number, { quantityAvailable }: TicketTypeField) => total + quantityAvailable, 0);
+        return Api.GetLocationById(values.location.id).then(res => {
+            if (res.success && res.data) {
+                const locationCapacity = res.data?.capacity;
+                if (locationCapacity && (locationCapacity < sectionsCount || locationCapacity < typesCount)) {
+                    fh.setFieldError(`location`,
+                        'Wybrana lokalizacja nie ma wystarczająco dużej pojemności na określoną dostępność biletów.');
+                    return false;
+                }
+            }
+            return true;
+        })
+    }
+
     return <>
         <Helmet>
             <title>APSI - Dodawanie wydarzenia</title>
@@ -157,6 +181,10 @@ const EventForm: React.FC<{
                 let newValues = values;
                 if (!values.location?.id)
                     newValues = { ...newValues, location: undefined}
+                else {
+                    const isValid = await validateLocationCapacity(values, fh);
+                    if (!isValid) return;
+                }
 
                 isUpdate ? handleUpdateEvent(newValues, fh) : handleCreateEvent(newValues, fh)
             }}
@@ -207,9 +235,9 @@ const EventForm: React.FC<{
                     <ValidationMessage fieldName="endTime" />
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="location.id" className="form-label">Lokacja</label>
+                    <label htmlFor="location.id" className="form-label">Lokalizacja</label>
                     <Field as="select" name="location.id" id="location.id" className="form-control">
-                        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)} 
+                        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
                     </Field>
                     <ValidationMessage fieldName="location.id" />
                     <ValidationMessage fieldName="location" />
@@ -220,9 +248,9 @@ const EventForm: React.FC<{
                     <input className="form-control" type="file" accept="image/*" id="image" name="image" onChange={e => {
                         const reader = new FileReader();
                         reader.onload = () => {
-                            if (reader.readyState === 2) 
+                            if (reader.readyState === 2)
                                 setFieldValue("image", reader.result)
-                            else 
+                            else
                                 setFieldError("image", "Nie udało się wczytać obrazu")
                         }
 
@@ -237,7 +265,7 @@ const EventForm: React.FC<{
                 </div>
                 <div className="mb-3">
                     <label htmlFor="ticketTypes" className="form-label">Typy biletów</label>
-                    <FieldArray name="ticketTypes" 
+                    <FieldArray name="ticketTypes"
                         render={helpers => <div className="p-1">
                             {values.ticketTypes.map((tt, idx) => {
                                 const name = `ticketTypes.${idx}`;
