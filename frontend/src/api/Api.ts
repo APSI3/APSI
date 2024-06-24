@@ -3,7 +3,7 @@ import { ApiResponse } from "./Responses";
 import { CreateEventRequest, CreateLocationRequest, LoginRequest, CreateTicketRequest, UpdateEventRequest } from "./Requests";
 import { toastError } from "../helpers/ToastHelpers";
 import { AuthHelpers } from "../helpers/AuthHelpers";
-import { CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO, TicketDTO, PaginatedList, ImageDTO, UserDTO } from "./DTOs";
+import { CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO, TicketDTO, PaginatedList, ImageDTO, UserDTO, EventReportDTO } from "./DTOs";
 
 axios.defaults.withCredentials = true;
 
@@ -157,6 +157,10 @@ export class Api {
 
     static async GetEventImagesByEventId(id: string) {
         return await getApiResponse<undefined, ImageDTO[]>("get", this.url + "/events/images/" + id)
+    }
+
+    static async GetEventReport(eventId: string) {
+        return await getApiResponse<undefined, EventReportDTO>("get", this.url + `/reports/${eventId}`);
     }
 
     static async Session() {
