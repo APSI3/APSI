@@ -104,7 +104,7 @@ const CreateOrganizerForm: React.FC<{ onClose: () => void }> = ({ onClose }) => 
                 </div>
                 <div className="form-group row justify-content-center">
                     <label className="col-6 col-md-3 col-form-label" />
-                    <div className="col-6 col-md-6">
+                    <div className="col-6 col-md-6" style={{ marginTop: '20px' }}>
                         <button className="btn btn-primary form-control" type="submit" disabled={isSubmitting}>Złóż wniosek</button>
                     </div>
                 </div>

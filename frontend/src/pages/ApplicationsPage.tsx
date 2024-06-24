@@ -28,9 +28,19 @@ export default function ApplicationsPage() {
         getApplications(index);
     }
 
+    const sortApplications = (apps: FormDTO[]) => {
+        const statusOrder: { [key: string]: number } = {
+            PENDING: 1,
+            ACCEPTED: 2,
+            REJECTED: 3,
+        };
+
+        return apps.sort((a, b) => statusOrder[a.status] - statusOrder[b.status]);
+    };
+
     return <>
         <h2>Wnioski</h2>
-        {applications.map(application => (
+        {sortApplications(applications).map(application => (
             <ApplicationCard application={application} key={`application-${application.id}`}/>
         ))}
         <br />
