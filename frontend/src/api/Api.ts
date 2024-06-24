@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ApiResponse } from "./Responses";
-import { CreateEventRequest, CreateLocationRequest, LoginRequest, CreateTicketRequest, UpdateEventRequest } from "./Requests";
+import {CreateEventRequest, CreateLocationRequest, LoginRequest, CreateTicketRequest, UpdateEventRequest, CreateUserRequest} from "./Requests";
 import { toastError } from "../helpers/ToastHelpers";
 import { AuthHelpers } from "../helpers/AuthHelpers";
 import { CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO, TicketDTO, PaginatedList, ImageDTO, UserDTO } from "./DTOs";
@@ -58,6 +58,10 @@ export class Api {
         return await getApiResponse<LoginRequest, LoggedUserDTO>("post", this.url + "/user/login", request);
     }
 
+    static async CreateUser(request: CreateUserRequest) {
+        return await getApiResponse<CreateUserRequest, UserDTO>("post", this.url + "/user", request);
+    }
+
     static async GetUsers(pageIndex: number) {
         return await getApiResponse<undefined, PaginatedList<UserDTO>>("get",
             this.url + `/user?pageIndex=${pageIndex}`);
@@ -68,7 +72,7 @@ export class Api {
     }
 
     static async CreateEvent(request: CreateEventRequest) {
-        const eventPart = { 
+        const eventPart = {
             ...request,
             image: undefined,
             sectionMap: undefined,
@@ -80,7 +84,7 @@ export class Api {
             event: JSON.stringify(eventPart),
             image: request.image,
             sectionMap: request.sectionMap,
-        }  
+        }
         return await getApiResponse<object, EventDTO>("post", this.url + "/events", body, true);
     }
 
@@ -157,6 +161,10 @@ export class Api {
 
     static async GetEventImagesByEventId(id: string) {
         return await getApiResponse<undefined, ImageDTO[]>("get", this.url + "/events/images/" + id)
+    }
+
+    static async GetUniqueLogin(login: string) {
+        return await getApiResponse<undefined, boolean>("get", this.url + `/user/check_login?login=${login}`);
     }
 
     static async Session() {

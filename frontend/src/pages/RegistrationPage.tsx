@@ -1,5 +1,9 @@
+import PersonUserCreationForm from "../components/PersonUserCreationForm";
+import {Paths} from "../App";
 
 export default function RegistrationPage() {
-    // todo: [JIRA: APSI-32]
-    return <>Work in progress</>
+    return <>
+        <PersonUserCreationForm/>
+        <p className="justify-content-center">Masz już konto? <a href={Paths.login}>Zaloguj się</a></p>
+    </>
 }

@@ -39,4 +39,11 @@ public class User {
     @ToString.Exclude
     private List<Event> events;
 
+    public User(String login, String hash, String salt, UserType type, String email) {
+        this.login = login;
+        this.hash = hash;
+        this.salt = salt;
+        this.type = type;
+        this.email = email;
+    }
 }
