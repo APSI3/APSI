@@ -6,6 +6,6 @@ import lombok.Value;
 
 @Value
 public class EventReportDTO {
-    EventDTO eventDTO;
+    EventDTO event;
     List<TicketDTO> tickets;
 }
