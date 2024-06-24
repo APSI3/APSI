@@ -178,7 +178,8 @@ const EventForm: React.FC<{
             validationSchema={createEventValidationSchema}
             onSubmit={async (values, fh) => {
                 let newValues = values;
-                if (!values.location?.id)
+                // eslint-disable-next-line eqeqeq
+                if (!values.location?.id || values.location.id == 0)
                     newValues = { ...newValues, location: undefined}
                 else {
                     const isValid = await validateLocationCapacity(values, fh);

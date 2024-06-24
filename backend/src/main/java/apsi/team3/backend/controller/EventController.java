@@ -128,10 +128,14 @@ public class EventController {
             || !Objects.equals(eventDTO.getStartDate(), oldEvent.get().getStartDate())
             || !Objects.equals(eventDTO.getEndDate(), oldEvent.get().getEndDate());
 
-        boolean locationChanged = eventDTO.getLocation().getId() != oldEvent.get().getLocation().getId();
-        var sections = resp.getSections();
+        var newLocId = eventDTO.getLocation() != null && eventDTO.getLocation().getId() != null ? eventDTO.getLocation().getId() : null;
+        var oldLocId = oldEvent.get().getLocation() != null && oldEvent.get().getLocation().getId() != null 
+            ? oldEvent.get().getLocation().getId()
+            : null;
 
+        var locationChanged = newLocId != oldLocId;
         if (timeChanged || locationChanged) {
+            var sections = resp.getSections();
             try {
                 List<TicketDTO> tickets = ticketService.getTicketsByEventId(oldEvent.get().getId());
                 for (TicketDTO ticket : tickets) {
