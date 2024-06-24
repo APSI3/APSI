@@ -1,9 +1,9 @@
 import axios from "axios";
 import { ApiResponse } from "./Responses";
-import {CreateEventRequest, CreateLocationRequest, LoginRequest, CreateTicketRequest, UpdateEventRequest, CreateUserRequest} from "./Requests";
+import {CreateEventRequest, CreateLocationRequest, LoginRequest, CreateTicketRequest, UpdateEventRequest, CreateUserRequest, CreateFormRequest, RejectionRequest} from "./Requests";
 import { toastError } from "../helpers/ToastHelpers";
 import { AuthHelpers } from "../helpers/AuthHelpers";
-import { CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO, TicketDTO, PaginatedList, ImageDTO, UserDTO } from "./DTOs";
+import {CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO, TicketDTO, PaginatedList, ImageDTO, UserDTO, FormDTO} from "./DTOs";
 
 axios.defaults.withCredentials = true;
 
@@ -165,6 +165,23 @@ export class Api {
 
     static async GetUniqueLogin(login: string) {
         return await getApiResponse<undefined, boolean>("get", this.url + `/user/check_login?login=${login}`);
+    }
+
+    static async CreateForm(request: CreateFormRequest) {
+        return await getApiResponse<CreateFormRequest, FormDTO>("post", this.url + "/forms", request)
+    }
+
+    static async GetForms(pageIndex: number) {
+        return await getApiResponse<undefined, PaginatedList<FormDTO>>("get",
+            this.url + `/forms?pageIndex=${pageIndex}`);
+    }
+
+    static async AcceptApplication(applicationId: number) {
+        return await getApiResponse<undefined, UserDTO>("post", this.url + `/forms/accept?formId=${applicationId}`)
+    }
+
+    static async RejectApplication(request: RejectionRequest) {
+        return await getApiResponse<RejectionRequest, boolean>("post", this.url + `/forms/reject`, request)
     }
 
     static async Session() {

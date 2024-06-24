@@ -9,6 +9,7 @@ import apsi.team3.backend.DTOs.UserDTO;
 import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IUserService;
+import apsi.team3.backend.model.Form;
 import apsi.team3.backend.model.User;
 import apsi.team3.backend.model.UserType;
 import apsi.team3.backend.repository.UserRepository;
@@ -33,7 +34,6 @@ public class UserService implements IUserService {
     private final int PAGE_SIZE = 10;
     private static int SALT_LENGTH = 16;
     private static final SecureRandom secureRandom = new SecureRandom();
-
     private final UserRepository userRepository;
 
     @Autowired
@@ -51,8 +51,7 @@ public class UserService implements IUserService {
         return userRepository.findUserByLogin(login);
     }
 
-    @Override
-    public String hashPassword(String password, String salt) throws ApsiException {
+    static public String hashPassword(String password, String salt) throws ApsiException {
         try {
             var byteSalt = Hex.decodeHex(salt);
             var spec = new PBEKeySpec(password.toCharArray(), byteSalt, 2 ^ 12, 256);
@@ -115,6 +114,13 @@ public class UserService implements IUserService {
     @Override
     public int getUserLoginCount(String login) {
         return userRepository.getUserLoginCount(login);
+    }
+
+    @Override
+    public UserDTO createOrganizer(Form form) {
+        var entity = new User(form.getLogin(), form.getHash(), form.getSalt(), UserType.ORGANIZER, form.getEmail());
+        var newUser = userRepository.save(entity);
+        return DTOMapper.toDTO(newUser);
     }
 
     @Override

@@ -87,3 +87,11 @@ export type ImageDTO = {
     image: string,
     sectionMap: boolean
 }
+
+export type FormDTO = {
+    id: number,
+    login: string,
+    email: string,
+    salt: string,
+    status: string,
+}
