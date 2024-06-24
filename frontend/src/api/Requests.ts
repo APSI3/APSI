@@ -64,3 +64,8 @@ export type CreateFormRequest = {
     email: string,
     password: string
 }
+
+export type RejectionRequest = {
+    id: number,
+    cause: string,
+}

@@ -4,12 +4,14 @@ import apsi.team3.backend.DTOs.DTOMapper;
 import apsi.team3.backend.DTOs.FormDTO;
 import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.DTOs.Requests.CreateFormRequest;
+import apsi.team3.backend.DTOs.UserDTO;
 import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IFormService;
 import apsi.team3.backend.model.Form;
 import apsi.team3.backend.model.FormStatus;
 import apsi.team3.backend.model.User;
+import apsi.team3.backend.model.UserType;
 import apsi.team3.backend.repository.FormRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -53,5 +55,11 @@ public class FormService implements IFormService {
                 .collect(Collectors.toList());
 
         return new PaginatedList<>(items, pageIndex, page.getTotalElements(), page.getTotalPages());
+    }
+
+    @Override
+    public UserDTO accept(Long formId) {
+        var form = formRepository.findById(formId);
+        return null;
     }
 }

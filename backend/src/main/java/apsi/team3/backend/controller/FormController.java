@@ -3,6 +3,7 @@ package apsi.team3.backend.controller;
 import apsi.team3.backend.DTOs.FormDTO;
 import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.DTOs.Requests.CreateFormRequest;
+import apsi.team3.backend.DTOs.UserDTO;
 import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IFormService;
@@ -30,6 +31,12 @@ public class FormController {
             @RequestParam int pageIndex
     ) throws ApsiValidationException {
         var resp = formService.getForms(pageIndex);
+        return ResponseEntity.ok(resp);
+    }
+
+    @PostMapping("/accept")
+    public ResponseEntity<UserDTO> accept(@PathVariable Long formId) {
+        var resp = formService.accept(formId);
         return ResponseEntity.ok(resp);
     }
 }

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ApiResponse } from "./Responses";
-import {CreateEventRequest, CreateLocationRequest, LoginRequest, CreateTicketRequest, UpdateEventRequest, CreateUserRequest, CreateFormRequest} from "./Requests";
+import {CreateEventRequest, CreateLocationRequest, LoginRequest, CreateTicketRequest, UpdateEventRequest, CreateUserRequest, CreateFormRequest, RejectionRequest} from "./Requests";
 import { toastError } from "../helpers/ToastHelpers";
 import { AuthHelpers } from "../helpers/AuthHelpers";
 import {CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO, TicketDTO, PaginatedList, ImageDTO, UserDTO, FormDTO} from "./DTOs";
@@ -174,6 +174,14 @@ export class Api {
     static async GetForms(pageIndex: number) {
         return await getApiResponse<undefined, PaginatedList<FormDTO>>("get",
             this.url + `/forms?pageIndex=${pageIndex}`);
+    }
+
+    static async AcceptApplication(applicationId: number) {
+        return await getApiResponse<undefined, UserDTO>("post", this.url + `/forms/accept?formId=${applicationId}`)
+    }
+
+    static async RejectApplication(request: RejectionRequest) {
+        return await getApiResponse<RejectionRequest, boolean>("post", this.url + `/forms/reject`)
     }
 
     static async Session() {
