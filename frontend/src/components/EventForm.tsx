@@ -9,6 +9,7 @@ import { Grid, Paper } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { LocationDTO } from "../api/DTOs";
 import {CreateEventRequest, UpdateEventRequest} from "../api/Requests";
+import { isTTDeletionEnabled } from "./TicketCardButtons/DeleteButton";
 
 const defaultInitialValues: UpdateEventRequest = {
     id: 0,
@@ -131,13 +132,12 @@ const EventForm: React.FC<{
             const oldTicket = mergedInitialValues.ticketTypes[idx];
 
             if (oldTicket?.quantityAvailable !== ticket?.quantityAvailable) {
-                await Api.GetSoldTicketsCount(ticket.id).then(res => {
-                    if (res.data && ticket.quantityAvailable - res.data < 0) {
-                        fh.setFieldError(`ticketTypes.${idx}.quantityAvailable`, 
-                            'Nie można zmienić liczby biletów poniżej dostępnej wartości');
-                        return;
-                    }
-                });
+                const resp = await Api.GetSoldTicketsCount(ticket.id);
+                if (resp.success && resp.data && resp.data > ticket.quantityAvailable){
+                    fh.setFieldError(`ticketTypes.${idx}.quantityAvailable`, 
+                        'Nie można zmienić liczby biletów poniżej dostępnej wartości');
+                    return;
+                }
             }
         }
 
@@ -179,7 +179,8 @@ const EventForm: React.FC<{
             validationSchema={createEventValidationSchema}
             onSubmit={async (values, fh) => {
                 let newValues = values;
-                if (!values.location?.id)
+                // eslint-disable-next-line eqeqeq
+                if (!values.location?.id || values.location.id == 0)
                     newValues = { ...newValues, location: undefined}
                 else {
                     const isValid = await validateLocationCapacity(values, fh);
@@ -235,9 +236,9 @@ const EventForm: React.FC<{
                     <ValidationMessage fieldName="endTime" />
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="location.id" className="form-label">Lokacja</label>
+                    <label htmlFor="location.id" className="form-label">Lokalizacja</label>
                     <Field as="select" name="location.id" id="location.id" className="form-control">
-                        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)} 
+                        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
                     </Field>
                     <ValidationMessage fieldName="location.id" />
                     <ValidationMessage fieldName="location" />
@@ -248,9 +249,9 @@ const EventForm: React.FC<{
                     <input className="form-control" type="file" accept="image/*" id="image" name="image" onChange={e => {
                         const reader = new FileReader();
                         reader.onload = () => {
-                            if (reader.readyState === 2) 
+                            if (reader.readyState === 2)
                                 setFieldValue("image", reader.result)
-                            else 
+                            else
                                 setFieldError("image", "Nie udało się wczytać obrazu")
                         }
 
@@ -265,7 +266,7 @@ const EventForm: React.FC<{
                 </div>
                 <div className="mb-3">
                     <label htmlFor="ticketTypes" className="form-label">Typy biletów</label>
-                    <FieldArray name="ticketTypes" 
+                    <FieldArray name="ticketTypes"
                         render={helpers => <div className="p-1">
                             {values.ticketTypes.map((tt, idx) => {
                                 const name = `ticketTypes.${idx}`;
@@ -295,7 +296,9 @@ const EventForm: React.FC<{
                                             <ValidationMessage fieldName={name + ".quantityAvailable"} />
                                         </Grid>
                                     </Grid>
-                                    <button className="btn btn-danger" type="button" onClick={() => helpers.remove(idx)}>
+                                    <button disabled={isTTDeletionEnabled(values.startDate, values.ticketTypes.length) && !!tt.id}
+                                        className="btn btn-danger" type="button" onClick={() => helpers.remove(idx)}
+                                    >
                                         Usuń
                                     </button>
                                 </Paper>}

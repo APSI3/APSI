@@ -58,11 +58,11 @@ public class TicketService implements ITicketService {
         if (!section.isPresent())
             throw new ApsiValidationException("Niepoprawny rodzaj miejsca", "sectionId");
         
-        var typeCount = ticketTypeRepository.findTicketCount(request.getTicketTypeId()).orElse(0l);
+        var typeCount = ticketTypeRepository.findTicketCount(request.getTicketTypeId());
         if (type.get().getQuantityAvailable() <= typeCount)
             throw new ApsiValidationException("Brak dostępnych biletów tego typu", "ticketTypeId");
 
-        var sectionCount = ticketRepository.countTicketsForSectionId(request.getSectionId()).orElse(0l);
+        var sectionCount = ticketRepository.countTicketsForSectionId(request.getSectionId());
         if (section.get().getCapacity() <= sectionCount)
             throw new ApsiValidationException("Brak dostępnych biletów dla tego rodzaju miejsc", "sectionId");
         

@@ -92,3 +92,11 @@ export type EventReportDTO = {
     event: EventDTO,
     tickets: TicketDTO[]
 }
+
+export type FormDTO = {
+    id: number,
+    login: string,
+    email: string,
+    salt: string,
+    status: string,
+}

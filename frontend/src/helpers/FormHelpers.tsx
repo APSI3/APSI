@@ -51,3 +51,9 @@ export const getExtendedLocationString = (loc: LocationDTO) => {
         string += "lokal " + loc.apartment_nr + " "
     return string;
 }
+
+export class FormStatus {
+    public static ACCEPTED = 'ACCEPTED';
+    public static PENDING = 'PENDING';
+    public static REJECTED = 'REJECTED';
+}

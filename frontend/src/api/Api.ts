@@ -1,9 +1,9 @@
 import axios from "axios";
 import { ApiResponse } from "./Responses";
-import { CreateEventRequest, CreateLocationRequest, LoginRequest, CreateTicketRequest, UpdateEventRequest } from "./Requests";
+import {CreateEventRequest, CreateLocationRequest, LoginRequest, CreateTicketRequest, UpdateEventRequest, CreateUserRequest, CreateFormRequest, RejectionRequest} from "./Requests";
 import { toastError } from "../helpers/ToastHelpers";
 import { AuthHelpers } from "../helpers/AuthHelpers";
-import { CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO, TicketDTO, PaginatedList, ImageDTO, UserDTO, EventReportDTO } from "./DTOs";
+import { CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO, TicketDTO, PaginatedList, ImageDTO, UserDTO, EventReportDTO, FormDTO } from "./DTOs";
 
 axios.defaults.withCredentials = true;
 
@@ -58,6 +58,10 @@ export class Api {
         return await getApiResponse<LoginRequest, LoggedUserDTO>("post", this.url + "/user/login", request);
     }
 
+    static async CreateUser(request: CreateUserRequest) {
+        return await getApiResponse<CreateUserRequest, UserDTO>("post", this.url + "/user", request);
+    }
+
     static async GetUsers(pageIndex: number) {
         return await getApiResponse<undefined, PaginatedList<UserDTO>>("get",
             this.url + `/user?pageIndex=${pageIndex}`);
@@ -68,7 +72,7 @@ export class Api {
     }
 
     static async CreateEvent(request: CreateEventRequest) {
-        const eventPart = { 
+        const eventPart = {
             ...request,
             image: undefined,
             sectionMap: undefined,
@@ -80,7 +84,7 @@ export class Api {
             event: JSON.stringify(eventPart),
             image: request.image,
             sectionMap: request.sectionMap,
-        }  
+        }
         return await getApiResponse<object, EventDTO>("post", this.url + "/events", body, true);
     }
 
@@ -161,6 +165,27 @@ export class Api {
 
     static async GetEventReport(eventId: string) {
         return await getApiResponse<undefined, EventReportDTO>("get", this.url + `/reports/${eventId}`);
+    }
+    
+    static async GetUniqueLogin(login: string) {
+        return await getApiResponse<undefined, boolean>("get", this.url + `/user/check_login?login=${login}`);
+    }
+
+    static async CreateForm(request: CreateFormRequest) {
+        return await getApiResponse<CreateFormRequest, FormDTO>("post", this.url + "/forms", request)
+    }
+
+    static async GetForms(pageIndex: number) {
+        return await getApiResponse<undefined, PaginatedList<FormDTO>>("get",
+            this.url + `/forms?pageIndex=${pageIndex}`);
+    }
+
+    static async AcceptApplication(applicationId: number) {
+        return await getApiResponse<undefined, UserDTO>("post", this.url + `/forms/accept?formId=${applicationId}`)
+    }
+
+    static async RejectApplication(request: RejectionRequest) {
+        return await getApiResponse<RejectionRequest, boolean>("post", this.url + `/forms/reject`, request)
     }
 
     static async Session() {
