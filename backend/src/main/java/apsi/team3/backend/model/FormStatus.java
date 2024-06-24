@@ -1,2 +1,7 @@
-package apsi.team3.backend.model;public enum FormStatus {
+package apsi.team3.backend.model;
+
+public enum FormStatus {
+    PENDING,
+    ACCEPTED,
+    REJECTED,
 }

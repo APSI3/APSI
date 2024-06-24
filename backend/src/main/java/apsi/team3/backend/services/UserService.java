@@ -33,7 +33,6 @@ public class UserService implements IUserService {
     private final int PAGE_SIZE = 10;
     private static int SALT_LENGTH = 16;
     private static final SecureRandom secureRandom = new SecureRandom();
-
     private final UserRepository userRepository;
 
     @Autowired
@@ -51,8 +50,7 @@ public class UserService implements IUserService {
         return userRepository.findUserByLogin(login);
     }
 
-    @Override
-    public String hashPassword(String password, String salt) throws ApsiException {
+    static public String hashPassword(String password, String salt) throws ApsiException {
         try {
             var byteSalt = Hex.decodeHex(salt);
             var spec = new PBEKeySpec(password.toCharArray(), byteSalt, 2 ^ 12, 256);

@@ -221,4 +221,8 @@ public class DTOMapper {
             .holderLastName(ticketDTO.getHolderLastName())
             .build();
     }
+
+    public static FormDTO toDTO(Form form) {
+        return new FormDTO(form.getId(), form.getLogin(), form.getEmail(), form.getSalt(), form.getStatus());
+    }
 }

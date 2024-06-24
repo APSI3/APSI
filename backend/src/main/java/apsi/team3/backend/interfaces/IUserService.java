@@ -16,8 +16,6 @@ public interface IUserService {
 
     Optional<User> getUserByLogin(String login);
 
-    String hashPassword(String password, String salt) throws ApsiException;
-
     LoggedUserDTO login(LoginRequest request) throws ApsiValidationException;
 
     PaginatedList<UserDTO> getUsers(int pageIndex) throws ApsiValidationException;

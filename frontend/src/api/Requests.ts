@@ -58,3 +58,9 @@ export type CreateUserRequest = {
     email: string,
     password: string,
 }
+
+export type CreateFormRequest = {
+    login: string,
+    email: string,
+    password: string
+}
