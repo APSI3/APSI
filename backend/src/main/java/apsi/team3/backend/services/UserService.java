@@ -66,7 +66,7 @@ public class UserService implements IUserService {
             throw new ApsiValidationException("Hasło jest wymagane", "password");
 
         var userRaw = userRepository.findUserByLogin(request.getLogin());
-        var user = userRaw.orElseThrow(() -> new ApsiValidationException("Niepoprawne hasło", "password"));
+        var user = userRaw.orElseThrow(() -> new ApsiValidationException("Niepoprawny login lub hasło", "password"));
 
         try {
             var hash = hashPassword(request.getPassword(), user.getSalt());
@@ -81,7 +81,7 @@ public class UserService implements IUserService {
             throw new ApsiValidationException("Nie udało się zalogować", "password");
         }
 
-        throw new ApsiValidationException("Niepoprawne hasło", "password");
+        throw new ApsiValidationException("Niepoprawny login lub hasło", "password");
     }
 
     @Override

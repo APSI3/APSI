@@ -78,10 +78,10 @@ public class EventService implements IEventService {
         if (eventDTO.getLocation() != null && eventDTO.getLocation().getId() != null) {
             var location = locationRepository.findById(eventDTO.getLocation().getId());
             if (location.isEmpty())
-                throw new ApsiValidationException("Wybrana lokacja nie istnieje", "location");
+                throw new ApsiValidationException("Wybrana lokalizacja nie istnieje", "location");
 
-            if (eventDTO.getTicketTypes().size() > 0 && 
-                location.get().getCapacity() != 0 && 
+            if (eventDTO.getTicketTypes().size() > 0 &&
+                location.get().getCapacity() != 0 &&
                 location.get().getCapacity() < eventDTO.getTicketTypes().stream().mapToInt(TicketTypeDTO::getQuantityAvailable).sum()
             )
                 throw new ApsiValidationException("Ilość biletów większa niż dopuszczalna w danej lokalizacji", "tickets");
@@ -161,7 +161,7 @@ public class EventService implements IEventService {
 
         if (image != null && existingImageId.isPresent()){
             existingEvent.getImages().removeIf(i -> i.getId() == existingImageId.get());
-            entity.getImages().removeIf(i -> i.getId() == existingImageId.get());    
+            entity.getImages().removeIf(i -> i.getId() == existingImageId.get());
             eventImageRepository.deleteById(existingImageId.get());
         }
 
@@ -279,6 +279,12 @@ public class EventService implements IEventService {
     @Override
     public List<ImageDTO> getImagesByEventId(Long id) {
         var images = eventImageRepository.findByEventId(id);
+
+        if (images.size() == 0)
+            return new byte[0];
+
+        // na razie spodziewamy się 1 obrazka per event
+        return images.get(0).getImage();
         return images.stream().map(i -> DTOMapper.toDTO(i)).toList();
     }
 }
