@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.model.User;
+import apsi.team3.backend.model.UserType;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,8 +30,10 @@ public class LocationService implements ILocationService {
     @Override
     public Optional<LocationDTO> getLocationById(Long id) {
         var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        // creator lub admin
-        return locationRepository.findById(id).map(DTOMapper::toDTO);
+        var loc = locationRepository.findById(id).map(DTOMapper::toDTO);;
+        if (loc.isPresent() && loc.get().getCreator_id() != loggedUser.getId() && loggedUser.getType() != UserType.SUPERADMIN)
+            return Optional.empty();
+        return loc;
     }
 
     @Override
@@ -44,8 +48,10 @@ public class LocationService implements ILocationService {
     @Override
     public List<LocationDTO> getLocations() {
         var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        // creator lub admin
-        return locationRepository.geLocationsForCreatorId(loggedUser.getId()).stream().map(DTOMapper::toDTO).toList();
+        List<LocationDTO> locations = locationRepository.geLocationsForCreatorId(loggedUser.getId()).stream().map(DTOMapper::toDTO).toList();
+        if (loggedUser.getType() != UserType.SUPERADMIN)
+            return locations.stream().filter(l -> l.getCreator_id() == loggedUser.getId()).toList();
+        return locations;
     }
 
     @Override

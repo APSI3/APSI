@@ -14,7 +14,7 @@ const TicketCard: React.FC<{ ticket: TicketTypeDTO, skipApiCheck?: boolean, sect
     
     useEffect(() => {
         if (!skipApiCheck) {
-            Api.GetSoldTicketsCount(ticket.id).then(res => {
+            Api.GetTicketCountByTypeId(ticket.id).then(res => {
                 if (res.success && res.data) {
                     setSoldCount(res.data ?? 0);
                 }

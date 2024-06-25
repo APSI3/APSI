@@ -41,9 +41,10 @@ public class Config {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
             .cors(Customizer.withDefaults())
-            .authorizeHttpRequests(r -> r.requestMatchers("/user/login").anonymous())
             .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.GET, "/user/check_login").anonymous())
             .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.POST, "/user").anonymous())
+            .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.GET, "/user").hasAnyAuthority(UserType.SUPERADMIN.toString()))
+            .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.DELETE, "/user").hasAnyAuthority(UserType.SUPERADMIN.toString()))
             .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.POST, "/forms").anonymous())
             .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.POST, "/forms/**").hasAnyAuthority(UserType.SUPERADMIN.toString()))
             .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.GET, "/forms").hasAnyAuthority(UserType.SUPERADMIN.toString()))
@@ -55,6 +56,8 @@ public class Config {
             .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.POST, "/locations**").hasAnyAuthority(UserType.SUPERADMIN.toString(), UserType.ORGANIZER.toString()))
             .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.POST, "/tickets").hasAnyAuthority(UserType.PERSON.toString()))
             .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.GET, "/tickets/**").hasAnyAuthority(UserType.PERSON.toString(), UserType.SUPERADMIN.toString()))
+            .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.GET, "/tickets/my").hasAnyAuthority(UserType.PERSON.toString()))
+            .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.DELETE, "/ticket_types/**").hasAnyAuthority(UserType.SUPERADMIN.toString(), UserType.ORGANIZER.toString()))
             .authorizeHttpRequests(r -> r.anyRequest().authenticated())
             .httpBasic(c -> c.authenticationEntryPoint((req, res, authEx) -> {
                 if (!req.getRequestURI().contains("login"))

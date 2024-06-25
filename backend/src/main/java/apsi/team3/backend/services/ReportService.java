@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import apsi.team3.backend.DTOs.EventReportDTO;
 import apsi.team3.backend.interfaces.IReportService;
 import apsi.team3.backend.model.User;
+import apsi.team3.backend.model.UserType;
 
 @Service
 public class ReportService implements IReportService {
@@ -24,7 +25,7 @@ public class ReportService implements IReportService {
     public EventReportDTO getEventReport(Long id) throws ApsiValidationException {
         var user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         var event = eventService.getEventById(id);
-        if (!event.isPresent() || event.get().getOrganizerId() != user.getId())
+        if (!event.isPresent() || (event.get().getOrganizerId() != user.getId() && user.getType() != UserType.SUPERADMIN))
             throw new ApsiValidationException("Nie znaleziono wydarzenia o takim id", "id");
         
         var tickets = ticketService.getTicketsByEventId(id);

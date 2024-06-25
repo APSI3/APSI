@@ -122,19 +122,20 @@ export class Api {
             this.url + `/tickets/user/${id}?from=${from.toISOString()}&to=${to.toISOString()}&pageIndex=${pageIndex}`);
     }
 
-    static async GetTicketTypesByEvent(id: string | undefined) {
-        return await getApiResponse<undefined, TicketTypeDTO[]>("get", this.url + `/ticket_types/event/${id}`);
+    static async GetMyTickets(from: Date, to: Date, pageIndex: number) {
+        return await getApiResponse<undefined, PaginatedList<TicketDTO>>("get",
+            this.url + `/tickets/my?from=${from.toISOString()}&to=${to.toISOString()}&pageIndex=${pageIndex}`);
     }
 
-    static async GetTicketTypeById(id: number | undefined) {
-        return await getApiResponse<undefined, TicketTypeDTO>("get", this.url + `/ticket_types/${id}`);
+    static async GetTicketTypesByEvent(id: string | undefined) {
+        return await getApiResponse<undefined, TicketTypeDTO[]>("get", this.url + `/ticket_types/event/${id}`);
     }
 
     static async DeleteTicketType(id: number | undefined) {
         return await getApiResponse<undefined, number>("delete", this.url + `/ticket_types/${id}`);
     }
 
-    static async GetSoldTicketsCount(id: number | undefined) {
+    static async GetTicketCountByTypeId(id: number | undefined) {
         return await getApiResponse<undefined, number>("get", this.url + `/ticket_types/${id}/count`);
     }
 

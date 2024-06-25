@@ -107,7 +107,6 @@ public class MailService {
     public void sendEventDeletedEmail(TicketDTO ticket) throws ApsiException {
         var user = ticket.getHolder();
         var event = ticket.getEvent();
-        String eventUrl = String.format("localhost:3000/event/%s", event.getId());
         String mailSubject = "Wydarzenie, na które kupiłeś bilet zostało anulowane";
         String message = String.format("""
                 Przepraszamy,

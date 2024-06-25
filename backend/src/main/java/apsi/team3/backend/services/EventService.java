@@ -11,6 +11,7 @@ import apsi.team3.backend.interfaces.IEventService;
 import apsi.team3.backend.model.Event;
 import apsi.team3.backend.model.EventImage;
 import apsi.team3.backend.model.User;
+import apsi.team3.backend.model.UserType;
 import apsi.team3.backend.repository.EventImageRepository;
 import apsi.team3.backend.repository.EventRepository;
 import apsi.team3.backend.repository.EventSectionRepository;
@@ -378,6 +379,10 @@ public class EventService implements IEventService {
             return Optional.empty();
         }
         var event = eventOptional.get();
+        var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (event.getOrganizer().getId() != loggedUser.getId() && loggedUser.getType() != UserType.ORGANIZER)
+            return Optional.empty();
+
         event.setCanceled(true);
         eventRepository.save(event);
         var tickets = ticketRepository.getTicketsByEventId(event.getId());

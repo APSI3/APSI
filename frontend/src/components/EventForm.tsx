@@ -132,7 +132,7 @@ const EventForm: React.FC<{
             const oldTicket = mergedInitialValues.ticketTypes[idx];
 
             if (oldTicket?.quantityAvailable !== ticket?.quantityAvailable) {
-                const resp = await Api.GetSoldTicketsCount(ticket.id);
+                const resp = await Api.GetTicketCountByTypeId(ticket.id);
                 if (resp.success && resp.data && resp.data > ticket.quantityAvailable){
                     fh.setFieldError(`ticketTypes.${idx}.quantityAvailable`, 
                         'Nie można zmienić liczby biletów poniżej dostępnej wartości');

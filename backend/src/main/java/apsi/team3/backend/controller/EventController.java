@@ -130,14 +130,13 @@ public class EventController {
         } catch (JsonProcessingException e) {
             throw new ApsiValidationException("Niepoprawne żądanie", "event");
         }
+
         var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         var oldEvent = eventService.getEventById(id);
-
         if (oldEvent.isEmpty() || (oldEvent.get().getOrganizerId() != loggedUser.getId() && loggedUser.getType() != UserType.SUPERADMIN)) {
             return ResponseEntity.notFound().build();
         }
             
-
         var resp = eventService.replace(eventDTO, image, sectionMap);
 
         boolean timeChanged = !Objects.equals(eventDTO.getStartTime(), oldEvent.get().getStartTime())
