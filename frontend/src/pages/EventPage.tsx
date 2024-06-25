@@ -87,6 +87,9 @@ export default function EventPage() {
                 </Grid>
                 {/* Title */}
                 <Grid item xs={12}>
+                    {event.canceled && <Typography variant="h5" color="red">
+                        ANULOWANE
+                    </Typography>}
                     <Typography variant="h4" gutterBottom>
                         {event.name}
                     </Typography>

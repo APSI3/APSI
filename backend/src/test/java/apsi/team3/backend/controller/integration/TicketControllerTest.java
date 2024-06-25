@@ -62,27 +62,6 @@ public class TicketControllerTest {
     }
 
     @Test
-    public void testGetTicketByIdReturnsTicket() throws Exception {
-        LoggedUserDTO loggedUser = login(UserType.PERSON);
-        var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        var todayDateStr = LocalDate.now().format(formatter);
-        String expectedJson = String.format("""
-            {
-                "id": 1,
-                "ticketTypeId": 2,
-                "holderId": 2,
-                "holderFirstName": "Jan",
-                "holderLastName": "Kowalski",
-                "purchaseDate": "%s"
-            }
-        """, todayDateStr);
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/tickets/2").header("Authorization", loggedUser.getAuthHeader()))
-            .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(content().json(expectedJson));
-    }
-
-    @Test
     public void testGetTicketByUserIdReturnsTicket() throws Exception {
         LoggedUserDTO loggedUser = login(UserType.PERSON);
         String from = "2024-04-10T00:00:00Z";

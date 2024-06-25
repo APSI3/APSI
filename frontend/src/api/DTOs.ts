@@ -25,6 +25,7 @@ export interface EventDTO {
     sections: SectionDTO[]
     hasImage: boolean
     hasSectionMap: boolean
+    canceled: boolean
 }
 
 export interface TicketTypeDTO {

@@ -174,8 +174,6 @@ public class EventController {
         return ResponseEntity.noContent().build();
     }
 
-
-
     private static void validateSameId(Long id, EventDTO eventDTO) throws ApsiValidationException {
         if (eventDTO.getId() == null) {
             throw new ApsiValidationException("Id must not be null", "id");

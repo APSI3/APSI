@@ -5,7 +5,7 @@ import DetailsButton from "./EventCardButtons/DetailsButton";
 import EditButton from "./EventCardButtons/EditButton";
 import DeleteButton from "./EventCardButtons/DeleteButton";
 
-function getActionButtonsBasedOnRole(event: EventDTO, callback: () => void) {
+function getActionButtonsBasedOnRole(event: EventDTO, callback: (id: number) => void) {
     const role = AuthHelpers.getRole()
     switch (role) {
         case UserTypes.SUPERADMIN:
@@ -16,7 +16,7 @@ function getActionButtonsBasedOnRole(event: EventDTO, callback: () => void) {
     }
 }
 
-const EventCard: React.FC<{ event: EventDTO, deleteEvent: () => void}> = ({ event, deleteEvent }) => {
+const EventCard: React.FC<{ event: EventDTO, deleteEvent: (id: number) => void}> = ({ event, deleteEvent }) => {
     return (
         <div className="card mb-4">
             <div className="card-body">

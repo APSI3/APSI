@@ -4,9 +4,11 @@ import {Grid, Link, Typography, Card, CardContent} from "@mui/material";
 
 
 const UserTicketCard: React.FC<{ ticket: TicketDTO }> = ({ ticket }) => {
+    console.log(ticket)
     return (
         <Card style={{ margin: '1rem' }} elevation={3}>
             <CardContent>
+                {ticket.event.canceled && <Typography variant="h6" color="red">WYDARZENIE ANULOWANE</Typography>}
                 <Grid container spacing={1}>
                     <Grid item xs={12} sm={4} alignItems="center" justifyContent="center" display='inline-flex' flexDirection='column'>
                         <>
