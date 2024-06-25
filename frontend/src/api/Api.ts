@@ -3,7 +3,7 @@ import { ApiResponse } from "./Responses";
 import {CreateEventRequest, CreateLocationRequest, LoginRequest, CreateTicketRequest, UpdateEventRequest, CreateUserRequest, CreateFormRequest, RejectionRequest} from "./Requests";
 import { toastError } from "../helpers/ToastHelpers";
 import { AuthHelpers } from "../helpers/AuthHelpers";
-import { CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketTypeDTO, TicketDTO, PaginatedList, ImageDTO, UserDTO, EventReportDTO, FormDTO } from "./DTOs";
+import { CountryDTO, EventDTO, LocationDTO, LoggedUserDTO, TicketDTO, PaginatedList, ImageDTO, UserDTO, EventReportDTO, FormDTO } from "./DTOs";
 
 axios.defaults.withCredentials = true;
 
@@ -125,10 +125,6 @@ export class Api {
     static async GetMyTickets(from: Date, to: Date, pageIndex: number) {
         return await getApiResponse<undefined, PaginatedList<TicketDTO>>("get",
             this.url + `/tickets/my?from=${from.toISOString()}&to=${to.toISOString()}&pageIndex=${pageIndex}`);
-    }
-
-    static async GetTicketTypesByEvent(id: string | undefined) {
-        return await getApiResponse<undefined, TicketTypeDTO[]>("get", this.url + `/ticket_types/event/${id}`);
     }
 
     static async DeleteTicketType(id: number | undefined) {
