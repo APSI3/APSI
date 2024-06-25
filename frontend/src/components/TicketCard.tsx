@@ -23,7 +23,7 @@ const TicketCard: React.FC<{ ticket: TicketTypeDTO, skipApiCheck?: boolean, sect
     }, [ticket.id, skipApiCheck]);
 
     const canBuyTickets = AuthHelpers.HasAnyRole([ UserTypes.PERSON ]);
-    const canDeleteTicket = AuthHelpers.HasAnyRole([ UserTypes.ORGANIZER ]);
+    const canDeleteTicket = AuthHelpers.HasAnyRole([ UserTypes.ORGANIZER, UserTypes.SUPERADMIN ]);
 
     return (
         <Paper style={{ alignItems: 'center', display: 'flex', justifyContent: 'space-evenly', margin: '0.5rem', background: '#dee2e6' }}  elevation={3} >

@@ -81,21 +81,23 @@ public class UserService implements IUserService {
 
         var userRaw = userRepository.findUserByLogin(request.getLogin());
         var user = userRaw.orElseThrow(() -> new ApsiValidationException("Niepoprawny login lub hasło", "password"));
-        if (user.isCanceled()) {
-            throw new ApsiValidationException("Użytkownik został usunięty", "login");
-        }
 
+        String hash;
         try {
-            var hash = hashPassword(request.getPassword(), user.getSalt());
-
-            if (Objects.equals(hash, user.getHash())) {
-                var str = user.getLogin() + ":" + request.getPassword();
-                var encoded = Base64.getEncoder().encodeToString(str.getBytes());
-                var header = "Basic " + encoded;
-                return DTOMapper.toDTO(user, header);
-            }
+            hash = hashPassword(request.getPassword(), user.getSalt());
         } catch (ApsiException e) {
             throw new ApsiValidationException("Nie udało się zalogować", "password");
+        }
+
+        if (Objects.equals(hash, user.getHash())) {
+            if (user.isCanceled()) {
+                throw new ApsiValidationException("Użytkownik został usunięty", "login");
+            }
+            
+            var str = user.getLogin() + ":" + request.getPassword();
+            var encoded = Base64.getEncoder().encodeToString(str.getBytes());
+            var header = "Basic " + encoded;
+            return DTOMapper.toDTO(user, header);
         }
 
         throw new ApsiValidationException("Niepoprawny login lub hasło", "password");
@@ -154,6 +156,8 @@ public class UserService implements IUserService {
                 for (EventDTO event: events) {
                     eventService.cancel(event.getId());
                 }
+                break;
+            default:
                 break;
         }
         user.get().setCanceled(true);
