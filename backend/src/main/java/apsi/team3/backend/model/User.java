@@ -35,15 +35,19 @@ public class User {
     @Column(name = "email", nullable = true, length = 255)
     private String email;
 
+    @Column(name = "canceled", nullable = false)
+    private boolean canceled;
+
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @ToString.Exclude
     private List<Event> events;
 
-    public User(String login, String hash, String salt, UserType type, String email) {
+    public User(String login, String hash, String salt, UserType type, String email, boolean canceled) {
         this.login = login;
         this.hash = hash;
         this.salt = salt;
         this.type = type;
         this.email = email;
+        this.canceled = canceled;
     }
 }

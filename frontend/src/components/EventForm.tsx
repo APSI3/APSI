@@ -319,24 +319,28 @@ const EventForm: React.FC<{
                         render={helpers => <div className="p-1" style={{ justifyContent: 'center' }}>
                             {values.sections.map((s, idx) => {
                                 const name = `sections.${idx}`;
-                                return <Paper key={idx} className="m-1">
-                                    <Grid item xs={3} style={{ justifyContent: 'center', display: 'flex' }}>
-                                        <div className="m-1">
+                                return <Paper key={idx} className="m-1" style={{ padding: 20 }}>
+                                    <Grid container spacing={1} alignItems="center">
+                                        <Grid item xs={12} sm={6} md={4} lg={3}>
                                             <label htmlFor={name + ".name"} className="form-label">Nazwa</label>
-                                            <Field type="string" name={name + ".name"}
-                                                id={name + ".name"} className="form-control"
-                                            />
-                                            <ValidationMessage fieldName={name + ".name"} />
-                                        </div>
-                                        <div className="m-1">
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={8} lg={9}>
+                                        <Field type="string" name={name + ".name"}
+                                            id={name + ".name"} className="form-control"
+                                        />
+                                        <ValidationMessage fieldName={name + ".name"} />
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={4} lg={3}>
                                             <label htmlFor={name + ".capacity"} className="form-label">Pojemność</label>
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={8} lg={9}>
                                             <Field type="number" name={name + ".capacity"}
                                                 id={name + ".capacity"} className="form-control"
                                             />
                                             <ValidationMessage fieldName={name + ".capacity"} />
-                                        </div>
+                                        </Grid>
                                     </Grid>
-                                    <button className="btn btn-danger" type="button" onClick={() => helpers.remove(idx)}>
+                                    <button disabled={isTTDeletionEnabled(values.startDate, values.sections.length) && !!s.id} className="btn btn-danger" type="button" onClick={() => helpers.remove(idx)} >
                                         Usuń
                                     </button>
                                 </Paper>

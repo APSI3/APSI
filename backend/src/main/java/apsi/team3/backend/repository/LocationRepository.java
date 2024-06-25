@@ -15,6 +15,9 @@ public interface LocationRepository extends CrudRepository<Location, Long> {
     @Query(value = "SELECT * FROM locations WHERE creator_id=?", nativeQuery = true)
     Page<Location> geLocationsForCreatorIdPageable(Pageable pageable, Long creatorId);
 
+    @Query(value = "SELECT * FROM locations", nativeQuery = true)
+    Page<Location> geLocationsPageable(Pageable pageable);
+
     @Query(value = "SELECT * FROM locations WHERE creator_id=?", nativeQuery = true)
     List<Location> geLocationsForCreatorId(Long creatorId);
 }

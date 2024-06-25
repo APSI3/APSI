@@ -17,7 +17,7 @@ public class TestHelper {
             null,
             "description",
             false,
-            new User(1L, "login", "hash", "salt", UserType.ORGANIZER, "email", null),
+            new User(1L, "login", "hash", "salt", UserType.ORGANIZER, "email", false, null),
             new ArrayList<>(),
             null,
             new ArrayList<>(),
@@ -34,7 +34,7 @@ public class TestHelper {
     }
 
     public static User getTestUser(Long userId, String login) {
-        return new User(userId, login, "hash", "salt", UserType.ORGANIZER, "email", null);
+        return new User(userId, login, "hash", "salt", UserType.ORGANIZER, "email", false, null);
     }
 
     public static User getTestUser() {

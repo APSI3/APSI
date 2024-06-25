@@ -20,4 +20,5 @@ public interface ITicketService {
     List<TicketDTO> getTicketsByEventId(Long id) throws ApsiValidationException;
     List<TicketDTO> getTicketsByTicketTypeId(Long id) throws ApsiValidationException;
     void deleteByTicketTypeId(Long id);
+    void deleteByHolderId(Long id);
 }

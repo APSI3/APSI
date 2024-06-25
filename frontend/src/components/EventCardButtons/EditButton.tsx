@@ -8,6 +8,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import EventForm from "../EventForm";
 import { modalStyle } from "../FormButton";
 import { UpdateEventRequest } from "../../api/Requests";
+import DateHelper from "../../helpers/DateHelper";
 
 const EditButton: React.FC<{ event: EventDTO }> = (
     { event }
@@ -36,6 +37,7 @@ const EditButton: React.FC<{ event: EventDTO }> = (
         <Fab
             size="small"
             onClick={handleOpen}
+            disabled={DateHelper.isDateInThePast(event.endDate)}
         >
             <Edit />
         </Fab>

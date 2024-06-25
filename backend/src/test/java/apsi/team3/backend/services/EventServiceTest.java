@@ -97,7 +97,7 @@ public class EventServiceTest {
             return mockedUser;
 
         var securityContextHolderMockedStatic = mockStatic(SecurityContextHolder.class);
-        User user = new User(420L, "login", "hash", "salt", UserType.ORGANIZER, "email", null);
+        User user = new User(420L, "login", "hash", "salt", UserType.ORGANIZER, "email", false, null);
         var securityContextMock = mock(SecurityContext.class);
         securityContextHolderMockedStatic.when(SecurityContextHolder::getContext).thenReturn(securityContextMock);
         var authenticationMock = mock(Authentication.class);

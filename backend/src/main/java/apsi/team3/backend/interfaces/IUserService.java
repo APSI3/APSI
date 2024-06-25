@@ -21,7 +21,7 @@ public interface IUserService {
 
     PaginatedList<UserDTO> getUsers(int pageIndex) throws ApsiValidationException;
 
-    Void deleteUser(Long id);
+    Void deleteUser(Long id) throws ApsiException;
 
     UserDTO createUser(CreateUserRequest request) throws ApsiException;
 

@@ -46,4 +46,9 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     @Transactional
     @Query(value = "DELETE FROM tickets WHERE ticket_type_id = :ticketTypeId", nativeQuery = true)
     int deleteByTicketTypeId(Long ticketTypeId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM tickets WHERE holder_id = :id", nativeQuery = true)
+    void deleteByHolderId(Long id);
 }
