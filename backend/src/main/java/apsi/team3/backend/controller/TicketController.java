@@ -32,6 +32,7 @@ public class TicketController {
     @GetMapping("/{id}")
     public ResponseEntity<TicketDTO> getTicketById(@PathVariable("id") Long id) {
         Optional<TicketDTO> ticket = ticketService.getTicketById(id);
+        // sprawdzić czy właściciel lub admin
         ticket.ifPresent(t -> {
             try {
                 t.setQRCode(QRCodeGenerator.generateQRCodeBase64(t.toJSON()));
@@ -50,6 +51,7 @@ public class TicketController {
         @RequestParam int pageIndex
     ) throws ApsiValidationException
     {
+        // rozdzielić na admina i usera
         var tickets = ticketService.getTicketsByUserId(id, from, to, pageIndex);
         return new ResponseEntity<>(tickets, HttpStatus.OK);
     }

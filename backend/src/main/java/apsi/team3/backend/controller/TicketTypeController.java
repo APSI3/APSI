@@ -32,12 +32,14 @@ public class TicketTypeController {
     @GetMapping("/{id}")
     public ResponseEntity<TicketTypeDTO> getTicketTypeById(@PathVariable("id") Long id) {
         Optional<TicketTypeDTO> ticketType = ticketTypeService.getTicketTypeById(id);
+        // sprawdzić kto może
         return ticketType.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/{id}/count")
     public ResponseEntity<Long> getTicketCountByTypeId(@PathVariable("id") Long id) {
         var ticketCount = ticketTypeService.getTicketCountByTypeId(id);
+        // sprawdzić kto może
         return ResponseEntity.ok(ticketCount);
     }
 

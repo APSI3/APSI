@@ -27,6 +27,8 @@ public class LocationService implements ILocationService {
 
     @Override
     public Optional<LocationDTO> getLocationById(Long id) {
+        var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        // creator lub admin
         return locationRepository.findById(id).map(DTOMapper::toDTO);
     }
 
@@ -42,8 +44,8 @@ public class LocationService implements ILocationService {
     @Override
     public List<LocationDTO> getLocations() {
         var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return locationRepository.geLocationsForCreatorId(loggedUser.getId())
-                .stream().map(DTOMapper::toDTO).toList();
+        // creator lub admin
+        return locationRepository.geLocationsForCreatorId(loggedUser.getId()).stream().map(DTOMapper::toDTO).toList();
     }
 
     @Override
@@ -51,12 +53,13 @@ public class LocationService implements ILocationService {
         if (pageIndex < 0)
             throw new ApsiValidationException("Indeks strony nie może być ujemny", "pageIndex");
         var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        // creator lub admin
         var page = locationRepository.geLocationsForCreatorIdPageable(PageRequest.of(pageIndex, PAGE_SIZE), loggedUser.getId());
 
         var items = page
-                .stream()
-                .map(DTOMapper::toDTO)
-                .collect(Collectors.toList());
+            .stream()
+            .map(DTOMapper::toDTO)
+            .collect(Collectors.toList());
 
         return new PaginatedList<>(items, pageIndex, page.getTotalElements(), page.getTotalPages());
     }

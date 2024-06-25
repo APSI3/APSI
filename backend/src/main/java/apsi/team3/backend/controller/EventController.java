@@ -11,6 +11,7 @@ import apsi.team3.backend.interfaces.IEventService;
 
 import apsi.team3.backend.model.MailStructure;
 import apsi.team3.backend.model.User;
+import apsi.team3.backend.model.UserType;
 import apsi.team3.backend.services.MailService;
 import apsi.team3.backend.services.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,15 @@ public class EventController {
         @RequestParam int pageIndex
     ) throws ApsiValidationException {
         var allEvents = eventService.getEvents(from, to, pageIndex); 
+        return ResponseEntity.ok(allEvents);
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<PaginatedList<EventDTO>> getOrganizerEvents(
+            @RequestParam @DateTimeFormat(iso = ISO.DATE_TIME) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = ISO.DATE_TIME) LocalDate to,
+            @RequestParam int pageIndex) throws ApsiValidationException {
+        var allEvents = eventService.getOrganizerEvents(from, to, pageIndex);
         return ResponseEntity.ok(allEvents);
     }
 
@@ -113,19 +123,20 @@ public class EventController {
             throw new ApsiValidationException("Zbyt duży obraz. Maksymalna wielkość to 500 KB", "sectionMap");
 
         EventDTO eventDTO;
+        var mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
         try {
-            var mapper = new ObjectMapper();
-            mapper.registerModule(new JavaTimeModule());
             eventDTO = mapper.readValue(event, EventDTO.class);
         } catch (JsonProcessingException e) {
-            throw new ApsiValidationException("Niepoprawne żądanie", "id");
+            throw new ApsiValidationException("Niepoprawne żądanie", "event");
         }
-
-        validateSameId(id, eventDTO);
+        var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         var oldEvent = eventService.getEventById(id);
-        if (oldEvent.isEmpty()) {
+
+        if (oldEvent.isEmpty() || (oldEvent.get().getOrganizerId() != loggedUser.getId() && loggedUser.getType() != UserType.SUPERADMIN)) {
             return ResponseEntity.notFound().build();
         }
+            
 
         var resp = eventService.replace(eventDTO, image, sectionMap);
 
@@ -144,7 +155,7 @@ public class EventController {
             var sections = resp.getSections();
             try {
                 List<TicketDTO> tickets = ticketService.getTicketsByEventId(oldEvent.get().getId());
-                for (TicketDTO ticket : tickets) {
+                for (var ticket : tickets) {
                     ticket.setEvent(resp);
                     var QRCode = QRCodeGenerator.generateQRCodeByte(ticket.toJSON());
                     ticket.setQRCode(QRCodeGenerator.convertQRCodeByteToBase64(QRCode));
@@ -161,25 +172,6 @@ public class EventController {
                 // we hope everyone gets an email but failing update when some got email and some didn't doesn't seem right
             }
         }
-
         return ResponseEntity.ok(resp);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEvent(@PathVariable("id") Long id) {
-        if (eventService.notExists(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        eventService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    private static void validateSameId(Long id, EventDTO eventDTO) throws ApsiValidationException {
-        if (eventDTO.getId() == null) {
-            throw new ApsiValidationException("Id must not be null", "id");
-        }
-        if (!id.equals(eventDTO.getId())) {
-            throw new ApsiValidationException("Id in path and body must be the same", "id");
-        }
     }
 }

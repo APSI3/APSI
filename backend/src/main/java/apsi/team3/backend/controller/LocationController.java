@@ -43,8 +43,7 @@ public class LocationController {
     }
 
     @GetMapping("/pageable")
-    public ResponseEntity<PaginatedList<LocationDTO>> getLocationsPageable(
-            @RequestParam int pageIndex
+    public ResponseEntity<PaginatedList<LocationDTO>> getLocationsPageable(@RequestParam int pageIndex
     ) throws ApsiValidationException {
         var resp = locationService.getLocationsPageable(pageIndex);
         return ResponseEntity.ok(resp);

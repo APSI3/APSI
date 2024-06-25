@@ -153,6 +153,21 @@ public class EventService implements IEventService {
     }
 
     @Override
+    public PaginatedList<EventDTO> getOrganizerEvents(LocalDate from, LocalDate to, int pageIndex) throws ApsiValidationException {
+        validatePaginationArgs(from, to, pageIndex);
+        var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        var page = eventRepository.getEventsWithDatesBetweenForOrganizer(PageRequest.of(pageIndex, PAGE_SIZE), from, to, loggedUser.getId());
+
+        var items = page
+            .stream()
+            .map(DTOMapper::toDTO)
+            .collect(Collectors.toList());
+
+        return new PaginatedList<>(items, pageIndex, page.getTotalElements(), page.getTotalPages());
+    }
+
+    @Override
     public EventDTO replace(EventDTO eventDTO, MultipartFile image, MultipartFile sectionMap) throws ApsiValidationException {
         if (eventDTO.getId() == null)
             throw new ApsiValidationException("Identyfikator wydarzenia jest wymagany", "id");

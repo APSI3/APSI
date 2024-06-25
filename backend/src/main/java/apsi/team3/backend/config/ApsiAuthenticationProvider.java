@@ -34,7 +34,7 @@ public class ApsiAuthenticationProvider implements AuthenticationProvider {
         return userService.getUserByLogin(login)
             .filter(user -> {
                 try {
-                    var hash = userService.hashPassword(password, user.getSalt());
+                    var hash = UserService.hashPassword(password, user.getSalt());
                     return Objects.equals(hash, user.getHash());
                 }
                 catch (ApsiException e){

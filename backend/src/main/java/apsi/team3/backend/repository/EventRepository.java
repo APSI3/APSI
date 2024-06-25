@@ -18,4 +18,10 @@ public interface EventRepository extends JpaRepository<Event, Long> {
         nativeQuery = true)
     Page<Event> getEventsWithDatesBetween(Pageable pageable, @Param("_from") LocalDate from, @Param("_to") LocalDate to);
 
+    @Query(
+        value = "SELECT * FROM events e WHERE e.organizerId = :_userId AND e.start_date <= :_to AND e.start_date >= :_from ORDER BY e.start_date",
+        countQuery = "SELECT COUNT(*) FROM events e WHERE e.organizerId = :_userId AND e.start_date <= :_to AND e.start_date >= :_from",
+        nativeQuery = true)
+    Page<Event> getEventsWithDatesBetweenForOrganizer(Pageable pageable, @Param("_from") LocalDate from, @Param("_to") LocalDate to, @Param("_userId") Long userId);
+
 }
