@@ -4,7 +4,6 @@ import {Grid, Link, Typography, Card, CardContent} from "@mui/material";
 
 
 const UserTicketCard: React.FC<{ ticket: TicketDTO }> = ({ ticket }) => {
-    console.log(ticket)
     return (
         <Card style={{ margin: '1rem' }} elevation={3}>
             <CardContent>

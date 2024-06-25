@@ -6,6 +6,7 @@ import { Api } from "../../api/Api";
 import { useNavigate } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
 import {toastDefaultError, toastInfo} from "../../helpers/ToastHelpers";
+import DateHelper from "../../helpers/DateHelper";
 
 const modalStyle = {
     position: 'absolute',
@@ -40,7 +41,7 @@ const DeleteButton: React.FC<{ event: EventDTO, callback: (id: number) => void }
     };
     const nav = useNavigate();
     return <>
-        <Fab size="small" onClick={handleOpen}>
+        <Fab size="small" onClick={handleOpen} disabled={DateHelper.isDateInThePast(event.endDate)}>
             <Delete />
         </Fab>
         <Modal

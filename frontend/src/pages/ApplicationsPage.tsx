@@ -12,7 +12,6 @@ export default function ApplicationsPage() {
     const getApplications = useCallback((currentIdx: number) => {
         Api.GetForms(currentIdx).then(res => {
             if (res.success && res.data) {
-                console.log(res.data.items);
                 setApplications(res.data.items ?? []);
                 setMaxIdx(res.data.totalPages - 1);
             }

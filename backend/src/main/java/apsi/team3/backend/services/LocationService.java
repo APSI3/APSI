@@ -3,10 +3,12 @@ package apsi.team3.backend.services;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.model.User;
+import apsi.team3.backend.model.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,6 +44,9 @@ public class LocationService implements ILocationService {
     @Override
     public List<LocationDTO> getLocations() {
         var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (loggedUser.getType().equals(UserType.SUPERADMIN)) {
+            return StreamSupport.stream(locationRepository.findAll().spliterator(), false).map(DTOMapper::toDTO).toList();
+        }
         return locationRepository.geLocationsForCreatorId(loggedUser.getId())
                 .stream().map(DTOMapper::toDTO).toList();
     }
@@ -51,7 +56,9 @@ public class LocationService implements ILocationService {
         if (pageIndex < 0)
             throw new ApsiValidationException("Indeks strony nie może być ujemny", "pageIndex");
         var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var page = locationRepository.geLocationsForCreatorIdPageable(PageRequest.of(pageIndex, PAGE_SIZE), loggedUser.getId());
+        var page = loggedUser.getType().equals(UserType.SUPERADMIN)
+                ? locationRepository.geLocationsPageable(PageRequest.of(pageIndex, PAGE_SIZE))
+                : locationRepository.geLocationsForCreatorIdPageable(PageRequest.of(pageIndex, PAGE_SIZE), loggedUser.getId());
 
         var items = page
                 .stream()
