@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findUserByLogin(String login);
 
-    @Query(value = "SELECT * FROM users", countQuery = "SELECT COUNT(*) FROM users", nativeQuery = true)
+    @Query(value = "SELECT * FROM users WHERE canceled = FALSE", countQuery = "SELECT COUNT(*) FROM users", nativeQuery = true)
     Page<User> getUsers(Pageable pageable);
 
     @Query(value = "SELECT COUNT(id) FROM users u WHERE u.login=:login", nativeQuery = true)

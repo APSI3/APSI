@@ -1,13 +1,12 @@
 package apsi.team3.backend.services;
 
-import apsi.team3.backend.DTOs.DTOMapper;
-import apsi.team3.backend.DTOs.LoggedUserDTO;
-import apsi.team3.backend.DTOs.PaginatedList;
+import apsi.team3.backend.DTOs.*;
 import apsi.team3.backend.DTOs.Requests.CreateUserRequest;
 import apsi.team3.backend.DTOs.Requests.LoginRequest;
-import apsi.team3.backend.DTOs.UserDTO;
 import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.exceptions.ApsiValidationException;
+import apsi.team3.backend.interfaces.IEventService;
+import apsi.team3.backend.interfaces.ITicketService;
 import apsi.team3.backend.interfaces.IUserService;
 import apsi.team3.backend.model.Form;
 import apsi.team3.backend.model.User;
@@ -35,10 +34,14 @@ public class UserService implements IUserService {
     private static int SALT_LENGTH = 16;
     private static final SecureRandom secureRandom = new SecureRandom();
     private final UserRepository userRepository;
+    private final ITicketService ticketService;
+    private final IEventService eventService;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, ITicketService ticketService, IEventService eventService) {
         this.userRepository = userRepository;
+        this.ticketService = ticketService;
+        this.eventService = eventService;
     }
 
     @Override
@@ -78,6 +81,9 @@ public class UserService implements IUserService {
 
         var userRaw = userRepository.findUserByLogin(request.getLogin());
         var user = userRaw.orElseThrow(() -> new ApsiValidationException("Niepoprawny login lub hasło", "password"));
+        if (user.isCanceled()) {
+            throw new ApsiValidationException("Użytkownik został usunięty", "login");
+        }
 
         try {
             var hash = hashPassword(request.getPassword(), user.getSalt());
@@ -106,7 +112,7 @@ public class UserService implements IUserService {
 
         var salt = generateSalt();
         var hash = hashPassword(request.getPassword(), salt);
-        var entity = new User(request.getLogin(), hash, salt, UserType.PERSON, request.getEmail());
+        var entity = new User(request.getLogin(), hash, salt, UserType.PERSON, request.getEmail(), false);
         var newUser = userRepository.save(entity);
         return DTOMapper.toDTO(newUser);
     }
@@ -118,7 +124,7 @@ public class UserService implements IUserService {
 
     @Override
     public UserDTO createOrganizer(Form form) {
-        var entity = new User(form.getLogin(), form.getHash(), form.getSalt(), UserType.ORGANIZER, form.getEmail());
+        var entity = new User(form.getLogin(), form.getHash(), form.getSalt(), UserType.ORGANIZER, form.getEmail(), false);
         var newUser = userRepository.save(entity);
         return DTOMapper.toDTO(newUser);
     }
@@ -135,8 +141,23 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public Void deleteUser(Long id) {
-        userRepository.deleteById(id);
+    public Void deleteUser(Long id) throws ApsiException {
+        var user = userRepository.findById(id);
+        switch (user.get().getType()) {
+            case PERSON:
+                // delete user tickets
+                ticketService.deleteByHolderId(id);
+                break;
+            case ORGANIZER:
+                // soft delete event
+                var events = eventService.getEventsByOrganizerId(id);
+                for (EventDTO event: events) {
+                    eventService.cancel(event.getId());
+                }
+                break;
+        }
+        user.get().setCanceled(true);
+        userRepository.save(user.get());
         return null;
     }
 }

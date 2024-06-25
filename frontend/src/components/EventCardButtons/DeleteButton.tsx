@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {Box, Fab, IconButton, Modal} from "@mui/material";
-import { Call, Delete } from "@mui/icons-material";
+import { Delete } from "@mui/icons-material";
 import { EventDTO } from "../../api/DTOs";
 import { Api } from "../../api/Api";
 import { useNavigate } from "react-router-dom";
@@ -41,7 +41,7 @@ const DeleteButton: React.FC<{ event: EventDTO, callback: (id: number) => void }
     };
     const nav = useNavigate();
     return <>
-        <Fab size="small" onClick={handleOpen} disabled={DateHelper.isDateInThePast(event.endDate)}>
+        <Fab size="small" style={{zIndex: 1}} onClick={handleOpen} disabled={DateHelper.isDateInThePast(event.endDate)}>
             <Delete />
         </Fab>
         <Modal

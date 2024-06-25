@@ -3,6 +3,7 @@ package apsi.team3.backend.repository;
 import apsi.team3.backend.model.Event;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,4 +19,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
         nativeQuery = true)
     Page<Event> getEventsWithDatesBetween(Pageable pageable, @Param("_from") LocalDate from, @Param("_to") LocalDate to);
 
+    @Query(value = "SELECT * FROM events e WHERE e.organizer_id=:id", nativeQuery = true)
+    List<Event> getEventsByOrganizerId(@Param("id") Long id);
 }

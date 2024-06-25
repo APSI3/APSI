@@ -1,0 +1,2 @@
+ALTER TABLE users ADD COLUMN canceled BOOLEAN DEFAULT FALSE;
+UPDATE users SET canceled = FALSE WHERE canceled IS NULL;
