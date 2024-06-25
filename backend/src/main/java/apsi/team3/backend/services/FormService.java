@@ -37,12 +37,16 @@ public class FormService implements IFormService {
     public FormDTO create(CreateFormRequest request) throws ApsiException {
         var salt = UserService.generateSalt();
         var hash = UserService.hashPassword(request.getPassword(), salt);
+        var loginCount = userService.getUserLoginCount(request.getLogin());
+        if (loginCount > 0)
+            throw new ApsiValidationException("Login już zajęty", "login");
+
         var entity = new Form(
-                request.getLogin(),
-                salt,
-                hash,
-                FormStatus.PENDING.toString(),
-                request.getEmail()
+            request.getLogin(),
+            salt,
+            hash,
+            FormStatus.PENDING.toString(),
+            request.getEmail()
         );
         var newForm = formRepository.save(entity);
         return DTOMapper.toDTO(newForm);

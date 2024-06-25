@@ -117,11 +117,6 @@ export class Api {
         return await getApiResponse<undefined, EventDTO>("patch", this.url + `/events/${id}`);
     }
 
-    static async GetTicketsByHolderId(id: string | undefined, from: Date, to: Date, pageIndex: number) {
-        return await getApiResponse<undefined, PaginatedList<TicketDTO>>("get",
-            this.url + `/tickets/user/${id}?from=${from.toISOString()}&to=${to.toISOString()}&pageIndex=${pageIndex}`);
-    }
-
     static async GetMyTickets(from: Date, to: Date, pageIndex: number) {
         return await getApiResponse<undefined, PaginatedList<TicketDTO>>("get",
             this.url + `/tickets/my?from=${from.toISOString()}&to=${to.toISOString()}&pageIndex=${pageIndex}`);

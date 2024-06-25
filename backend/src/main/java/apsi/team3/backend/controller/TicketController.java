@@ -42,18 +42,6 @@ public class TicketController {
         return ticket.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/user/{id}")
-    public ResponseEntity<PaginatedList<TicketDTO>> getTicketsByUserId(
-        @PathVariable("id") Long id,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate from,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate to,
-        @RequestParam int pageIndex
-    ) throws ApsiValidationException
-    {
-        var tickets = ticketService.getTicketsByUserId(id, from, to, pageIndex);
-        return new ResponseEntity<>(tickets, HttpStatus.OK);
-    }
-
     @GetMapping("/my")
     public ResponseEntity<PaginatedList<TicketDTO>> getMyTickets(
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate from,
