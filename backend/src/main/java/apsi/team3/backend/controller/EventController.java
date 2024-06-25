@@ -4,6 +4,7 @@ import apsi.team3.backend.DTOs.EventDTO;
 import apsi.team3.backend.DTOs.ImageDTO;
 import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.DTOs.TicketDTO;
+import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.helpers.QRCodeGenerator;
 import apsi.team3.backend.interfaces.IEventService;
@@ -91,6 +92,11 @@ public class EventController {
         catch (JsonProcessingException e){
             throw new ApsiValidationException("Niepoprawne żądanie", "id");
         }
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<EventDTO> cancelEvent(@PathVariable("id") Long id) throws ApsiException {
+        return eventService.cancel(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping(value="/{id}", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })

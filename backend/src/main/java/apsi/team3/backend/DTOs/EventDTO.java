@@ -31,4 +31,5 @@ public class EventDTO implements Serializable {
     List<SectionDTO> sections;
     boolean hasSectionMap;
     boolean hasImage;
+    boolean canceled;
 }

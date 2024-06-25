@@ -5,6 +5,7 @@ import apsi.team3.backend.DTOs.EventDTO;
 import apsi.team3.backend.DTOs.ImageDTO;
 import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.DTOs.TicketTypeDTO;
+import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.interfaces.IEventService;
 import apsi.team3.backend.model.Event;
@@ -144,6 +145,7 @@ public class EventService implements IEventService {
 
         var items = page
             .stream()
+            .filter(e -> !e.isCanceled())
             .map(DTOMapper::toDTO)
             .collect(Collectors.toList());
 
@@ -352,5 +354,21 @@ public class EventService implements IEventService {
     public List<ImageDTO> getImagesByEventId(Long id) {
         var images = eventImageRepository.findByEventId(id);
         return images.stream().map(i -> DTOMapper.toDTO(i)).toList();
+    }
+
+    @Override
+    public Optional<EventDTO> cancel(Long id) throws ApsiException {
+        var eventOptional = eventRepository.findById(id);
+        if (eventOptional.isEmpty()) {
+            return Optional.empty();
+        }
+        var event = eventOptional.get();
+        event.setCanceled(true);
+        eventRepository.save(event);
+        var tickets = ticketRepository.getTicketsByEventId(event.getId());
+        for (var ticket : tickets) {
+            mailService.sendEventDeletedEmail(DTOMapper.toDTO(ticket));
+        }
+        return Optional.of(DTOMapper.toDTO(event));
     }
 }

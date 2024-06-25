@@ -1,0 +1,2 @@
+ALTER TABLE events ADD COLUMN canceled BOOLEAN DEFAULT FALSE;
+UPDATE events SET canceled = FALSE WHERE canceled IS NULL;

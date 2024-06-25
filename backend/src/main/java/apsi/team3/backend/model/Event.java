@@ -41,6 +41,9 @@ public class Event {
     @Column(name = "description", length = 2000)
     private String description;
 
+    @Column(name = "canceled", nullable = false)
+    private boolean canceled;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "organizer_id", nullable = false)
     private User organizer;

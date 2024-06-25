@@ -3,6 +3,7 @@ package apsi.team3.backend.interfaces;
 import apsi.team3.backend.DTOs.EventDTO;
 import apsi.team3.backend.DTOs.ImageDTO;
 import apsi.team3.backend.DTOs.PaginatedList;
+import apsi.team3.backend.exceptions.ApsiException;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 
 import java.time.LocalDate;
@@ -25,4 +26,6 @@ public interface IEventService {
     boolean notExists(Long id);
 
     List<ImageDTO> getImagesByEventId(Long id);
+
+    Optional<EventDTO> cancel(Long id) throws ApsiException;
 }

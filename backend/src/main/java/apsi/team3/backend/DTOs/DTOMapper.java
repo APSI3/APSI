@@ -148,7 +148,8 @@ public class DTOMapper {
             images.stream().map(i -> i.getId()).toList(),
             sections.stream().map(s -> DTOMapper.toDTO(s, 0)).toList(),
             images.stream().anyMatch(i -> i.isSection_map()),
-            images.stream().anyMatch(i -> !i.isSection_map())
+            images.stream().anyMatch(i -> !i.isSection_map()),
+            event.isCanceled()
         );
     }
 

@@ -16,6 +16,7 @@ public class TestHelper {
             LocalDate.now().plusDays(7),
             null,
             "description",
+            false,
             new User(1L, "login", "hash", "salt", UserType.ORGANIZER, "email", null),
             new ArrayList<>(),
             null,
