@@ -34,7 +34,7 @@ public class LocationServiceTest {
 
     @Test
     public void testGetLocationByIdReturnsLocation() {
-        User creator = new User(1L, "login", "hash", "salt", UserType.ORGANIZER, "email", new ArrayList<>());
+        User creator = new User(1L, "login", "hash", "salt", UserType.ORGANIZER, "email", false, new ArrayList<>());
         Location location = new Location(
             1L,
             creator,
@@ -68,7 +68,7 @@ public class LocationServiceTest {
         Location location = DTOMapper.toEntity(locationDTO);
         location.setId(1L);
         var securityContextHolderMockedStatic = mockStatic(SecurityContextHolder.class);
-        User creator = new User(1L, "login", "hash", "salt", UserType.ORGANIZER, "email", new ArrayList<>());
+        User creator = new User(1L, "login", "hash", "salt", UserType.ORGANIZER, "email", false, new ArrayList<>());
         SecurityContext securityContextMock = mock(SecurityContext.class);
         securityContextHolderMockedStatic.when(SecurityContextHolder::getContext).thenReturn(securityContextMock);
         Authentication authenticationMock = mock(Authentication.class);

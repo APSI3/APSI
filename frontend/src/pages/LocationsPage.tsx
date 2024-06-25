@@ -12,7 +12,6 @@ export default function LocationsPage() {
     const getLocations = useCallback((currentIdx: number) => {
         Api.GetLocationsPageable(currentIdx).then(res => {
             if (res.success && res.data) {
-                console.log(res.data.items);
                 setLocations(res.data.items ?? []);
                 setMaxIdx(res.data.totalPages - 1);
             }

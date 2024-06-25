@@ -119,4 +119,9 @@ public class TicketService implements ITicketService {
     public void deleteByTicketTypeId(Long id) {
         ticketRepository.deleteByTicketTypeId(id);
     }
+
+    @Override
+    public void deleteByHolderId(Long id) {
+        ticketRepository.deleteByHolderId(id);
+    }
 }

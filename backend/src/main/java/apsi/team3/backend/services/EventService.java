@@ -371,4 +371,10 @@ public class EventService implements IEventService {
         }
         return Optional.of(DTOMapper.toDTO(event));
     }
+
+    @Override
+    public List<EventDTO> getEventsByOrganizerId(Long id) {
+        var events = eventRepository.getEventsByOrganizerId(id);
+        return events.stream().map(DTOMapper::toDTO).toList();
+    }
 }

@@ -74,7 +74,7 @@ public class UserServiceTest {
         Long userId = 1234L;
         LoginRequest loginRequest = new LoginRequest(login, password);
         String hash = userService.hashPassword(password, salt);
-        User user = new User(userId, login, hash, salt, UserType.PERSON, email, new ArrayList<>());
+        User user = new User(userId, login, hash, salt, UserType.PERSON, email, false, new ArrayList<>());
         when(userRepository.findUserByLogin(login)).thenReturn(Optional.of(user));
         var encoded = Base64.getEncoder().encodeToString("apsi:apsi".getBytes());
         String expectedAuthHeader = "Basic " + encoded;

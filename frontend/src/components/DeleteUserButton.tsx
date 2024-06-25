@@ -32,7 +32,7 @@ const DeleteUserButton: React.FC<{ user: UserDTO, disabled: boolean, onDelete: (
     };
 
     return <>
-        <Fab size="small" color="error" onClick={handleModal} disabled={disabled}>
+        <Fab size="small" color="error" style={{zIndex: 1}} onClick={handleModal} disabled={disabled}>
             <Delete/>
         </Fab>
         <Modal

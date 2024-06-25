@@ -28,4 +28,6 @@ public interface IEventService {
     List<ImageDTO> getImagesByEventId(Long id);
 
     Optional<EventDTO> cancel(Long id) throws ApsiException;
+
+    List<EventDTO> getEventsByOrganizerId(Long id);
 }

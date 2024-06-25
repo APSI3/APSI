@@ -10,6 +10,7 @@ import { Field, Form, Formik } from "formik";
 import { Option, ValidationMessage } from "../../helpers/FormHelpers";
 import { CreateTicketRequest } from "../../api/Requests";
 import { object, string } from "yup";
+import DateHelper from "../../helpers/DateHelper";
 
 const validationSchema = object<CreateTicketRequest>().shape({
     holderFirstName: string()
@@ -20,8 +21,8 @@ const validationSchema = object<CreateTicketRequest>().shape({
         .required("Należy podać nazwisko posiadacza"),
 });
 
-const BuyButton: React.FC<{ ticketTypeId: number, sectionMap?: string, ticketTypes: Option[], sections: Option[] }>= (
-    { ticketTypeId, sectionMap, ticketTypes, sections }
+const BuyButton: React.FC<{ ticketTypeId: number, sectionMap?: string, ticketTypes: Option[], sections: Option[], endDate: Date }>= (
+    { ticketTypeId, sectionMap, ticketTypes, sections, endDate }
 ) => {
     const [open, setOpen] = useState(false);
     const nav = useNavigate();
@@ -35,7 +36,7 @@ const BuyButton: React.FC<{ ticketTypeId: number, sectionMap?: string, ticketTyp
 
     return <>
         <Tooltip title={"Kup bilet"} placement="left">
-            <Fab size="small" onClick={() => setOpen(true)}>
+            <Fab size="small" style={{zIndex: 1}} onClick={() => setOpen(true)} disabled={DateHelper.isDateInThePast(endDate)}>
                 <ShoppingCart/>
             </Fab>
         </Tooltip>
