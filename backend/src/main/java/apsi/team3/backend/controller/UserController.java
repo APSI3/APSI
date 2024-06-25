@@ -41,15 +41,6 @@ public class UserController {
         return ResponseEntity.ok(newUser);
     }
 
-    @GetMapping("/check_login")
-    public ResponseEntity<Boolean> uniqueLogin(@RequestParam("login") String login) {
-        var loginCount = userService.getUserLoginCount(login);
-        if (loginCount > 0) {
-            return ResponseEntity.ok(false);
-        }
-        return ResponseEntity.ok(true);
-    }
-
     @GetMapping
     public ResponseEntity<PaginatedList<UserDTO>> getUsers(@RequestParam int pageIndex) throws ApsiValidationException {
         var allUsers = userService.getUsers(pageIndex);

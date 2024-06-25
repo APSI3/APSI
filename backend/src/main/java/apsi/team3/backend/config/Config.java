@@ -41,7 +41,6 @@ public class Config {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
             .cors(Customizer.withDefaults())
-            .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.GET, "/user/check_login").anonymous())
             .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.POST, "/user").anonymous())
             .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.GET, "/user").hasAnyAuthority(UserType.SUPERADMIN.toString()))
             .authorizeHttpRequests(r -> r.requestMatchers(HttpMethod.DELETE, "/user").hasAnyAuthority(UserType.SUPERADMIN.toString()))

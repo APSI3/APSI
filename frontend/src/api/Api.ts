@@ -167,10 +167,6 @@ export class Api {
     static async GetEventReport(eventId: string) {
         return await getApiResponse<undefined, EventReportDTO>("get", this.url + `/reports/${eventId}`);
     }
-    
-    static async GetUniqueLogin(login: string) {
-        return await getApiResponse<undefined, boolean>("get", this.url + `/user/check_login?login=${login}`);
-    }
 
     static async CreateForm(request: CreateFormRequest) {
         return await getApiResponse<CreateFormRequest, FormDTO>("post", this.url + "/forms", request)
