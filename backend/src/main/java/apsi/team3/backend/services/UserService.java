@@ -112,6 +112,10 @@ public class UserService implements IUserService {
         if (request.getEmail() == null || request.getEmail().isBlank())
             throw new ApsiValidationException("Email jest wymagany", "email");
 
+        var loginCount = getUserLoginCount(request.getLogin());
+        if (loginCount > 0)
+            throw new ApsiValidationException("Login już zajęty", "login");
+
         var salt = generateSalt();
         var hash = hashPassword(request.getPassword(), salt);
         var entity = new User(request.getLogin(), hash, salt, UserType.PERSON, request.getEmail(), false);

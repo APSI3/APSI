@@ -20,12 +20,6 @@ const initialValues: FormValues = {
     repeatedPassword: ''
 };
 
-const checkLogin = async (value: string) => {
-    if (!value) return false;
-    const response = await Api.GetUniqueLogin(value);
-    return response.success && response.data;
-}
-
 const validationSchema = Yup.object({
     login: Yup.string()
         .required('Należy podać login')
@@ -48,12 +42,6 @@ const PersonUserCreationForm: React.FC = () => (
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={async (values, fh) => {
-            const isUniqueLogin = await checkLogin(values.login);
-            if (!isUniqueLogin) {
-                fh.setFieldError('login', 'Login już zajęty');
-                return;
-            }
-
             await Api.CreateUser(values as CreateUserRequest).then(res => {
                 if (res.success && res.data) {
                     toastInfo("Udało się stworzyć twoje konto. Przejdź na stronę logowania.");

@@ -9,6 +9,7 @@ import apsi.team3.backend.DTOs.PaginatedList;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.model.User;
 import apsi.team3.backend.model.UserType;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,7 +30,11 @@ public class LocationService implements ILocationService {
 
     @Override
     public Optional<LocationDTO> getLocationById(Long id) {
-        return locationRepository.findById(id).map(DTOMapper::toDTO);
+        var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var loc = locationRepository.findById(id).map(DTOMapper::toDTO);;
+        if (loc.isPresent() && loc.get().getCreator_id() != loggedUser.getId() && loggedUser.getType() != UserType.SUPERADMIN)
+            return Optional.empty();
+        return loc;
     }
 
     @Override
@@ -47,8 +52,7 @@ public class LocationService implements ILocationService {
         if (loggedUser.getType().equals(UserType.SUPERADMIN)) {
             return StreamSupport.stream(locationRepository.findAll().spliterator(), false).map(DTOMapper::toDTO).toList();
         }
-        return locationRepository.geLocationsForCreatorId(loggedUser.getId())
-                .stream().map(DTOMapper::toDTO).toList();
+        return locationRepository.geLocationsForCreatorId(loggedUser.getId()).stream().map(DTOMapper::toDTO).toList();
     }
 
     @Override
@@ -57,13 +61,13 @@ public class LocationService implements ILocationService {
             throw new ApsiValidationException("Indeks strony nie może być ujemny", "pageIndex");
         var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         var page = loggedUser.getType().equals(UserType.SUPERADMIN)
-                ? locationRepository.geLocationsPageable(PageRequest.of(pageIndex, PAGE_SIZE))
-                : locationRepository.geLocationsForCreatorIdPageable(PageRequest.of(pageIndex, PAGE_SIZE), loggedUser.getId());
+            ? locationRepository.geLocationsPageable(PageRequest.of(pageIndex, PAGE_SIZE))
+            : locationRepository.geLocationsForCreatorIdPageable(PageRequest.of(pageIndex, PAGE_SIZE), loggedUser.getId());
 
         var items = page
-                .stream()
-                .map(DTOMapper::toDTO)
-                .collect(Collectors.toList());
+            .stream()
+            .map(DTOMapper::toDTO)
+            .collect(Collectors.toList());
 
         return new PaginatedList<>(items, pageIndex, page.getTotalElements(), page.getTotalPages());
     }

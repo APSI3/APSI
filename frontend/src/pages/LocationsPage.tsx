@@ -27,6 +27,7 @@ export default function LocationsPage() {
         getLocations(index);
     }
     return <>
+        {locations.length !== 0 ? <h2>Lokalizacje</h2> : <h5>Brak lokalizacji</h5>}
         {locations.map(location => (
             <LocationCard location={location} key={`location-${location.id}`} />
         ))}

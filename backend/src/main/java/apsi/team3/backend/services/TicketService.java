@@ -9,6 +9,7 @@ import apsi.team3.backend.helpers.QRCodeGenerator;
 import apsi.team3.backend.interfaces.ITicketService;
 import apsi.team3.backend.model.MailStructure;
 import apsi.team3.backend.model.User;
+import apsi.team3.backend.model.UserType;
 import apsi.team3.backend.repository.EventSectionRepository;
 import apsi.team3.backend.repository.TicketRepository;
 import apsi.team3.backend.repository.TicketTypeRepository;
@@ -45,7 +46,11 @@ public class TicketService implements ITicketService {
 
     @Override
     public Optional<TicketDTO> getTicketById(Long id) {
-        return ticketRepository.findById(id).map(DTOMapper::toDTO);
+        var user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var ticket = ticketRepository.findById(id).map(DTOMapper::toDTO);
+        if (ticket.isPresent() && ticket.get().getHolder().getId() != user.getId() && user.getType() != UserType.SUPERADMIN)
+            return Optional.empty();
+        return ticket;
     }
 
     @Override

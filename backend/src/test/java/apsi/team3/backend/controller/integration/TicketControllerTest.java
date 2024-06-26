@@ -91,7 +91,7 @@ public class TicketControllerTest {
             }
         """, todayDateStr, qrCode);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/tickets/user/2")
+        mockMvc.perform(MockMvcRequestBuilders.get("/tickets/my")
                         .param("from", from)
                         .param("to", to)
                         .param("pageIndex", String.valueOf(pageIndex))

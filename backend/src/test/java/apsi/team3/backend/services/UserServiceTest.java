@@ -50,7 +50,7 @@ public class UserServiceTest {
         String password = "apsi";
         String salt = "1234";
         String expectedHash = "098813193d97d1e2ba71c76753eb4a2ce90a6c0229658e168294e619ab00cfec";
-        assertEquals(userService.hashPassword(password, salt), expectedHash);
+        assertEquals(UserService.hashPassword(password, salt), expectedHash);
     }
 
     @Test
@@ -73,7 +73,7 @@ public class UserServiceTest {
         String salt = "1234";
         Long userId = 1234L;
         LoginRequest loginRequest = new LoginRequest(login, password);
-        String hash = userService.hashPassword(password, salt);
+        String hash = UserService.hashPassword(password, salt);
         User user = new User(userId, login, hash, salt, UserType.PERSON, email, false, new ArrayList<>());
         when(userRepository.findUserByLogin(login)).thenReturn(Optional.of(user));
         var encoded = Base64.getEncoder().encodeToString("apsi:apsi".getBytes());

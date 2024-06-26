@@ -1,18 +1,18 @@
 package apsi.team3.backend.controller;
 
-import apsi.team3.backend.DTOs.TicketDTO;
 import apsi.team3.backend.DTOs.Requests.CreateTicketRequest;
 import apsi.team3.backend.DTOs.*;
 import apsi.team3.backend.exceptions.ApsiValidationException;
 import apsi.team3.backend.helpers.QRCodeGenerator;
 import apsi.team3.backend.interfaces.ITicketService;
-
+import apsi.team3.backend.model.User;
 import jakarta.mail.MessagingException;
 import com.google.zxing.WriterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -42,15 +42,15 @@ public class TicketController {
         return ticket.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("user/{id}")
-    public ResponseEntity<PaginatedList<TicketDTO>> getExtendedTicketsByUserId(
-        @PathVariable("id") Long id,
+    @GetMapping("/my")
+    public ResponseEntity<PaginatedList<TicketDTO>> getMyTickets(
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate from,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate to,
         @RequestParam int pageIndex
     ) throws ApsiValidationException
     {
-        var tickets = ticketService.getTicketsByUserId(id, from, to, pageIndex);
+        var user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var tickets = ticketService.getTicketsByUserId(user.getId(), from, to, pageIndex);
         return new ResponseEntity<>(tickets, HttpStatus.OK);
     }
 

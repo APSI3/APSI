@@ -76,6 +76,9 @@ public class MailService {
 
     @Async
     public void sendMail(String mail, String mailSubject, String mailMessage) throws MessagingException {
+        if (mail == null)
+            return;
+
         var message = mailSender.createMimeMessage();
         var helper = new MimeMessageHelper(message, true, "UTF-8");
 
@@ -107,7 +110,6 @@ public class MailService {
     public void sendEventDeletedEmail(TicketDTO ticket) throws ApsiException {
         var user = ticket.getHolder();
         var event = ticket.getEvent();
-        String eventUrl = String.format("localhost:3000/event/%s", event.getId());
         String mailSubject = "Wydarzenie, na które kupiłeś bilet zostało anulowane";
         String message = String.format("""
                 Przepraszamy,
