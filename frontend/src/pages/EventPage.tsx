@@ -157,7 +157,7 @@ export default function EventPage() {
                     {event.sections.map(s => <EventSectionItem key={s.id} section={s} />)}
                 </Grid>
                 {/*Edit & delete buttons*/}
-                    {AuthHelpers.getRole() !== UserTypes.PERSON && <Grid container className="mt-3" style={{ justifyContent: 'right' }}>
+                {AuthHelpers.getRole() !== UserTypes.PERSON && <Grid container className="mt-3" style={{ justifyContent: 'right' }}>
                     <div className="d-flex justify-content-end gap-1">
                         <EditButton event={event} />
                         <DeleteButton event={event} callback={() => {}}/>

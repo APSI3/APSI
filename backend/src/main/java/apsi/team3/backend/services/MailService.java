@@ -76,6 +76,9 @@ public class MailService {
 
     @Async
     public void sendMail(String mail, String mailSubject, String mailMessage) throws MessagingException {
+        if (mail == null)
+            return;
+
         var message = mailSender.createMimeMessage();
         var helper = new MimeMessageHelper(message, true, "UTF-8");
 

@@ -20,6 +20,7 @@ import apsi.team3.backend.repository.TicketRepository;
 import apsi.team3.backend.repository.TicketTypeRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -99,7 +100,7 @@ public class EventService implements IEventService {
                 )
                     throw new ApsiValidationException("Ilość biletów większa niż dopuszczalna w danej lokalizacji", "tickets");
 
-                if (!Objects.equals(location.get().getCreator().getId(), loggedUser.getId()))
+                if (!Objects.equals(location.get().getCreator().getId(), loggedUser.getId()) && loggedUser.getType() != UserType.SUPERADMIN)
                     throw new ApsiValidationException("Lokalizacja niedostępna", "location");
             }
         }
@@ -140,13 +141,18 @@ public class EventService implements IEventService {
 
     @Override
     public PaginatedList<EventDTO> getEvents(LocalDate from, LocalDate to, int pageIndex) throws ApsiValidationException {
+        Page<Event> page;
+        
         validatePaginationArgs(from, to, pageIndex);
 
-        var page = eventRepository.getEventsWithDatesBetween(PageRequest.of(pageIndex, PAGE_SIZE), from, to);
+        var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (loggedUser.getType() == UserType.SUPERADMIN)
+            page = eventRepository.getEventsWithDatesBetween(PageRequest.of(pageIndex, PAGE_SIZE), from, to);
+        else
+            page = eventRepository.getUncancelledEventsWithDatesBetween(PageRequest.of(pageIndex, PAGE_SIZE), from, to);
 
         var items = page
             .stream()
-            .filter(e -> !e.isCanceled())
             .map(DTOMapper::toDTO)
             .collect(Collectors.toList());
 
@@ -182,7 +188,12 @@ public class EventService implements IEventService {
         validateEvent(eventDTO, loggedUser);
 
         var entity = DTOMapper.toEntity(eventDTO);
-        entity = prepareEventEntity(entity, loggedUser);
+        entity.setOrganizer(existingEvent.getOrganizer());
+        if (entity.getLocation() != null) {
+            var loc = locationRepository.findById(entity.getLocation().getId()).get();
+            entity.setLocation(loc);
+        }
+
         entity.setId(existingEvent.getId());  // Ensure the ID is retained
         entity.setImages(existingEvent.getImages()); // Retain existing images list
 
@@ -258,7 +269,15 @@ public class EventService implements IEventService {
         validateEvent(eventDTO, loggedUser);
 
         var entity = DTOMapper.toEntityWithNullCollections(eventDTO);
-        entity = prepareEventEntity(entity, loggedUser);
+        entity.setOrganizer(loggedUser);
+
+        if (entity.getLocation() != null) {
+            var loc = locationRepository.findById(entity.getLocation().getId()).get();
+            if (loc.getCreator().getId() != entity.getOrganizer().getId())
+                entity.setLocation(null);
+            else
+                entity.setLocation(loc);
+        }
 
         var savedEvent = eventRepository.save(entity);
         savedEvent.setImages(new ArrayList<>());
@@ -281,17 +300,6 @@ public class EventService implements IEventService {
         processSectionMap(sectionMap, savedEvent);
 
         return DTOMapper.toDTO(savedEvent);
-    }
-
-    private Event prepareEventEntity(Event entity, User loggedUser) throws ApsiValidationException {
-        entity.setOrganizer(loggedUser);
-
-        if (entity.getLocation() != null) {
-            var loc = locationRepository.findById(entity.getLocation().getId()).get();
-            entity.setLocation(loc);
-        }
-
-        return entity;
     }
 
     private void processRelatedEntities(EventDTO eventDTO, Event newEvent, Event oldEvent) throws ApsiValidationException {
@@ -380,7 +388,7 @@ public class EventService implements IEventService {
         }
         var event = eventOptional.get();
         var loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (event.getOrganizer().getId() != loggedUser.getId() && loggedUser.getType() != UserType.ORGANIZER)
+        if (event.getOrganizer().getId() != loggedUser.getId() && loggedUser.getType() != UserType.SUPERADMIN)
             return Optional.empty();
 
         event.setCanceled(true);

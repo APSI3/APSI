@@ -109,6 +109,11 @@ export class Api {
             this.url + `/events?from=${from.toISOString()}&to=${to.toISOString()}&pageIndex=${pageIndex}`);
     }
 
+    static async GetOrganizerEvents(from: Date, to: Date, pageIndex: number) {
+        return await getApiResponse<undefined, PaginatedList<EventDTO>>("get",
+            this.url + `/events/my?from=${from.toISOString()}&to=${to.toISOString()}&pageIndex=${pageIndex}`);
+    }
+
     static async GetEventById(id: string | number | undefined) {
         return await getApiResponse<undefined, EventDTO>("get", this.url + `/events/${id}`);
     }
