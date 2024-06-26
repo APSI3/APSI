@@ -38,7 +38,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 public class EventServiceTest {
-    private static User mockedUser = null;
+    public static User mockedUser = null;
 
     @InjectMocks
     private EventService eventService;
@@ -67,6 +67,7 @@ public class EventServiceTest {
 
     @Test
     public void testGetAllEventsReturnsListOfAllEvents() throws ApsiValidationException {
+        mockAuthUser();
         List<Event> eventList = new ArrayList<>();
         eventList.add(TestHelper.getTestEvent(1L));
         eventList.add(TestHelper.getTestEvent(2L));
@@ -76,7 +77,7 @@ public class EventServiceTest {
         var to = from.plusDays(7);
         var pager = PageRequest.of(0, 10);
 
-        when(eventRepository.getEventsWithDatesBetween(pager, from, to)).thenReturn(new PageImpl<Event>(eventList, pager, eventList.size()));
+        when(eventRepository.getUncancelledEventsWithDatesBetween(pager, from, to)).thenReturn(new PageImpl<Event>(eventList, pager, eventList.size()));
         List<EventDTO> eventDTOList = new ArrayList<>();
         for (var event: eventList) {
             eventDTOList.add(DTOMapper.toDTO(event));

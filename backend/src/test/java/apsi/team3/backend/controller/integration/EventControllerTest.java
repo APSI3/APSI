@@ -34,8 +34,8 @@ public class EventControllerTest {
     final static String LOGIN = "testuser1";
     final static String PASSWORD = "apsi";
 
-    private LoggedUserDTO login() throws Exception {
-        LoginRequest loginRequest = new LoginRequest(LOGIN, PASSWORD);
+    private LoggedUserDTO login(String login) throws Exception {
+        LoginRequest loginRequest = new LoginRequest(login == null ? LOGIN : login, PASSWORD);
         String stringLoginRequest = objectMapper.writeValueAsString(loginRequest);
         String responseContent = mockMvc.perform(MockMvcRequestBuilders.post("/user/login")
             .contentType(MediaType.APPLICATION_JSON)
@@ -58,7 +58,7 @@ public class EventControllerTest {
 
     @Test
     public void testGetEventsReturnsListOfSomeEventsFromTestDB() throws Exception {
-        LoggedUserDTO loggedUser = login();
+        LoggedUserDTO loggedUser = login(null);
         String expectedJson = """
             {
                 "pageIndex": 0,
@@ -84,7 +84,7 @@ public class EventControllerTest {
 
     @Test
     public void testGetEventsReturnsListOfAllEventsFromTestDB() throws Exception {
-        LoggedUserDTO loggedUser = login();
+        LoggedUserDTO loggedUser = login("organizer");
         String expectedJson = """
             {
                 "pageIndex": 0,
@@ -125,7 +125,7 @@ public class EventControllerTest {
 
     @Test
     public void testGetEventByIdReturnsUser() throws Exception {
-        LoggedUserDTO loggedUserDTO = login();
+        LoggedUserDTO loggedUserDTO = login(null);
         String expectedJson = """
             {
                 "id": 1,
@@ -151,7 +151,7 @@ public class EventControllerTest {
     @Test
     @Transactional
     public void testCreateEventReturnsCreatedObject() throws Exception {
-        LoggedUserDTO loggedUser = login();
+        LoggedUserDTO loggedUser = login("organizer");
         String expectedJson = """
             {
                 "id": 3,
@@ -159,7 +159,7 @@ public class EventControllerTest {
                 "startDate": "2026-11-01",
                 "endDate": "2027-01-01",
                 "description": "test description",
-                "organizerId": 1,
+                "organizerId": 3,
                 "ticketTypes": [
                     {
                         "name": "type 1",
@@ -219,16 +219,16 @@ public class EventControllerTest {
     @Test
     @Transactional
     public void testReplaceEventReplacesEvent() throws Exception {
-        LoggedUserDTO loggedUser = login();
+        LoggedUserDTO loggedUser = login(null);
 
-        String expectedJson = """
+        String expectedJson = String.format("""
             {
                 "id": 2,
                 "name": "changed name",
                 "startDate": "2026-11-01",
                 "endDate": "2027-01-01",
                 "description": "test description",
-                "organizerId": 1,
+                "organizerId": 3,
                 "ticketTypes": [
                     {
                         "name": "type 1",
@@ -243,7 +243,7 @@ public class EventControllerTest {
                     }
                 ]
             }
-        """;
+        """);
 
         String request = """
             {
@@ -282,7 +282,7 @@ public class EventControllerTest {
 
     @Test
     public void testDeleteReturns401ForUnauthorizedUser() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/events/1"))
+        mockMvc.perform(MockMvcRequestBuilders.patch("/events/1"))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError())
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
@@ -290,9 +290,9 @@ public class EventControllerTest {
     @Test
     @Transactional
     public void testDeleteReturns204() throws Exception {
-        LoggedUserDTO loggedUser = login();
-        mockMvc.perform(MockMvcRequestBuilders.delete("/events/1")
-                        .header("Authorization", loggedUser.getAuthHeader()))
-                .andExpect(MockMvcResultMatchers.status().isNoContent());
+        LoggedUserDTO loggedUser = login(null);
+        mockMvc.perform(MockMvcRequestBuilders.patch("/events/1")
+            .header("Authorization", loggedUser.getAuthHeader()))
+            .andExpect(MockMvcResultMatchers.status().isOk());
     }
 }
