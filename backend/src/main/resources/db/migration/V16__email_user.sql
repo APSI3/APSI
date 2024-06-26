@@ -1,0 +1,1 @@
+UPDATE users SET email='apsi.tickets@gmail.com';
